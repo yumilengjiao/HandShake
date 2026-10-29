@@ -1,0 +1,124 @@
+{
+  "format_version": "training-run-v1",
+  "run_id": "31fd64c3-c07c-4cc9-80aa-2f90b8f9599c",
+  "identity_sha256": "fe6edf3588325615704fba40ed7364135aa18bc40c0d42944f6ab8910455d1ae",
+  "identity": {
+    "config": {
+      "format_version": "trainer-v1",
+      "model_type": "mlp",
+      "optimizer": "AdamW",
+      "learning_rate": 0.01,
+      "weight_decay": 0.0001,
+      "batch_size": 40,
+      "max_epochs": 60,
+      "patience": 60,
+      "min_delta": 0.0,
+      "grad_clip_norm": 1.0,
+      "seed": 42,
+      "device": "cpu",
+      "threads": 1,
+      "sampling": "uniform",
+      "scheduler": "constant",
+      "checkpoint_metric": "val_macro_f1",
+      "shuffle_labels_diagnostic": true
+    },
+    "data": {
+      "train_index_sha256": "af4bc37d4f5cb66577d98999a1d2bf73f696022914a78b79894327f19ad41523",
+      "val_index_sha256": "fc1bc8ee0f4f2096479183320ae0005555a027cebadb2916889934113cfcebf9",
+      "dataset_sha256": "079bb24ebc31986607f34a92d322fc0c7673e9c3e6d9882a4acd1b0bce5672a7",
+      "split_sha256": "fc771e57050758a0ee1796a282381c648069555deee93a9597813a922b5f9dee",
+      "stats_sha256": "269a0a9de7f3693e8f708ca1124eeebecae44da5eb39541e9563f8b91dbefb86",
+      "config_sha256": "c402769a53a6b6b728c9de2f192622b14212db383b33dc22a4835abdd6db0d81",
+      "synthetic": true,
+      "stride": 1,
+      "train": {
+        "endpoints": 40,
+        "supervised": 40,
+        "class_counts": [
+          8,
+          8,
+          8,
+          8,
+          8
+        ],
+        "coverage": {
+          "selected_endpoints": 40,
+          "represented": 40,
+          "ready": 0,
+          "ready_coverage": 0.0,
+          "unprocessed_frames": 0
+        },
+        "endpoint_sha256": "1f69f16476e3a5cf19fab8fe88d766e9c6a2f36ac84e6dde58080e4618f44f77"
+      },
+      "val": {
+        "endpoints": 40,
+        "supervised": 40,
+        "class_counts": [
+          8,
+          8,
+          8,
+          8,
+          8
+        ],
+        "coverage": {
+          "selected_endpoints": 40,
+          "represented": 40,
+          "ready": 0,
+          "ready_coverage": 0.0,
+          "unprocessed_frames": 0
+        },
+        "endpoint_sha256": "61e04faed37d2887619667033bb8b1af485b548a45302ddba071012cdf703497"
+      }
+    },
+    "code_sha256": "c73c21cadf178403ccc4a5309ad797f3ef28f0e783610fa861c2d5f7420db63a",
+    "schema_sha256": "e0df738963ff2a706ed13c8efbd4da181a5922464c24d2da4bd3c98320927dea",
+    "classes_sha256": "c7d03f896906e3720779061d20c7e9a6b682c5bc220647d12fc80f837614e90d",
+    "architecture": {
+      "format_version": "model-config-v1",
+      "status": "draft",
+      "feature_schema_version": "landmarks94-v1",
+      "vocabulary_version": "gesture-v1-draft",
+      "input_dim": 94,
+      "window_size": 32,
+      "dropout": 0.2,
+      "model_type": "mlp",
+      "hidden_dims": [
+        128,
+        64
+      ]
+    },
+    "environment": {
+      "python": "3.10.12",
+      "torch": "2.14.1+cpu",
+      "numpy": "2.2.6",
+      "system": "Linux",
+      "kernel": "6.8.0-138-generic",
+      "machine": "x86_64",
+      "cpu_model": "13th Gen Intel(R) Core(TM) i7-13650HX",
+      "logical_cpus": 20,
+      "python_build": [
+        "main",
+        "Aug 31 2026 10:18:17"
+      ],
+      "device": "cpu",
+      "threads": 1
+    }
+  },
+  "synthetic": true,
+  "status": "completed",
+  "resume_boundary": "completed_epoch",
+  "determinism": "CPU, one process, no DataLoader workers; identical code/software/hardware required",
+  "selection": "validation macro-F1 over all 5 classes; strict improvement > min_delta; ties retain earlier epoch",
+  "scheduler": "constant; no scheduler state",
+  "final_test_used": false,
+  "epochs": 60,
+  "global_step": 60,
+  "best_epoch": 16,
+  "best_val_macro_f1": 0.18666666666666668,
+  "early_stopped": false,
+  "artifacts": {
+    "last.pt": "0cc73ae591558349250d00190c5dc23c397fb5a25331a6f212fc6cd8ca63fa72",
+    "best.pt": "c88864c784a3634ec25a1df8a2b39baf73e6d8d77c0475f25409a0de2971f667",
+    "epochs.jsonl": "19de40a640bd74f8be5fa58e1153d7a0dc627928ca4e88b9220cbabd16267bc0"
+  }
+}

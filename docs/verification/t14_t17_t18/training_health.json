@@ -1,0 +1,31 @@
+{
+  "scope": "synthetic class-coded geometry, train/development only, no real gesture or generalization result",
+  "synthetic": true,
+  "final_test_used": false,
+  "models": {
+    "mlp": {
+      "coded_labels": {
+        "val_macro_f1": 1.0,
+        "best_epoch": 16,
+        "run_id": "3cab5752-ed71-48fd-9708-28c7577d4393"
+      },
+      "shuffled_labels": {
+        "val_macro_f1": 0.18666666666666668,
+        "best_epoch": 16,
+        "run_id": "31fd64c3-c07c-4cc9-80aa-2f90b8f9599c"
+      }
+    },
+    "tcn": {
+      "coded_labels": {
+        "val_macro_f1": 1.0,
+        "best_epoch": 32,
+        "run_id": "f384b328-06c4-462a-af36-f02c580bae1a"
+      },
+      "shuffled_labels": {
+        "val_macro_f1": 0.25421789768538994,
+        "best_epoch": 52,
+        "run_id": "405cdfc1-ee9a-4166-bced-4434162833b0"
+      }
+    }
+  }
+}

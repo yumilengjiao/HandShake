@@ -28,17 +28,20 @@ def code_version() -> str:
 
 
 def main(argv=None) -> int:
+    arguments = list(sys.argv[1:] if argv is None else argv)
+    if arguments and arguments[0] == "train":
+        from algorithm.training.cli import main as training_main
+        return training_main(arguments[1:])
     from backend.collection.commands import add_arguments, run_capture_command, run_data_command
 
-    parser = argparse.ArgumentParser(description="HandShake: local capture/collection tools; live device control is unavailable")
+    parser = argparse.ArgumentParser(description="HandShake: local capture/collection and offline training; live device control is unavailable")
     parser.add_argument("mode", nargs="?", default="dry_run", choices=["dry_run", "preview", "camera_probe", "collect", "inspect", "recover", "annotate", "train", "evaluate", "replay", "live"])
     parser.add_argument("--config-dir", type=Path, help="directory containing the six YAML files and platforms/mock.yaml")
     parser.add_argument("--log", type=Path, help="write versioned synthetic JSONL; parent must exist; never overwrites")
     add_arguments(parser)
-    args = parser.parse_args(argv)
-    if args.mode in {"train", "evaluate", "replay", "live"}:
+    args = parser.parse_args(arguments)
+    if args.mode in {"evaluate", "replay", "live"}:
         reason = {
-            "train": "formal dataset/trainer/checkpoints are not implemented (T10/T14); model modules and algorithm.smoke are available",
             "evaluate": "trained model and evaluator are not implemented (T15)",
             "replay": "recording replay is not implemented (T23); JSONL validation alone is not replay",
             "live": "no real backend or independent stop has been verified (T18/T19/T24)",

@@ -2,7 +2,7 @@
 
 基于 MediaPipe 手部关键点与自主训练时序神经网络的手势终端控制项目。
 
-> 已实现T01/T02/T05核心与协议、T03/T04/T06相机/视频输入与授权分块采集/骨架标注，以及T11/T12/T13的94维共享特征、数据/缓存、规则/MLP/因果TCN。真实MediaPipe初始化exit137和完整实机验收仍待解决；尚无参与者训练数据、正式训练权重、产品UI或真实翻页。当前目标按native-v2采用原生多端，桌面与手机分别验收。
+> 已实现T01/T02/T05核心、T03/T04/T06采集工具、T11～T13特征/模型，以及T14训练器、T17状态机、T18映射与安全调度模块。当前主机MediaPipe模型初始化＋合成空图推理通过，旧主机exit137原因未知；真手/GUI/完整实机验收、参与者数据、正式权重、产品UI和真实翻页仍待完成。当前目标按native-v2采用原生多端。
 
 ## 先看这些文档
 
@@ -15,6 +15,7 @@
 - [手势协议](docs/gesture_protocol.md)与[标注指南](docs/annotation_guide.md)
 - [T01/T02/T05 验证记录](docs/verification_t01_t02_t05.md)
 - [T11/T12/T13 特征与模型使用说明](docs/features_and_models.md)及[验证记录](docs/verification_t11_t12_t13.md)
+- [T14/T17/T18 训练与交互使用说明](docs/training_and_interaction.md)及[验证记录](docs/verification_t14_t17_t18.md)
 - [采集/感知/骨架标注操作指南](docs/collection_workflow.md)
 - [T03/T04/T06 验证与当前阻塞](docs/verification_t03_t04_t06.md)
 

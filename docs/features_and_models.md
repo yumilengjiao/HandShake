@@ -53,7 +53,7 @@ TCN的LayerNorm只对同一时刻通道维统计，卷积只在左侧补零。`f
 
 模型配置在 `configs/training/mlp.yaml`、`tcn.yaml`（链接至打包资源），由 `algorithm/model_config.py` 校验/创建模型；C从统一类表读取。规则参数公开在RuleThresholds。B0纵向阈值单位为图像宽度，与T05以图像高度定义的标注起点参数分开；不得声称二者等同。
 
-`algorithm/inference.py` 的RulePredictor/TorchPredictor共用窗口长度、ready、当前质量、跨度、新鲜度和同域时钟门控。MLP取最后一帧，TCN取整窗，规则对同一标准化窗反变换几何；推理前后各检查时钟，保留提交时stream/track/epoch和源帧，绝不重贴新context。录制/合成时钟必须显式注入，不能混入墙钟。输出ModelPrediction，保留intent/phase/calibrated_probabilities=None，不把类别或规则分数当执行授权。完整事件引擎待T17；各模型后续接同一引擎，分别按相同验证协议/预算选门限。
+`algorithm/inference.py` 的RulePredictor/TorchPredictor共用窗口长度、ready、当前质量、跨度、新鲜度和同域时钟门控。MLP取最后一帧，TCN取整窗，规则对同一标准化窗反变换几何；推理前后各检查时钟，保留提交时stream/track/epoch和源帧，绝不重贴新context。录制/合成时钟必须显式注入，不能混入墙钟。输出ModelPrediction，保留intent/phase/calibrated_probabilities=None，不把类别或规则分数当执行授权。T17/T18现已提供独立事件/调度模块，见[新增说明](training_and_interaction.md)；各模型后续接同一引擎，分别按相同验证协议/预算选门限。
 
 ## 运行与后续
 
@@ -63,6 +63,6 @@ env -u PYTHONPATH PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/python -m pytest
 env -u PYTHONPATH .venv/bin/python -m algorithm.smoke --output artifacts/model-smoke.json
 ```
 
-smoke只在20个容易分离的人造张量上做100次优化，检查可过拟合、参数量和CPU前向耗时，并对5个规则几何fixture给分项诊断；不保存权重，不做正式验证集选择。输出拒绝覆盖同名报告；T14正式训练入口仍未实现。本轮不给真实F1、误触率或端到端延迟结论。
+smoke只在20个容易分离的人造张量上做100次优化，检查可过拟合、参数量和CPU前向耗时，并对5个规则几何fixture给分项诊断；不保存权重，不做正式验证集选择。输出拒绝覆盖同名报告；T14现已新增缓存驱动训练入口，见[训练与交互](training_and_interaction.md)；正式数据训练仍未完成。本轮不给真实F1、误触率或端到端延迟结论。
 
 T04真实观测、T07词表/pilot与T10正式划分齐备后，T11再拟合并冻结真实统计；T14共用训练器加载这些模型，T15校准，T16完成可信模型包与在线部署。网络语义核对依据为 [PyTorch Conv1d](https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv1d.html)、[LayerNorm](https://docs.pytorch.org/docs/stable/generated/torch.nn.LayerNorm.html)；94维公式和层宽是本项目设计，不是第三方论文的实测结论。

@@ -7,6 +7,7 @@
 - [手势协议](gesture_protocol.md)、[标注指南](annotation_guide.md)
 - [T01/T02/T05 验证与完成边界](verification_t01_t02_t05.md)
 - [T11/T12/T13 特征与模型](features_and_models.md)、[模块验证记录](verification_t11_t12_t13.md)
+- [T14/T17/T18 训练与交互说明](training_and_interaction.md)、[新增验证及SDK诊断](verification_t14_t17_t18.md)
 - [T03/T04/T06 采集操作指南](collection_workflow.md)、[感知协议](perception_contract.md)
 - [T03/T04/T06 验证与SDK阻塞](verification_t03_t04_t06.md)
 - [通用技术架构图](assets/technical-architecture-general.png)

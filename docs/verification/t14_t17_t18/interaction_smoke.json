@@ -1,0 +1,665 @@
+{
+  "policy": {
+    "wake_hold_ns": 600000000,
+    "exit_hold_ns": 800000000,
+    "neutral_hold_ns": 400000000,
+    "cooldown_ns": 500000000,
+    "max_prediction_age_ns": 150000000,
+    "max_evidence_gap_ns": 100000000,
+    "health_timeout_ns": 150000000,
+    "class_on": 0.8,
+    "status": "draft",
+    "score_kind": "rule_decision"
+  },
+  "config_sha256": "a782059f0dae035aed5d56088b56d75546cd0aa2f8b972e7538b7f77c9598321",
+  "synthetic": true,
+  "camera_opened": false,
+  "real_model_used": false,
+  "system_injection": false,
+  "events": [
+    {
+      "schema_version": "1.0.0",
+      "time_unit": "ns",
+      "timebase": "synthetic",
+      "stream_id": "interaction-fixture",
+      "source_frame_id": 13,
+      "source_timestamp_ns": 650000000,
+      "event_id": "662cc8e8-e4fa-49f0-ba25-bd7089e39c22",
+      "track_id": "hand",
+      "context_epoch": 1,
+      "gesture_id": "wake_open",
+      "candidate_start_timestamp_ns": 50000000,
+      "commit_timestamp_ns": 650000000,
+      "mode": "presentation",
+      "decision_reason": "wake_confirmed"
+    },
+    {
+      "schema_version": "1.0.0",
+      "time_unit": "ns",
+      "timebase": "synthetic",
+      "stream_id": "interaction-fixture",
+      "source_frame_id": 26,
+      "source_timestamp_ns": 1300000000,
+      "event_id": "645a0797-1f7d-4cd5-93ee-553460fbffb4",
+      "track_id": "hand",
+      "context_epoch": 2,
+      "gesture_id": "swipe_right",
+      "candidate_start_timestamp_ns": 1150000000,
+      "commit_timestamp_ns": 1300000000,
+      "mode": "presentation",
+      "decision_reason": "causal_geometry_complete"
+    },
+    {
+      "schema_version": "1.0.0",
+      "time_unit": "ns",
+      "timebase": "synthetic",
+      "stream_id": "interaction-fixture",
+      "source_frame_id": 47,
+      "source_timestamp_ns": 2350000000,
+      "event_id": "a7d300eb-07d9-4e37-9c26-e2efd41e2120",
+      "track_id": "hand",
+      "context_epoch": 2,
+      "gesture_id": "swipe_left",
+      "candidate_start_timestamp_ns": 2200000000,
+      "commit_timestamp_ns": 2350000000,
+      "mode": "presentation",
+      "decision_reason": "causal_geometry_complete"
+    },
+    {
+      "schema_version": "1.0.0",
+      "time_unit": "ns",
+      "timebase": "synthetic",
+      "stream_id": "interaction-fixture",
+      "source_frame_id": 64,
+      "source_timestamp_ns": 3200000000,
+      "event_id": "599bec02-0c4e-4132-849b-478aa91db47e",
+      "track_id": "hand",
+      "context_epoch": 2,
+      "gesture_id": "exit_pose",
+      "candidate_start_timestamp_ns": 2400000000,
+      "commit_timestamp_ns": 3200000000,
+      "mode": "presentation",
+      "decision_reason": "exit_confirmed"
+    }
+  ],
+  "results": [
+    {
+      "schema_version": "1.0.0",
+      "time_unit": "ns",
+      "timebase": "synthetic",
+      "command_id": "d07abf25-56b5-4d21-b218-e6ece12e7825",
+      "accepted": true,
+      "injection_status": "not_attempted",
+      "error_code": null,
+      "completed_at_ns": 1300000000,
+      "acknowledgement_level": "none"
+    },
+    {
+      "schema_version": "1.0.0",
+      "time_unit": "ns",
+      "timebase": "synthetic",
+      "command_id": "44ecf8b3-51b7-4dc7-8fd7-1711facfbeff",
+      "accepted": true,
+      "injection_status": "not_attempted",
+      "error_code": null,
+      "completed_at_ns": 2350000000,
+      "acknowledgement_level": "none"
+    }
+  ],
+  "timeline": [
+    {
+      "now_ns": 50000000,
+      "state": "ARMING",
+      "reason": "wake_holding",
+      "source_frame_id": 1,
+      "context_epoch": 1,
+      "event_id": null
+    },
+    {
+      "now_ns": 100000000,
+      "state": "ARMING",
+      "reason": "wake_holding",
+      "source_frame_id": 2,
+      "context_epoch": 1,
+      "event_id": null
+    },
+    {
+      "now_ns": 150000000,
+      "state": "ARMING",
+      "reason": "wake_holding",
+      "source_frame_id": 3,
+      "context_epoch": 1,
+      "event_id": null
+    },
+    {
+      "now_ns": 200000000,
+      "state": "ARMING",
+      "reason": "wake_holding",
+      "source_frame_id": 4,
+      "context_epoch": 1,
+      "event_id": null
+    },
+    {
+      "now_ns": 250000000,
+      "state": "ARMING",
+      "reason": "wake_holding",
+      "source_frame_id": 5,
+      "context_epoch": 1,
+      "event_id": null
+    },
+    {
+      "now_ns": 300000000,
+      "state": "ARMING",
+      "reason": "wake_holding",
+      "source_frame_id": 6,
+      "context_epoch": 1,
+      "event_id": null
+    },
+    {
+      "now_ns": 350000000,
+      "state": "ARMING",
+      "reason": "wake_holding",
+      "source_frame_id": 7,
+      "context_epoch": 1,
+      "event_id": null
+    },
+    {
+      "now_ns": 400000000,
+      "state": "ARMING",
+      "reason": "wake_holding",
+      "source_frame_id": 8,
+      "context_epoch": 1,
+      "event_id": null
+    },
+    {
+      "now_ns": 450000000,
+      "state": "ARMING",
+      "reason": "wake_holding",
+      "source_frame_id": 9,
+      "context_epoch": 1,
+      "event_id": null
+    },
+    {
+      "now_ns": 500000000,
+      "state": "ARMING",
+      "reason": "wake_holding",
+      "source_frame_id": 10,
+      "context_epoch": 1,
+      "event_id": null
+    },
+    {
+      "now_ns": 550000000,
+      "state": "ARMING",
+      "reason": "wake_holding",
+      "source_frame_id": 11,
+      "context_epoch": 1,
+      "event_id": null
+    },
+    {
+      "now_ns": 600000000,
+      "state": "ARMING",
+      "reason": "wake_holding",
+      "source_frame_id": 12,
+      "context_epoch": 1,
+      "event_id": null
+    },
+    {
+      "now_ns": 650000000,
+      "state": "WAIT_RELEASE",
+      "reason": "wake_owner_acquired",
+      "source_frame_id": 13,
+      "context_epoch": 2,
+      "event_id": "662cc8e8-e4fa-49f0-ba25-bd7089e39c22"
+    },
+    {
+      "now_ns": 700000000,
+      "state": "WAIT_RELEASE",
+      "reason": "waiting_neutral_and_cooldown",
+      "source_frame_id": 14,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 750000000,
+      "state": "WAIT_RELEASE",
+      "reason": "waiting_neutral_and_cooldown",
+      "source_frame_id": 15,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 800000000,
+      "state": "WAIT_RELEASE",
+      "reason": "waiting_neutral_and_cooldown",
+      "source_frame_id": 16,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 850000000,
+      "state": "WAIT_RELEASE",
+      "reason": "waiting_neutral_and_cooldown",
+      "source_frame_id": 17,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 900000000,
+      "state": "WAIT_RELEASE",
+      "reason": "waiting_neutral_and_cooldown",
+      "source_frame_id": 18,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 950000000,
+      "state": "WAIT_RELEASE",
+      "reason": "waiting_neutral_and_cooldown",
+      "source_frame_id": 19,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 1000000000,
+      "state": "WAIT_RELEASE",
+      "reason": "waiting_neutral_and_cooldown",
+      "source_frame_id": 20,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 1050000000,
+      "state": "WAIT_RELEASE",
+      "reason": "waiting_neutral_and_cooldown",
+      "source_frame_id": 21,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 1100000000,
+      "state": "ACTIVE",
+      "reason": "released",
+      "source_frame_id": 22,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 1150000000,
+      "state": "ACTIVE",
+      "reason": "no_device_gesture",
+      "source_frame_id": 23,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 1200000000,
+      "state": "ACTIVE",
+      "reason": "no_device_gesture",
+      "source_frame_id": 24,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 1250000000,
+      "state": "ACTIVE",
+      "reason": "no_device_gesture",
+      "source_frame_id": 25,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 1300000000,
+      "state": "WAIT_RELEASE",
+      "reason": "swipe_completed_once",
+      "source_frame_id": 26,
+      "context_epoch": 2,
+      "event_id": "645a0797-1f7d-4cd5-93ee-553460fbffb4"
+    },
+    {
+      "now_ns": 1350000000,
+      "state": "WAIT_RELEASE",
+      "reason": "waiting_neutral_and_cooldown",
+      "source_frame_id": 27,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 1400000000,
+      "state": "WAIT_RELEASE",
+      "reason": "waiting_neutral_and_cooldown",
+      "source_frame_id": 28,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 1450000000,
+      "state": "WAIT_RELEASE",
+      "reason": "waiting_neutral_and_cooldown",
+      "source_frame_id": 29,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 1500000000,
+      "state": "WAIT_RELEASE",
+      "reason": "waiting_neutral_and_cooldown",
+      "source_frame_id": 30,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 1550000000,
+      "state": "WAIT_RELEASE",
+      "reason": "waiting_neutral_and_cooldown",
+      "source_frame_id": 31,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 1600000000,
+      "state": "WAIT_RELEASE",
+      "reason": "waiting_neutral_and_cooldown",
+      "source_frame_id": 32,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 1650000000,
+      "state": "WAIT_RELEASE",
+      "reason": "waiting_neutral_and_cooldown",
+      "source_frame_id": 33,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 1700000000,
+      "state": "WAIT_RELEASE",
+      "reason": "waiting_neutral_and_cooldown",
+      "source_frame_id": 34,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 1750000000,
+      "state": "WAIT_RELEASE",
+      "reason": "waiting_neutral_and_cooldown",
+      "source_frame_id": 35,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 1800000000,
+      "state": "WAIT_RELEASE",
+      "reason": "waiting_neutral_and_cooldown",
+      "source_frame_id": 36,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 1850000000,
+      "state": "WAIT_RELEASE",
+      "reason": "waiting_neutral_and_cooldown",
+      "source_frame_id": 37,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 1900000000,
+      "state": "WAIT_RELEASE",
+      "reason": "waiting_neutral_and_cooldown",
+      "source_frame_id": 38,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 1950000000,
+      "state": "WAIT_RELEASE",
+      "reason": "waiting_neutral_and_cooldown",
+      "source_frame_id": 39,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 2000000000,
+      "state": "WAIT_RELEASE",
+      "reason": "waiting_neutral_and_cooldown",
+      "source_frame_id": 40,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 2050000000,
+      "state": "WAIT_RELEASE",
+      "reason": "waiting_neutral_and_cooldown",
+      "source_frame_id": 41,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 2100000000,
+      "state": "ACTIVE",
+      "reason": "released",
+      "source_frame_id": 42,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 2150000000,
+      "state": "ACTIVE",
+      "reason": "no_device_gesture",
+      "source_frame_id": 43,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 2200000000,
+      "state": "ACTIVE",
+      "reason": "no_device_gesture",
+      "source_frame_id": 44,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 2250000000,
+      "state": "ACTIVE",
+      "reason": "no_device_gesture",
+      "source_frame_id": 45,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 2300000000,
+      "state": "ACTIVE",
+      "reason": "no_device_gesture",
+      "source_frame_id": 46,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 2350000000,
+      "state": "WAIT_RELEASE",
+      "reason": "swipe_completed_once",
+      "source_frame_id": 47,
+      "context_epoch": 2,
+      "event_id": "a7d300eb-07d9-4e37-9c26-e2efd41e2120"
+    },
+    {
+      "now_ns": 2400000000,
+      "state": "WAIT_RELEASE",
+      "reason": "exit_holding",
+      "source_frame_id": 48,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 2450000000,
+      "state": "WAIT_RELEASE",
+      "reason": "exit_holding",
+      "source_frame_id": 49,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 2500000000,
+      "state": "WAIT_RELEASE",
+      "reason": "exit_holding",
+      "source_frame_id": 50,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 2550000000,
+      "state": "WAIT_RELEASE",
+      "reason": "exit_holding",
+      "source_frame_id": 51,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 2600000000,
+      "state": "WAIT_RELEASE",
+      "reason": "exit_holding",
+      "source_frame_id": 52,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 2650000000,
+      "state": "WAIT_RELEASE",
+      "reason": "exit_holding",
+      "source_frame_id": 53,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 2700000000,
+      "state": "WAIT_RELEASE",
+      "reason": "exit_holding",
+      "source_frame_id": 54,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 2750000000,
+      "state": "WAIT_RELEASE",
+      "reason": "exit_holding",
+      "source_frame_id": 55,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 2800000000,
+      "state": "WAIT_RELEASE",
+      "reason": "exit_holding",
+      "source_frame_id": 56,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 2850000000,
+      "state": "WAIT_RELEASE",
+      "reason": "exit_holding",
+      "source_frame_id": 57,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 2900000000,
+      "state": "WAIT_RELEASE",
+      "reason": "exit_holding",
+      "source_frame_id": 58,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 2950000000,
+      "state": "WAIT_RELEASE",
+      "reason": "exit_holding",
+      "source_frame_id": 59,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 3000000000,
+      "state": "WAIT_RELEASE",
+      "reason": "exit_holding",
+      "source_frame_id": 60,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 3050000000,
+      "state": "WAIT_RELEASE",
+      "reason": "exit_holding",
+      "source_frame_id": 61,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 3100000000,
+      "state": "WAIT_RELEASE",
+      "reason": "exit_holding",
+      "source_frame_id": 62,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 3150000000,
+      "state": "WAIT_RELEASE",
+      "reason": "exit_holding",
+      "source_frame_id": 63,
+      "context_epoch": 2,
+      "event_id": null
+    },
+    {
+      "now_ns": 3200000000,
+      "state": "DISABLED",
+      "reason": "exit_control",
+      "source_frame_id": 64,
+      "context_epoch": 3,
+      "event_id": "599bec02-0c4e-4132-849b-478aa91db47e"
+    },
+    {
+      "now_ns": 3250000000,
+      "state": "DISABLED",
+      "reason": "disabled_or_suspended",
+      "source_frame_id": 65,
+      "context_epoch": 3,
+      "event_id": null
+    }
+  ],
+  "final_context": {
+    "schema_version": "1.0.0",
+    "time_unit": "ns",
+    "timebase": "synthetic",
+    "stream_id": "interaction-fixture",
+    "context_epoch": 3,
+    "enabled": false,
+    "mode": "presentation",
+    "target_context": "mock-presentation",
+    "owner_track_id": null,
+    "suspended": false
+  },
+  "safety": [
+    {
+      "stop_received_ns": 3200000000,
+      "submissions_disabled_ns": 3200000000,
+      "inflight": false,
+      "reason": "stop"
+    },
+    {
+      "stop_received_ns": 3250000000,
+      "submissions_disabled_ns": 3250000000,
+      "inflight": false,
+      "reason": "stop"
+    },
+    {
+      "release_finished_ns": 3250000000,
+      "confirmed": true,
+      "error": null,
+      "generation": 2,
+      "safe_quiescent": true
+    }
+  ],
+  "released": true
+}
