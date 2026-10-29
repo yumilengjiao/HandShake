@@ -1,5 +1,7 @@
 # T02 依赖与安装验证
 
+> 历史T02环境记录保留。T03/T04/T06已在另一Linux/Python3.12.14环境按同一锁文件安装dev/perception：NumPy2.5.4，MediaPipe1.2.0，OpenCV5.0.0.93；131项自动测试通过。但真实MediaPipe初始化exit137，导入不等于感知可运行。详见 [本轮验证](verification_t03_t04_t06.md)，未改uv.lock或系统Python。
+
 验证日期2026-10-29；Linux x86_64 / CPython 3.10.12 / GNOME Wayland。下表为**实际安装及导入结果**，不是仅依据在线文档填写的兼容版本。锁文件 `uv.lock` 包含精确版本与分发哈希；只对当前组合做了验证。
 
 | 依赖 | 实测发行版本 | 实际检查 |
@@ -44,6 +46,6 @@ uv build --out-dir /tmp/handshake-t02-dist
 
 ## 后续锁定与来源
 
-每次环境、词表、特征或依赖变更都重新运行核心测试；感知模型资产与实际摄像头在T03/T04记录型号、版本/哈希和失败原因。当前只有软件依赖锁，不存在模型权重锁或实验性能数字。手机浏览器兼容性在T20/T23实机验证。
+每次环境、词表、特征或依赖变更都重新运行核心测试；感知模型资产与实际摄像头在 T03/T04 记录型号、版本/哈希和失败原因。当前只有 Python 软件依赖锁，不存在模型权重锁或实验性能数字。最新原生多端路线由 T36 选择，T20 桌面 UI 与 T37 手机 SDK/模型运行时/签名构建分别锁定验证；不能从当前 Linux 导入结果推断其他 OS/ABI 可用。本次只改文档，未安装新依赖或改动锁文件。
 
 实现核对依据为 [Pydantic严格校验文档](https://pydantic.dev/docs/validation/latest/concepts/strict_mode/)、[setuptools项目配置](https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html) 和 [MediaPipe Python设置指南](https://developers.google.com/edge/mediapipe/solutions/setup_python)。CPU来源按 [PyTorch官方安装说明](https://pytorch.org/get-started/locally/) 选择；uv对Linux/Windows的torch使用显式CPU索引。官方文档不代替上述本地实测。

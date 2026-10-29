@@ -1,7 +1,7 @@
 """Versioned JSONL for synthetic evidence and future runtime telemetry.
 
 Frame images and annotation truth are intentionally not accepted by this logger.
-T06 will implement NPZ observations/recordings, T23 full replay.
+T06 NPZ observation recordings live in shared.recordings; T23 full replay is pending.
 """
 
 from pathlib import Path

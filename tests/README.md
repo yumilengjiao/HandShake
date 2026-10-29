@@ -1,6 +1,6 @@
 # tests：公共测试与回归验证
 
-> 当前仅有测试规划说明，没有已实现或已通过的程序测试。
+> T02/T05及T03/T04/T06累计131项自动测试通过，见 [本轮验证](../docs/verification_t03_t04_t06.md)。覆盖核心、采集、质量/关联、分块存储与CLI；真实模型初始化、人工GUI和完整实机安全验收尚未通过。
 
 ## 两人分工
 
@@ -33,11 +33,19 @@ tests/
 - 前台是演示应用、UI 卡顿、模型/后端阻塞时的独立停止。
 - 候选包冻结后重跑相应安全和回放用例。
 
+## 原生多端测试交接
+
+- T36 验证原生框架/平台插件和本机桥接；T20 桌面 UI 与核心独立停止、崩溃/失联处理。
+- T37 用 golden fixtures 对照 Python 与移动核心的特征/窗口/ready/logits/事件，测真实机型前后摄像头、旋转/镜像、后台/锁屏/权限撤销、离线运行、热降频和电量。
+- 各 OS/ABI 的构建/安装 CI 与真机相机/控制证据分列，缺机器标未验证，不默认跳过即通过。
+- T38 额外测认证/配对撤销、网络延迟/乱序/重放、时钟不确定度、断连 watchdog 和重连不补动作。
+- 所有平台按 T24/T29 补安全与发布回归，测试包不能自动获得 live 或公开分发授权。
+
 ## 运行边界
 
 常规自动测试使用合成输入和 mock/dry-run，不需要真实参与者数据、相机或桌面注入权限。硬件/应用/live 测试必须显式选择，并在隔离的无敏感内容环境中授权运行。
 
-T02/T05 当前测试运行：`env -u PYTHONPATH PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/python -m pytest`。覆盖契约、配置、合成标注和 mock 集成，不需要相机、模型或设备权限；具体执行结果见 [验证记录](../docs/verification_t01_t02_t05.md)。完整安全与回放尚属 [T23](../task_plans/23_replay_and_integration.md)、[T24](../task_plans/24_safety_faults_and_performance.md)。
+T02/T05 当前测试运行：`env -u PYTHONPATH PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/python -m pytest`。覆盖契约、配置、合成标注和 mock 集成，不需要相机、模型或设备权限；具体执行结果见 [验证记录](../docs/verification_t01_t02_t05.md)。完整安全与回放尚属 [T23](../task_plans/23_replay_and_integration.md)、[T24](../task_plans/24_safety_faults_and_performance.md)。新增采集测试为 `test_capture.py`、`test_perception.py`、`test_recordings.py`、`test_collection.py` 与可选的 `test_opencv_io.py`；OpenCV测试只生成合成像素/视频，不访问真实相机。
 
 T11/T12/T13 增加特征/统计/窗口、用户划分与缓存、规则/MLP/TCN因果/梯度及统一预测器测试。完整测试先安装`uv sync --locked --extra dev --extra training`；缺少可选torch时神经模型测试会明确skip。实际309项全通过的环境和合成边界见 [新验证记录](../docs/verification_t11_t12_t13.md)。
 

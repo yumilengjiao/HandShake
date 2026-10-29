@@ -1,6 +1,6 @@
 # shared：公共契约与共享基础模块
 
-> T02/T05 已实现公共契约/配置/标注；T11 新增 `classes.py` 和 `features/` 的94维几何、字段级训练统计、掩码与32帧窗口。离线与在线调用同一实现，真实统计待T10；T06真实NPZ会话格式仍未实现。说明见 [特征与模型](../docs/features_and_models.md)。
+> T02/T05公共契约/配置/标注、T03/T06的`observations.py`数组帧适配与`recordings.py`分块NPZ/manifest/事件校验，以及T11的`classes.py`和`features/`均已实现。94维几何、字段级train统计、掩码和32帧窗口由离线/在线共用；正式统计待T10。recording-v1与T11草案Dataset适配的格式边界仍须后续集成，不改旧公共schema。见[感知协议](../docs/perception_contract.md)与[特征和模型](../docs/features_and_models.md)。
 
 ## 主责与任务
 
@@ -23,8 +23,12 @@
 - 本目录不反向依赖 frontend/backend/algorithm，也不发设备操作。
 - 尽量只依赖基础库及必要的数组/校验库，不为了公共字段导入 PyTorch、MediaPipe 或 UI 框架。
 - `shared/` 定义状态对象/时钟接口，后端拥有运行生命周期和安全决策；训练优化由算法模块拥有。
-- 共享特征只保留一份实现，离线和在线不得各抄一套。
+- Python 特征保持单一实现，离线与在线不得各抄一套。T37 移动运行时优先绑定公共核心；必须移植时以同一版本化规范和 golden fixtures 检查特征、窗口、ready 和数值误差，不各端自由调参。
 - 记录读写是通用格式能力；采集流程在 backend，训练采样/增强在 algorithm。
+
+## 原生多端交接
+
+T36 为跨语言壳确定 schema/绑定和 IPC/FFI，不等于所有端直接导入 Python。时间整数必须无损编码，平台回调时基显式转换；T38 跨设备不得直接比较单调时钟。平台能力、权限/生命周期和网络会话等增量字段需在实现时升级 schema 并同步校验，此次不改既有契约代码。
 
 ## 接口变更规则
 

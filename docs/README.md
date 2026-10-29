@@ -3,10 +3,12 @@
 ## 当前已有内容
 
 - [范围与待确认项](scope_freeze.md)、[平台支持](platform_support.md)
-- [当前架构/契约](architecture.md)、[依赖验证](dependencies.md)
+- [当前架构/契约](architecture.md)、[原生多端目标与实施边界](native_architecture.md)、[依赖验证](dependencies.md)
 - [手势协议](gesture_protocol.md)、[标注指南](annotation_guide.md)
 - [T01/T02/T05 验证与完成边界](verification_t01_t02_t05.md)
 - [T11/T12/T13 特征与模型](features_and_models.md)、[模块验证记录](verification_t11_t12_t13.md)
+- [T03/T04/T06 采集操作指南](collection_workflow.md)、[感知协议](perception_contract.md)
+- [T03/T04/T06 验证与SDK阻塞](verification_t03_t04_t06.md)
 - [通用技术架构图](assets/technical-architecture-general.png)
 - [架构图生成说明](assets/technical-architecture-general.prompt.txt)
 
@@ -23,7 +25,8 @@
 | 文档 | 内容 |
 | --- | --- |
 | `scope_freeze.md` | 课程范围、脱敏人员角色、节点与变更记录 |
-| `architecture.md` | 实际模块依赖、接口、运行模式与时序 |
+| `native_architecture.md` | 当前原生多端目标、平台权限、便携运行时与 T36～T38 验收 |
+| `architecture.md` | 当前 Python 实装、契约与后续原生交接，不混为已完成多端 |
 | `annotation_guide.md`、`gesture_protocol.md` | 词元、类别/意图/阶段、确认/释放和反例 |
 | `platform_support.md` | 真正实测的系统/应用/权限与限制 |
 | `dataset_card.md` | 授权范围、真实规模、划分及公开程度 |

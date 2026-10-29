@@ -1,6 +1,6 @@
 # scripts：采集、训练与运维命令入口
 
-> T02 已提供 `check_environment.py` 限时依赖导入/CPU冒烟脚本，运行 `.venv/bin/python scripts/check_environment.py`。主 CLI 为 `.venv/bin/handshake dry_run`。以下采集/训练/回放入口仍为后续规划。
+> 现有 `check_environment.py`；T03/T06新增 `camera_probe.py`、`collect.py`、`annotate.py` 薄入口，均转发已安装包的 `backend.cli`。训练/评估/事件回放仍未实现。完整命令和授权要求见 [采集指南](../docs/collection_workflow.md)。
 
 T11/T12/T13 已提供 `build_features.py`（草案观测JSON＋预分配划分→绑定版本的NPZ缓存）和 `smoke_models.py`（纯合成可过拟合/结构诊断，不保存权重）。完整用法见 [特征与模型](../docs/features_and_models.md)。正式train/evaluate/replay仍未实现。
 
