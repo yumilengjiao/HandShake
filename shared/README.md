@@ -1,6 +1,6 @@
 # shared：公共契约与共享基础模块
 
-> T02/T05 已实现 `contracts.py`、`config.py`、`records.py`、`annotations.py` 与包内 draft 默认配置。契约/配置/合成标注校验已接入测试；共享特征和真实 NPZ 会话格式尚待 T11/T06。
+> T02/T05 契约/配置/标注已实现；T03/T06 新增 `observations.py` 数组帧适配和 `recordings.py` 分块NPZ/manifest/事件校验。共享94维特征仍待T11；新记录格式为recording-v1，旧公共schema未静默改变。
 
 ## 主责与任务
 

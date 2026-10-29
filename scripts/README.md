@@ -1,6 +1,6 @@
 # scripts：采集、训练与运维命令入口
 
-> T02 已提供 `check_environment.py` 限时依赖导入/CPU冒烟脚本，运行 `.venv/bin/python scripts/check_environment.py`。主 CLI 为 `.venv/bin/handshake dry_run`。以下采集/训练/回放入口仍为后续规划。
+> 现有 `check_environment.py`；T03/T06新增 `camera_probe.py`、`collect.py`、`annotate.py` 薄入口，均转发已安装包的 `backend.cli`。训练/评估/事件回放仍未实现。完整命令和授权要求见 [采集指南](../docs/collection_workflow.md)。
 
 ## 原则
 
