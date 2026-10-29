@@ -25,6 +25,12 @@
 6. 同一模型/配置/fixture 的规范化事件列表一致：比较源时间、类型、上下文和原因，随机 UUID/运行耗时从一致性断言中剥离，或注入确定性 ID 生成器。对比 MLP/TCN 固定事件逻辑及验证搜索预算；参数可按各自校准结果配置并公开。更改门限/特征保留旧日志并输出差异。
 7. 集成分三步退出：A 合成预测贯通 UI/mock；B 真实关键点回放＋自训模型 dry-run；C 在 T17/T18/T19 局部安全检查通过后，受控 live 完成有页码的脚本。
 
+## 原生多端复用验收
+
+P0 先验证本机原生桌面链路，不要求网络服务。T37 的移动核心复用同一逻辑/调度回放规范，逐平台比较特征、ready、事件和停止轨迹；跨语言时间编码需无损，UI 生命周期事件需录制/注入。授权手机实机资料单列，不能用相同 fixture 的数值一致性替代感知/帧率/热降频评估。
+
+T37/T38 在各自集成时调用本任务已有方案补平台证据，不把其完整实现反设为 T23 桌面交付的前置。远程模式额外验证配对、乱序/新鲜度和执行端断连停止，本地模式断网仍可工作。
+
 ## 输出与验收
 
 `app.py`、`scripts/replay.py`、`telemetry/event_log.py`、回放 manifest、集成测试与最小端到端操作说明。
@@ -38,4 +44,4 @@
 
 ## 前置任务文件
 
-[T06 实现授权采集、会话落盘与标注辅助工具](06_collection_tool.md)；[T16 打包模型并实现带新鲜度校验的在线推理](16_export_and_online_inference.md)；[T17 实现唤醒、控制权、释放去重与独立停止状态机](17_interaction_state_machine.md)；[T18 实现通用命令映射、调度器与 mock 适配器](18_generic_action_dispatch.md)；[T19 实现演示文稿上层应用与实机翻页](19_presentation_application.md)；[T20 实现预览、模式、模型状态与启停控制界面](20_desktop_ui.md)
+[T06 实现授权采集、会话落盘与标注辅助工具](06_collection_tool.md)；[T16 打包模型并实现带新鲜度校验的在线推理](16_export_and_online_inference.md)；[T17 实现唤醒、控制权、释放去重与独立停止状态机](17_interaction_state_machine.md)；[T18 实现通用命令映射、调度器与 mock 适配器](18_generic_action_dispatch.md)；[T19 实现演示文稿上层应用与实机翻页](19_presentation_application.md)；[T20 实现原生桌面界面与多端交互契约](20_desktop_ui.md)

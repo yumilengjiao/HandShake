@@ -1,5 +1,7 @@
 # T01 → T02 → T05 实施与验证记录
 
+> 历史证据说明：下文保留该轮 Web＋手机需求及软件验证结果，不代表最新产品形态。当前已改为 [native-v2 原生多端](native_architecture.md)，T20/T36/T37/T38 均待实施；此次文档修订不重跑软件验证、不更新历史 manifest/哈希或宣称多平台通过。
+
 2026-10-29（Asia/Shanghai）。执行者：Codex；实际成员A/B由用户后续填写。本轮没有提交Git commit或外部发布；代码版本为当前HEAD加dirty标记，精确文件哈希见 [实现清单](verification/implementation_manifest.json)。
 
 ## 交付与结论
@@ -57,4 +59,4 @@ env -u PYTHONPATH /tmp/handshake-t02-wheel-env/bin/handshake dry_run
 
 ## 下一步交接
 
-按原任务依赖继续T03/T04 → T06 → T07。T05仍用draft版本，T07真实试标后冻结。最终Web/手机界面保留在后续T20及集成阶段；用户后填分工，当前不代填实名或课程日期。
+该轮原定继续 T03/T04 → T06 → T07，Web/手机 UI 交后续 T20。现按 native-v2 更新为 T36 选型 → T20 原生桌面，T37 本机手机、T38 可选配对控制，见 [当前任务导航](../task_plans/README.md)。T05 仍需 T07 真实试标冻结；分工/课程日期由用户补充，历史验证不覆盖这些新增任务。

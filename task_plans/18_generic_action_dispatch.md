@@ -39,6 +39,13 @@ Backend.release_all() -> None
 6. 后端调用必须限时并与控制/停止循环隔离，说明超时后底层调用是否仍可能完成。不能仅用线程 future 超时假装取消了系统调用；晚到按下/回执要再次触发安全释放或保持禁用。不能证明安全收尾的后端不启用持有类能力。DryRunBackend 只记录拟执行，MockBackend 能模拟异常前后已产生副作用、阻塞和晚到完成；不通过全局 monkeypatch 偷换 mock/live。
 7. ActionResult 区分内部接收、系统注入和应用确认；不具备应用回执时不能把 injected=true 解释为用户看到了结果。
 
+## 原生多端与远程执行边界
+
+- ActionBackend 分为本应用内、系统/外部应用、T38 可选远程目标；每类执行前均经过调度，不因原生 UI 可调用 SDK 就允许绕过安全闸门。
+- capabilities 按具体 OS/版本/权限/目标动态给出，缺失或撤销时拒绝。手机默认应用内命令；Android 敏感系统能力单独授权评估，iOS 不要求任意跨 App 注入，未知 OS 默认无外部能力。
+- 平台 SDK 只在适配器加载，不让某个 OS 缺依赖导致训练/回放/mock 无法启动。T36 冻结边界，T37 用相同 fixture 验证移植后的去重、TTL、旧 epoch 拒绝与释放。
+- T38 远程命令必须在执行端再校验授权/目标/新鲜度/租约；目标端 watchdog 不依赖手机在线。单调时钟不跨设备直接比较，标准命令不能包含任意 shell 或触摸脚本。
+
 ## 输出与验收
 
 `actions/mapper.py`、`actions/dispatcher.py`、`actions/backends/dry_run.py`、`mock.py`、动作 schema 与能力矩阵。
