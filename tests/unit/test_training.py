@@ -113,3 +113,20 @@ def test_resume_rejects_changed_checkpoint_hash(caches, tmp_path):
         stream.write(b"changed")
     with pytest.raises(ValueError, match="checkpoint hash"):
         train(*caches, root, config=cfg, resume=root / "last.pt")
+
+
+def test_public_class_ids_are_not_silently_mapped_into_legacy_five_classes(caches, tmp_path):
+    from hashlib import sha256
+    from algorithm.data.dataset import canonical_digest
+    path = caches[0]
+    with np.load(path / "features.npz", allow_pickle=False) as archive:
+        arrays = {name: archive[name].copy() for name in archive.files}
+    arrays["y"][arrays["class_valid"]] = 14  # Public-data-v1 is not migrated yet.
+    np.savez_compressed(path / "features.npz", **arrays)
+    index = json.loads((path / "index.json").read_text())
+    index["npz_sha256"] = sha256((path / "features.npz").read_bytes()).hexdigest()
+    index["index_sha256"] = canonical_digest({key: value for key, value in index.items() if key != "index_sha256"})
+    (path / "index.json").write_text(json.dumps(index))
+    with pytest.raises(ValueError, match="labels do not match vocabulary"):
+        train(*caches, tmp_path / "must-not-train")
+    assert not (tmp_path / "must-not-train").exists()

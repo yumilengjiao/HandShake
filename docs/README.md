@@ -2,14 +2,18 @@
 
 ## 当前已有内容
 
+- [T14/T17/T18 训练与交互说明](training_and_interaction.md)、[最新master适配验证](verification_master_sync.md)
+
+- [公开数据路线 public-data-v1](public_data_plan.md)、[官方下载入口](../data/SOURCES.md)、[版本/许可/校验清单](../data/sources.json)
+
 - [范围与待确认项](scope_freeze.md)、[平台支持](platform_support.md)
 - [当前架构/契约](architecture.md)、[原生多端目标与实施边界](native_architecture.md)、[依赖验证](dependencies.md)
 - [手势协议](gesture_protocol.md)、[标注指南](annotation_guide.md)
 - [T01/T02/T05 验证与完成边界](verification_t01_t02_t05.md)
 - [T11/T12/T13 特征与模型](features_and_models.md)、[模块验证记录](verification_t11_t12_t13.md)
-- [T14/T17/T18 训练与交互说明](training_and_interaction.md)、[新增验证及SDK诊断](verification_t14_t17_t18.md)
 - [T03/T04/T06 采集操作指南](collection_workflow.md)、[感知协议](perception_contract.md)
-- [T03/T04/T06 验证与SDK阻塞](verification_t03_t04_t06.md)
+- [T03/T04/T06 初次交付验证与旧SDK阻塞](verification_t03_t04_t06.md)
+- [MediaPipe兼容修复、独立模型探针与剩余实机验收](perception_diagnostics.md)
 - [通用技术架构图](assets/technical-architecture-general.png)
 - [架构图生成说明](assets/technical-architecture-general.prompt.txt)
 

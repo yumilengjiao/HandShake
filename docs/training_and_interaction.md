@@ -2,9 +2,11 @@
 
 2026-10-29。现已实现 CPU 可复现训练器、交互状态机、通用映射与有界调度器，默认仍不注入系统操作。没有正式参与者数据、真实手势训练结果、桌面/手机产品界面或实机翻页。软件验证记录见 [本轮报告](verification_t14_t17_t18.md)。
 
+当前基线已合入最新master的[公开数据优先路线](public_data_plan.md)与[MediaPipe兼容依赖/统一探针](perception_diagnostics.md)。本文软件仍是旧5类契约：公开15类需T07核验、统一协议迁移、T10划分后才能训练；不要求用户自行录制。公开版计划以UI/键盘启停，下面张掌/握拳流程仅为旧协议实现，不假称已支持来源类别。最新兼容验证见[master适配记录](verification_master_sync.md)。
+
 ## T14：从特征缓存训练
 
-先按 [特征说明](features_and_models.md) 生成同一 dataset/split/stats/config/stride 的 train 与 val 缓存。现有录制 recording-v1 与 T11 ObservationRecord 草案仍需 T09/T10 的正式转换与审核；此轮没有假定两者已经无缝接通。正式输入必须来自上游冻结清单。
+先按[特征说明](features_and_models.md)生成同一dataset/split/stats/config/stride的train与val缓存。T11 ObservationRecord仍是旧5类输入草案；公开来源适配器、15类契约升级与T09/T10审核尚未完成。可选自采的recording-v1也需显式转换；两条来源都必须加载对应版本的冻结清单，不能将15类直接伪标为5类。
 
 ```bash
 .venv/bin/python -m backend.cli train \
@@ -85,13 +87,17 @@ runtime 自带独立20ms时钟 watchdog。没有新预测、推理调用方阻�
 
 该演示执行真正的新状态机/映射/调度模块，合成轨迹依次唤醒、右挥、阻止左向回程、中性释放、左挥、握拳退出。只出现两个翻页拟执行结果，均 not_attempted；不是相机→训练模型→演示软件闭环。
 
-## T04：当前主机的隔离SDK诊断
+## T04：统一隔离SDK诊断
 
 ```bash
-.venv/bin/python -m backend.perception.diagnostics \
+# master固定的兼容依赖；完整感知基线使用Python3.12。
+uv sync --locked --python 3.12 --extra dev --extra perception --extra training
+.venv/bin/handshake-perception-probe \
   --model artifacts/perception/hand_landmarker.task \
-  --expected-sha256 fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1 \
-  --timeout-seconds 20 --report artifacts/perception-probe-new.json
+  --model-sha256 fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1 \
+  --timeout 30 --rss-limit-mib 768 --report artifacts/perception-probe-new.json
 ```
 
-该入口记录实际环境与可读 cgroup 限制，在独立子进程只初始化一次SDK并推理128×128合成黑图，不访问相机。超时终止子进程组；校验失败或资产缺失不启动SDK，也不自动换模型/依赖。SIGKILL/137单独不能确定OOM，需要对照资源事件。当前主机探针通过，旧主机的原因仍未知；真手、镜像、交叉、遮挡、GUI和授权采集仍需补验。
+权威实现为 `backend/perception/probe.py`，同一有界子进程记录加载、三帧640×480黑图、关闭、期限/RSS/日志守护。旧 `python -m backend.perception.diagnostics --expected-sha256 ... --timeout-seconds ... --report ...` 与 `scripts/probe_perception.py` 保留参数和摘要兼容，但原生调用全部转发至统一实现，不再维护另一份SDK加载流程。
+
+不访问相机，不自动下载或切换资产/依赖。SDK通过不代表真手/镜像/遮挡/交叉或GUI验收；SIGKILL本身也不能确定OOM。旧3.10/MediaPipe1.2.0的成功记录与master的3.12/0.10.21记录分别作为历史证据保留；实际当前环境与重新验证见[master适配报告](verification_master_sync.md)。

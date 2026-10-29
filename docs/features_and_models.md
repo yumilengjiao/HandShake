@@ -1,5 +1,7 @@
 # T11/T12/T13 特征、基线与因果网络
 
+> 当前主线采用[公开数据方案](public_data_plan.md)，无需强制自采。下文是旧5类草案模块的实现说明；15类导入/协议迁移尚未完成，保留旧记录版本。训练器/事件模块已提供，最新验证见[master适配](verification_master_sync.md)。
+
 2026-10-29，`handshake-core 0.2.0`。本轮交付共享特征、训练输入适配、规则/MLP/TCN及统一预测接口；没有真实数据训练、正式模型包或Web实现。结果和限制见 [验证记录](verification_t11_t12_t13.md)。
 
 ## 特征与输入
@@ -65,4 +67,4 @@ env -u PYTHONPATH .venv/bin/python -m algorithm.smoke --output artifacts/model-s
 
 smoke只在20个容易分离的人造张量上做100次优化，检查可过拟合、参数量和CPU前向耗时，并对5个规则几何fixture给分项诊断；不保存权重，不做正式验证集选择。输出拒绝覆盖同名报告；T14现已新增缓存驱动训练入口，见[训练与交互](training_and_interaction.md)；正式数据训练仍未完成。本轮不给真实F1、误触率或端到端延迟结论。
 
-T04真实观测、T07词表/pilot与T10正式划分齐备后，T11再拟合并冻结真实统计；T14共用训练器加载这些模型，T15校准，T16完成可信模型包与在线部署。网络语义核对依据为 [PyTorch Conv1d](https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv1d.html)、[LayerNorm](https://docs.pytorch.org/docs/stable/generated/torch.nn.LayerNorm.html)；94维公式和层宽是本项目设计，不是第三方论文的实测结论。
+T07公开数据完整性/类别/时轴核验、统一协议迁移与T10正式划分齐备后，T11再拟合并冻结真实统计；T14共用训练器加载这些模型，T15校准，T16完成可信模型包与在线部署。网络语义核对依据为 [PyTorch Conv1d](https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv1d.html)、[LayerNorm](https://docs.pytorch.org/docs/stable/generated/torch.nn.LayerNorm.html)；94维公式和层宽是本项目设计，不是第三方论文的实测结论。

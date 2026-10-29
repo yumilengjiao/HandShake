@@ -7,9 +7,7 @@
 | 建议主责 | B（A/B 实名以总方案为准） |
 | 前置任务 | T03 |
 | 总方案依据 | 第 6、10.1～10.4、18 节 |
-| 状态 | 待验证；适配/质量/关联软件已实现，当前主机SDK初始化＋合成空图通过，真手/GUI待验；历史主机exit137未归因 |
-
-2026-10-29新增隔离诊断 `backend/perception/diagnostics.py`；当前Linux/Python3.10官方模型SHA一致，单次初始化和空图推理退出0。历史Python3.12主机记录保留，详见 [新增验证](../docs/verification_t14_t17_t18.md)。
+| 状态 | 待验证；兼容依赖下真实模型加载/黑图推理已通过，真手效果待验 |
 
 总约束和路径解释见 [任务导航](README.md)。下列代码、配置、命令和产物路径均为待实现约定，不代表目前已存在。新增细节属于总方案的实施起点；只有通过试采集和验证后才冻结，不得用最终测试结果反向挑选配置。
 
@@ -44,13 +42,17 @@
 
 接口依据见 [官方 Python 指南](https://developers.google.com/edge/mediapipe/solutions/vision/hand_landmarker/python)。最终安装版本需另行实机验证。
 
-## 2026-10-29 实施记录
+## 2026-10-29 初次交付记录（修复前）
 
 - 实现：`backend/perception/{mediapipe_adapter,pipeline,quality,synthetic}.py`、`backend/tracking/association.py`；逐帧观察契约见 [perception_contract](../docs/perception_contract.md)。
 - 自带合成检测器只在显式synthetic模式使用，绝不是缺模型时的回退。资产来源/SHA/SDK版本写元数据，world估计与handedness分数不伪造成定位置信度。
 - fake SDK与合成测试覆盖VIDEO参数/毫秒映射、四类状态、完整帧关联、质量失效、重排/交叉/失跟；代码可导入，OpenCV合成视频真实编码/读取通过。
 - 实际MediaPipe 1.2.0可导入，但官方float16/v1资产初始化被宿主终止（exit137），没有真实模型输出。原因未确定，不虚称OOM或已解决，不以fake SDK结果代替真手验收。
 - 当前验收保留“待验证”；完整命令/资产哈希/限制见 [本轮验证](../docs/verification_t03_t04_t06.md)。解决加载故障后再实测左右手/镜像/遮挡/交叉和速率。
+
+## 同日兼容修复
+
+在独立环境对照后固定 MediaPipe 0.10.21/OpenCV 4.11.0.86，锁定 NumPy 1.26.4。真实模型加载、黑色RGB帧VIDEO推理及关闭通过；新增 `backend/perception/probe.py` 独立探针，154项软件回归通过。1.2.0对照仍收到SIGKILL，但信号来源未确定，不声称修好了上游或证明OOM。仍需人工真手/镜像/遮挡/交叉验收；具体证据见 [感知修复](../docs/perception_diagnostics.md)。
 
 ## 前置任务文件
 

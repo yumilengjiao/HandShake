@@ -1,6 +1,9 @@
-# Local datasets and generated artifacts: keep only directory documentation.
+# Local datasets: allow only reviewed documentation and source metadata.
 /data/*
 !/data/README.md
+!/data/SOURCES.md
+!/data/sources.json
+# Generated artifacts remain local.
 /artifacts/*
 !/artifacts/README.md
 

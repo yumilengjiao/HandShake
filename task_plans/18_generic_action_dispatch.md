@@ -11,6 +11,8 @@
 
 实施日期：2026-10-29。实际源码位于 `algorithm/training/`、`backend/interaction/`、`backend/actions/`（按本任务职责），使用与限制见 [说明](../docs/training_and_interaction.md)，证据见 [验证报告](../docs/verification_t14_t17_t18.md)。以下未验收项仍保留；规划路径以已实现职责目录为准。
 
+**public-data-v1适配**：以[公开数据方案](../docs/public_data_plan.md)优先，不强制自采。现有模块只验证旧5类草案；15类数据须经T07来源/语义核验、统一契约迁移与T10划分后再接入。公开首版计划UI/键盘启停，不把Open twice/Grab伪映射为张掌/握拳。最新整体验证见[master适配记录](../docs/verification_master_sync.md)。
+
 总约束和路径解释见 [任务导航](README.md)。下列代码、配置、命令和产物路径均为待实现约定，不代表目前已存在。新增细节属于总方案的实施起点；只有通过试采集和验证后才冻结，不得用最终测试结果反向挑选配置。
 
 ## 目标

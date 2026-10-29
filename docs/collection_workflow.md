@@ -1,11 +1,13 @@
 # T03/T04/T06 采集、感知与标注操作指南
 
+> 最新训练数据路线为 [public-data-v1](public_data_plan.md)，不要求用户自行录制；下载入口见 [data/SOURCES.md](../data/SOURCES.md)。以下collect是可选授权采集工具，不是公开数据训练的强制前置。
+
 ## 当前能力与边界
 
 - 已实现本机相机/视频/合成输入、最新帧槽、帧状态账本、VIDEO 感知适配、质量/两手关联、授权分块落盘、完整性检查/恢复及骨架标注工具。
 - 工具不加载自训手势分类器，不创建任何真实动作后端。MediaPipe 仅提取关键点；T11/T13/T17/T18/T20 的生产功能仍待实施。
 - OpenCV 工具窗口只服务预检/采集/标注，不等于已完成 T20 原生产品 UI 或 T36 框架选型。
-- 当前机器短时相机探针通过；MediaPipe 可导入，但实际 Hand Landmarker 初始化被宿主终止（退出码 137，原因未确定）。合成检测器测试通过不代表真实感知通过。详见 [验证记录](verification_t03_t04_t06.md)。
+- 当前兼容组合已通过真实 Hand Landmarker 加载、合成图像推理与关闭；新增独立子进程探针保留原生失败证据。原1.2.0的SIGKILL来源尚未查明，不认定OOM；兼容修复和剩余验收见 [感知诊断](perception_diagnostics.md)。真手效果仍需人工验证。
 
 ## 环境与默认安全行为
 
@@ -44,11 +46,15 @@ uv sync --locked --python 3.12 --extra dev --extra perception
 ```bash
 # 不依赖 MediaPipe 模型的显式合成链路
 .venv/bin/handshake preview --source synthetic --frames 90 --headless
-# 真实 SDK + 合成图像；当前宿主初始化失败，排错后再试
+# 先检查真实模型：独立子进程，默认30秒期限，不访问相机
+.venv/bin/handshake-perception-probe --model artifacts/perception/hand_landmarker.task \
+  --model-sha256 fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1 \
+  --report artifacts/perception-probe-new.json
+# 真实 SDK + 合成图像的采集处理链路
 .venv/bin/handshake preview --source synthetic --frames 10 --headless \
   --model artifacts/perception/hand_landmarker.task \
   --model-sha256 fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1
-# 感知预览（需先解决本机 SDK 初始化问题）
+# 感知预览（模型探针通过后，由操作者核对真手效果）
 .venv/bin/handshake preview --camera 0 --model artifacts/perception/hand_landmarker.task
 ```
 
@@ -121,7 +127,7 @@ uv sync --locked --python 3.12 --extra dev --extra perception
 
 ## 待验证清单
 
-- 相机连续约5分钟、真实占用/拔插、人工窗口关闭与重开；目前仅5秒 headless 探针。
-- 解决 MediaPipe 原生初始化 exit 137，验证真手左右/镜像/遮挡/交叉与实际感知速率。
+- 5分钟headless相机稳定性与随后重开已通过；真实占用/拔插、人工窗口预览/关闭仍待验，见 [补验记录](perception_diagnostics.md)。
+- 在已通过加载的兼容环境验证真手左右/镜像/遮挡/交叉与实际感知速率；黑图探针不是手部效果验收。
 - 人工操作预览/标注窗口、真实授权短会话和双人标签对齐；单元测试不代替交互验收。
 - 后续 T17/T18/T24 的真实控制、独立停止和竞态安全，不以此采集工具的无操作模式背书。

@@ -12,8 +12,9 @@ dependencies = ["pydantic>=2.10,<3", "PyYAML>=6,<7", "numpy>=1.26,<3"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8,<10"]
-# Import smoke tests do not certify camera/model operation. See docs/dependencies.md.
-perception = ["mediapipe", "opencv-contrib-python"]
+# Verified Linux/Python 3.12 model-operation baseline; see docs/perception_diagnostics.md.
+# 1.2.0 imports here but its native model initialization receives SIGKILL.
+perception = ["mediapipe==0.10.21", "opencv-contrib-python==4.11.0.86"]
 training = ["torch", "scikit-learn"]
 
 [tool.uv.sources]
@@ -26,6 +27,7 @@ explicit = true
 
 [project.scripts]
 handshake = "backend.cli:main"
+handshake-perception-probe = "backend.perception.probe:main"
 
 [tool.setuptools]
 include-package-data = true

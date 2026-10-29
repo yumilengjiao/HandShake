@@ -2,9 +2,11 @@
 
 基于 MediaPipe 手部关键点与自主训练时序神经网络的手势终端控制项目。
 
-> 已实现T01/T02/T05核心、T03/T04/T06采集工具、T11～T13特征/模型，以及T14训练器、T17状态机、T18映射与安全调度模块。当前主机MediaPipe模型初始化＋合成空图推理通过，旧主机exit137原因未知；真手/GUI/完整实机验收、参与者数据、正式权重、产品UI和真实翻页仍待完成。当前目标按native-v2采用原生多端。
+> 已实现T01/T02/T05核心、T03/T04/T06采集工具、T11～T13特征/模型，以及T14训练器、T17交互状态机、T18映射与安全调度模块。感知依赖采用master固定的MediaPipe 0.10.21/OpenCV 4.11.0.86，统一探针见[感知修复](docs/perception_diagnostics.md)。公开数据为主，当前代码仍是旧5类契约；15类导入/协议迁移、正式训练、产品UI和真实翻页待完成。
 
 ## 先看这些文档
+
+> **最新数据约定 public-data-v1**：公开数据为主，不要求自录训练集。已整理 [官方下载入口](data/SOURCES.md) 和 [公开数据路线](docs/public_data_plan.md)；首选IPN HandS关键点候选，标注包SHA不一致仍待核验，不能直接开始训练。现有5类代码契约尚未迁移。
 
 - [项目总目标与技术方案](PROJECT_MASTER_PLAN.md)
 - [38 个实施任务与依赖](task_plans/README.md)
@@ -15,9 +17,10 @@
 - [手势协议](docs/gesture_protocol.md)与[标注指南](docs/annotation_guide.md)
 - [T01/T02/T05 验证记录](docs/verification_t01_t02_t05.md)
 - [T11/T12/T13 特征与模型使用说明](docs/features_and_models.md)及[验证记录](docs/verification_t11_t12_t13.md)
-- [T14/T17/T18 训练与交互使用说明](docs/training_and_interaction.md)及[验证记录](docs/verification_t14_t17_t18.md)
+- [T14/T17/T18 训练与交互说明](docs/training_and_interaction.md)、[基于最新master的适配验证](docs/verification_master_sync.md)
 - [采集/感知/骨架标注操作指南](docs/collection_workflow.md)
-- [T03/T04/T06 验证与当前阻塞](docs/verification_t03_t04_t06.md)
+- [T03/T04/T06 初次交付验证](docs/verification_t03_t04_t06.md)
+- [MediaPipe 兼容修复、模型探针与剩余验收](docs/perception_diagnostics.md)
 
 课程版先完成 **手势翻页、原生桌面基础界面、自训 TCN、MLP 对照、安全控制与实验报告**。产品目标覆盖 Windows/macOS/Linux、Android/iOS/iPadOS；手机本地运行列为 T37 后续交付，其他 OS 按能力评估。可安装、本机识别、应用内控制、外部应用控制分别验收，不承诺任意系统控制任意 App。
 
@@ -116,18 +119,18 @@ frontend / backend / algorithm --> shared
 ## 数据与产物管理
 
 - `data/` 专门放数据集，`artifacts/` 专门放模型和实验产物；二者均不是源码包。
-- 当前 Git 只跟踪这两个目录中的 README，其他内容默认忽略。共享数据应经授权的受控渠道传递，并核对 manifest/哈希；拉取代码不会自动获得数据或模型。
+- Git在`data/`只跟踪README、`SOURCES.md`和`sources.json`，在`artifacts/`只跟踪README；数据/标签/权重仍忽略。按官方链接与许可获取公开数据，核对版本和哈希；拉取代码不会自动获得数据或模型。
 - 实名、授权原件、课程提交凭据和个人档案放本地 `private/`，已忽略，不创建公开样例。
 - 可公开的脱敏说明/汇总图放 `docs/`，纯合成小测试样本放 `tests/fixtures/`；公开前仍需核查内容。
 - `.gitignore` 不是访问控制或加密，不能代替授权、备份、文件权限和删除流程。
 
 ## 当前下一步
 
-先解决真实 MediaPipe 初始化 exit137 → 补5分钟相机与人工工具验收 → 真实授权短采集/T07 双人试标。算法主线、T36 原生选型和 T20 mock 可按依赖并行；T37 手机/T38 配对后续推进。不能把合成资料当训练数据，A/B 分工与真实参与者授权仍需补齐。
+按 [public-data-v1](docs/public_data_plan.md) 核对公开数据完整性/许可 → 导入关键点和时间标签、冻结类别与分组划分 → 复用已有T11/MLP/TCN模块，完成类别适配与T14正式训练 → 界面、受控翻页与实机评估。**不以T07自行录制或T08招募为训练前置**；首版计划用UI/键盘启停，模型负责左右动作，手势唤醒/退出可后续增强。T36/T20和安全状态机可用合成输入并行；T37/T38后续推进。不把数据来源清单、合成结果或作者预训练模型当成自主训练成果。
 
 ## 安装与合成验证
 
-以下基础安装原在 Linux/Python 3.10 验证；本轮 T03/T04/T06 另在 Linux/Python 3.12.14 按同一锁文件验证，见本轮记录。用 uv 创建项目 `.venv`；不以锁文件推断所有宿主兼容。
+历史基础安装在 Linux/Python 3.10 验证；当前感知兼容修复在 Linux/Python 3.12.14 验证，已更新依赖与锁文件，见 [修复记录](docs/perception_diagnostics.md)。建议感知工具显式使用 Python 3.12；不以锁文件推断其他 Python/OS/ABI 兼容。
 
 ```bash
 # 在 HandShake 仓库根目录运行
@@ -137,7 +140,7 @@ uv sync --locked --extra dev
 env -u PYTHONPATH PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/python -m pytest
 ```
 
-`dry_run` 仍只运行有限合成脚本，不访问相机、不训练、不注入事件；无参数默认 dry_run。`train/evaluate/replay/live` 仍不可用。新增显式 `preview/camera_probe/collect/inspect/recover/annotate` 工具；采集授权、格式和失败边界见操作指南，`inspect` 不等于 T23 事件回放。
+`dry_run` 仍只运行有限合成脚本，不访问相机、不训练、不注入事件；无参数默认 dry_run。`train --train-cache ... --val-cache ... --output ...` 已可运行旧5类版本缓存训练；`evaluate/replay/live` 仍不可用。新增显式 `preview/camera_probe/collect/inspect/recover/annotate` 工具；采集授权、格式和失败边界见操作指南，`inspect` 不等于 T23 事件回放。
 
 当前环境的 ROS `PYTHONPATH` 和全局 pytest 插件会干扰测试，因此命令显式隔离；普通环境也可使用同一命令。基础链路不导入 MediaPipe/OpenCV/PyTorch。
 
@@ -157,7 +160,7 @@ uv sync --locked --extra dev --extra training
 env -u PYTHONPATH .venv/bin/python -m algorithm.smoke --output artifacts/model-smoke.json
 ```
 
-该命令只做人造张量可过拟合/CPU前向检查和规则fixture诊断，不保存正式模型，报告文件拒绝覆盖。MLP为94→128→64→5；TCN为单卷积残差块d=1/2/4/8、56,325参数、31帧感受野。三种模型共用32帧输入就绪与新鲜度门控；MLP只取末帧但特征含速度。训练统计仅由train拟合，验证/测试构建必须复用同一统计。缓存构建命令与草案输入格式见 [模块说明](docs/features_and_models.md)，正式实验等待T04/T07/T10及T14。
+该命令只做人造张量可过拟合/CPU前向检查和规则fixture诊断，不保存正式模型，报告文件拒绝覆盖。MLP为94→128→64→5；TCN为单卷积残差块d=1/2/4/8、56,325参数、31帧感受野。这里仍是旧5类草案，公开数据15类方案须迁移类表/契约并重训，不能直接复用为已完成的新类别模型。三种模型共用32帧输入就绪与新鲜度门控；MLP只取末帧但特征含速度。训练统计仅由train拟合，验证/测试构建必须复用同一统计。缓存构建命令与草案输入格式见 [模块说明](docs/features_and_models.md)，正式实验等待T07公开数据完整性/类别核验、协议迁移、T10划分后再使用T14；不要求自采。
 
 ## 新增工具快速开始
 
@@ -174,6 +177,6 @@ uv sync --locked --python 3.12 --extra dev --extra perception
 .venv/bin/handshake annotate --recording <录制目录> --annotator A
 ```
 
-真实感知先解决当前 SDK 初始化问题并提供本地 `.task`；真实采集必须另行取得授权，不能照抄合成授权引用。OpenCV工具窗口不是T20产品UI。完整命令和当前限制见 [操作指南](docs/collection_workflow.md)。
+真实感知先提供本地 `.task` 并运行 `.venv/bin/handshake-perception-probe --model <资产路径>`，通过后再预览；真实采集必须另行取得授权，不能照抄合成授权引用。OpenCV工具窗口不是T20产品UI。完整命令和当前限制见 [操作指南](docs/collection_workflow.md)。
 
 完整边界见 [架构与契约说明](docs/architecture.md)和[平台支持矩阵](docs/platform_support.md)。T01课程/设备签认、T03/T04/T06完整实机验收和T05真实双人标注仍待完成。

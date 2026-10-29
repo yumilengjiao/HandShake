@@ -1,6 +1,6 @@
 # backend：实时运行与安全终端控制
 
-> T02 核心之外，T03/T04/T06 已实现相机/视频/合成源、感知适配/质量/关联和授权采集/标注工具。T17/T18新增状态机、映射、有界调度和独立watchdog/release。当前主机SDK空图探针通过，历史主机exit137未归因；没有产品UI或真实系统操作，见[新增说明](../docs/training_and_interaction.md)。
+> T02 核心之外，T03/T04/T06 已实现相机/视频/合成源、感知适配/质量/关联和授权采集/标注工具。T17/T18已实现旧5类交互状态机与有界安全调度；没有产品UI或真实系统操作；兼容依赖下真实模型加载/黑图推理已通过，真手/人工工具待验，见 [修复记录](../docs/perception_diagnostics.md)。
 
 ## 主责与任务
 
@@ -21,7 +21,9 @@
 | `telemetry/` | 结构化日志、健康监控、计时与事件轨迹 |
 | 应用控制器 | 生命周期、运行上下文、输入/模型/模式切换、停止 |
 
-`capture/`、`perception/`、`tracking/association.py`、`collection/` 已落地；`interaction/`、`actions/` 已有独立实现和合成故障测试；telemetry落盘、正式模型/真实后端集成仍待后续任务，保留T02历史mock回归。命令见 [采集操作指南](../docs/collection_workflow.md)。
+`capture/`、`perception/`、`tracking/association.py`、`collection/` 已落地；`interaction/`、`actions/` 已实现独立模块与合成故障检查；真实集成/平台仍待T19/T23/T24。公开版UI/键盘启停与15类契约迁移未实施，见[训练与交互](../docs/training_and_interaction.md)。命令见 [采集操作指南](../docs/collection_workflow.md)。
+
+感知诊断统一由 `backend/perception/probe.py` 执行；T14旧入口 `diagnostics.py` / `scripts/probe_perception.py` 仅兼容转发，保留原参数/摘要格式。
 
 ## 在线链路
 

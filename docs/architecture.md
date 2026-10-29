@@ -10,15 +10,17 @@ T11/T12/T13使用共享几何、训练统计和窗口实现，详见[特征与�
 
 相机实时输入丢旧帧并保留状态；离线视频背压保留所有解码帧。未授权预览不保存资料，采集路径不构造动作后端。原FramePacket作为JSON边界保留，显式转换，不改旧schema。完整字段见 [感知协议](perception_contract.md) 和 [采集指南](collection_workflow.md)。
 
-131项软件测试和短相机探针通过；历史主机MediaPipe初始化exit137；当前主机SDK初始化＋空图推理通过，人工GUI/真手/真实会话仍待验证。`inspect/recover`不等于T23完整事件回放。
+154项软件测试及兼容依赖下的真实模型加载/合成图像推理通过，见 [感知修复](perception_diagnostics.md)；真手效果、人工GUI/真实会话仍待验证。独立模型探针不访问相机，记录子进程原生故障；`inspect/recover`不等于T23完整事件回放。
 
 ## T02 既有合成链路
 
 `FramePacket（1×1 合成 RGB） → FrameStatus（脚本） → FeatureWindow（32×94 零值 fixture） → MockPredictor → MockGestureEngine → ActionCommand → MockDispatcher → MockBackend → JSONL`
 
-这些是保留的T02软件连接验证，processed_hands为合成状态，零值fixture未调用感知或94维特征提取。真正的特征与模型模块已由T11/T13提供；T17/T18已提供独立唤醒/释放/调度模块，T14已有训练器，详见[新增模块](training_and_interaction.md)；正式数据/模型与真实后端验收仍未完成。mock预测不提供intent、phase或校准概率。
+这些是保留的T02软件连接验证，processed_hands为合成状态，零值fixture未调用感知或94维特征提取。真正的特征与模型模块已由T11/T13提供；T17/T18已有旧5类唤醒/释放/调度模块，T14已有训练器；公开数据的15类契约/启停迁移、正式训练及真实后端仍待实施。mock预测不提供intent、phase或校准概率。
 
 控制器默认未启用、无 owner；合成脚本显式启用并绑定合成 track。每次启停、模式/模型/owner 变化、挂起、重连都会增加 epoch，重连还要求新 stream。提交工作前捕获上下文，后续对象保留同一 stream/epoch；预测返回时不得贴上新 epoch。mock 在发事件与派发前复检当前上下文、新鲜度/过期、目标白名单和能力，重复 command_id 被拒绝。当前检查为同步测试实现，不宣称处理了 T24 的线程竞态或迟到外部副作用。
+
+数据路线以[public-data-v1](public_data_plan.md)优先；T06自采可选。现行特征/类表/训练/事件模块保持同一旧5类版本，公开15类不得直接送入或伪标旧词元。原生诊断仅使用 `perception/probe.py` 的有界子进程；`diagnostics.py` 转发兼容旧入口。
 
 ## 契约
 
@@ -44,7 +46,7 @@ Python 内部时间是非负 int64 ns，拒绝 float、bool、字符串、负值
 
 六类 YAML：runtime / interaction / gestures / actions / training / privacy，另有 platforms/mock。`shared/config.py` 拒绝未知字段/动作、映射缺失、重复 YAML 键、负时长、错误版本、平台能力和目标冲突。默认文件作为包资源提供，仓库 `configs/` 是同一来源的链接，外部可复制成独立配置目录并通过 `--config-dir` 指定。所有阈值是 draft。
 
-`dry_run` 合成冒烟保留；新增显式 `preview/camera_probe/collect/inspect/recover/annotate` 工具。`train --train-cache ... --val-cache ... --output ...` 已接入T14；`evaluate/replay/live` 仍返回未实现/不可用，不存在隐藏live开关。
+`dry_run` 合成冒烟保留；新增显式 `preview/camera_probe/collect/inspect/recover/annotate` 工具。`train --train-cache ... --val-cache ... --output ...` 已接入T14旧5类训练器；`evaluate/replay/live` 仍返回未实现/不可用，不存在隐藏live开关。
 
 JSONL 包含运行 ID、配置 SHA256、发行版/Git 版本、dirty 标志、schema、timebase 和 synthetic 标记。文件以独占创建方式写入，拒绝覆盖既有证据；读回校验 payload 类型、schema 与 timebase。默认不写图片、身份或真值。日志读回不是 T23 的完整确定性回放。NPZ/会话读写现由T06的 `shared/recordings.py` 和 `backend/collection/` 实现；完整事件回放仍归T23。
 

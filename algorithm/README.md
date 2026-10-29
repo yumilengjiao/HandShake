@@ -2,6 +2,8 @@
 
 > T11/T12/T13 已实现 `data/`、`models/`、`inference.py`、`model_config.py` 与合成 `smoke.py`，另保留T02显式MockPredictor。T14现已增加 `training/` 与 `scripts/train.py`，支持缓存校验、验证选择、checkpoint/恢复与健康诊断，见[训练与交互](../docs/training_and_interaction.md)。规则/MLP/TCN模块和接口可运行；没有真实数据训练结果或可发布权重。使用与边界见 [特征与模型](../docs/features_and_models.md)。
 
+当前数据路线为[公开数据优先](../docs/public_data_plan.md)，T14现有训练器仅适配旧5类特征缓存；15类来源/类别/契约迁移及正式训练尚未完成，不以自采为硬前置。
+
 ## 主责与任务
 
 - **A 主责**；B 协助采集、实时接口与实机性能验证。

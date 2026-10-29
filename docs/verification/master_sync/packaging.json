@@ -1,0 +1,25 @@
+{
+  "isolated_python": true,
+  "source_cwd": false,
+  "installed_module": "/tmp/handshake-master-sync-installed/backend/interaction/smoke.py",
+  "runtime_without_torch": true,
+  "probe_single_implementation": true,
+  "interaction_commands": 2,
+  "training_status": "completed",
+  "training_epochs": 2,
+  "build_command": "UV_CACHE_DIR=/tmp/handshake-master-sync-cache uv build --offline --no-build-isolation --python /tmp/handshake-master-sync-venv/bin/python --out-dir /tmp/handshake-master-sync-dist",
+  "python": "3.12.14",
+  "packages": {
+    "numpy": "1.26.4",
+    "torch": "2.15.0+cpu",
+    "mediapipe": "0.10.21",
+    "opencv-contrib-python": "4.11.0.86",
+    "setuptools": "84.2.1",
+    "pytest": "9.2.0"
+  },
+  "dependency_check_packages": 52,
+  "artifacts_sha256": {
+    "handshake_core-0.2.0-py3-none-any.whl": "deed3510cf90e948946e1a4657010a37846a4aa1bd13094e65dd635f085cba09",
+    "handshake_core-0.2.0.tar.gz": "bfc929b3957374c3a34d8eadd94b2ba4bb507d85c96c8f112105188376ed518b"
+  }
+}
