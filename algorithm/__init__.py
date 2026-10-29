@@ -1,1 +1,1 @@
-"""Predictor interface and explicitly synthetic implementation."""
+"""Causal features/data adapters, rule/MLP/TCN modules and synthetic diagnostics."""

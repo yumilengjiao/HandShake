@@ -2,6 +2,8 @@
 
 > T02/T05 已提供 runtime、interaction、gestures、actions、training、privacy 和 platforms/mock 配置，通过符号链接使用 `shared/defaults/` 的同一来源。所有门限均为 draft 起点；包内默认值和 `--config-dir configs` 加载结果一致，尚无验证集选择的最优门限。
 
+T11/T12/T13 增加统一 `classes.json` 和 `training/mlp.yaml`、`training/tcn.yaml`，仍链接至打包资源；特征字段/公式/阈值权威来源为 `shared/features/feature_schema.json`。模型配置加载用 `algorithm.model_config`；正式训练搜索与冻结仍待T14/T15。
+
 ## 主责
 
 - A：训练、模型、评估与特征参数。

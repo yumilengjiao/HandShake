@@ -7,7 +7,7 @@
 | 建议主责 | A（A/B 实名以总方案为准） |
 | 前置任务 | T04, T05, T10 |
 | 总方案依据 | 第 7、8、13、14.4 节 |
-| 状态 | 待实施；本文是规划，不代表已有代码、数据或结果 |
+| 状态 | 待验证；模块与合成验证已交付，真实观测/pilot/正式统计待T04/T07/T10 |
 
 总约束和路径解释见 [任务导航](README.md)。下列代码、配置、命令和产物路径均为待实现约定，不代表目前已存在。新增细节属于总方案的实施起点；只有通过试采集和验证后才冻结，不得用最终测试结果反向挑选配置。
 
@@ -46,13 +46,22 @@ Python 训练/桌面在线保持同一实现。T37 若需非 Python 核心，优
 
 `features/geometry.py`、`features/window.py`、`data/dataset.py`、`scripts/build_features.py`、schema/stats 与缓存索引；缓存可重建，原始数据不被覆盖。
 
-- [ ] 维度恒为 63+10+21=94，只有合法有限值；类表与 schema 错误拒绝加载。
-- [ ] 同一录制离线逐帧与在线特征结果一致，归一化缓存只使用当前和历史数据；改变未来帧不改变过去特征。
-- [ ] 缺失、重复时间、长间隔、镜像、尺度过小、轨迹切换都有合成测试。
-- [ ] 训练集统计与缓存版本可追溯；测试数据不参与拟合。
+- [x] 维度恒为 63+10+21=94，只有合法有限值；类表与 schema 错误拒绝加载。
+- [x] 同一录制离线逐帧与在线特征结果一致，归一化缓存只使用当前和历史数据；改变未来帧不改变过去特征。
+- [x] 缺失、重复时间、长间隔、镜像、尺度过小、轨迹切换都有合成测试。
+- [x] 训练集统计与缓存版本可追溯；测试数据不参与拟合（已用合成预分配split验证，正式输入尚未提供）。
 
 图像坐标的定义核对 [MediaPipe 官方结果说明](https://developers.google.com/edge/mediapipe/solutions/vision/hand_landmarker/python#handle_and_display_results)；94 维及尺度公式属于本项目设计选择。
 
 ## 前置任务文件
 
 [T04 实现关键点感知、轨迹关联与质量门控](04_perception_tracking_quality.md)；[T05 冻结手势词表、动作边界与标签规则](05_gesture_and_annotation_protocol.md)；[T10 固定用户划分、排查泄漏并版本化数据集](10_splits_and_dataset_version.md)
+
+## 2026-10-29 实施记录
+
+- 执行：Codex；实际A/B仍由用户填写。开始/软件验证日期2026-10-29，正式数据验收日期待T10。
+- 步骤1～3：`shared/features/{geometry,schema,normalization}.py`、`feature_schema.json`与统一`shared/classes.py`，落实公式/字段掩码、真实dt、missing/health区分、train-only统计及固定时间缩放。
+- 步骤4～5/7：`shared/features/window.py`、`algorithm/data/dataset.py`，独立轨迹窗口、末端监督和ready分离；连续32有效预热，持续长失跟与断流均重置，延迟处理时钟不误当源时间。
+- 步骤6：`algorithm/data/augmentation.py`只接受train来源，原始观测翻转/小噪声/模拟感知dropout后重算特征；默认关闭，时间反转/速度增强未开放。来源split/lineage与新派生版本由T14调用方保留。
+- `algorithm/data/cache.py`和`scripts/build_features.py`提供NPZ/统计/索引，依赖哈希验证、无pickle、不覆盖旧缓存。ObservationRecord/SplitManifest为T11草案适配，真实输入要求T10冻结记录，不冒充完成T06/T10。
+- 验收、配置/代码/schema/合成统计哈希、命令与安装证据见 [统一验证记录](../docs/verification_t11_t12_t13.md)。无正式数据集、模型权重或性能结论，正式统计待前置任务。

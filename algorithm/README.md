@@ -1,6 +1,6 @@
 # algorithm：模型、训练、评估与推理
 
-> T02 已实现 `predictor.py` 的 Predictor 协议和显式 MockPredictor；后者仅给合成脚本固定输出。没有真实模型、训练结果或可用权重。
+> T11/T12/T13 已实现 `data/`、`models/`、`inference.py`、`model_config.py` 与合成 `smoke.py`，另保留T02显式MockPredictor。规则/MLP/TCN模块和接口可运行；没有真实数据训练结果或可发布权重。使用与边界见 [特征与模型](../docs/features_and_models.md)。
 
 ## 主责与任务
 
