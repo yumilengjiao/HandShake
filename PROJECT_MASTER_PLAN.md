@@ -607,7 +607,7 @@ M_valid  ∈ {0,1}[B, T, D_mask]
 - 采用残差连接、稳定归一化与必要的梯度裁剪。
 - 避免跨未来时间点统计或注意力泄漏；Transformer 备选必须使用因果掩码。
 
-课程版首个可复现配置固定为：输入历史 32 帧、卷积核 3、4 个残差块，扩张率依次为 `[1, 2, 4, 8]`，每块仅一层时序卷积，步长为 1，感受野为 31 帧。每层只在左侧补零；训练和在线窗口均采用相同补零规则。冷启动或长失跟后清空窗口并重新收集 32 个有效采样步，在历史不足时仅预览，不生成普通命令；缺失与时间间隔仍遵循第 7 节协议。若改为每块两层卷积，感受野将为 61 帧，需同步调整窗口、缓存、训练配置与冷启动规则，不能沿用 32 帧配置后声称拥有完整 61 帧历史。
+课程版首个可复现配置固定为：输入历史 32 帧、卷积核 3、4 个残差块，扩张率依次为 `[1, 2, 4, 8]`，每块仅一层时序卷积，步长为 1，感受野为 31 帧。每层只在左侧补零；训练和在线窗口采用相同规则。冷启动或长失跟后，连续 32 个有效观测完成预热，预热中无效/超允许间隔则重新计数；之后短缺失保留掩码，但当前失效时不执行，恢复还须检查窗口有效比例、时间跨度与新鲜度。ready 不代表自动恢复控制权，具体协议见 T11/T16。若改为每块两层卷积，感受野为 61 帧，需同步调整窗口、缓存、训练和冷启动，不能沿用 32 帧后声称拥有完整历史。
 
 TCN 感受野由实际卷积层数决定：每层一层卷积时，步长为 1 的感受野为 `1 + Σ(k_l-1)d_l`；若一个残差块包含两层卷积，二者都要计入。输入窗口、训练切片和在线缓存必须与感受野一致。
 
@@ -975,7 +975,9 @@ release_all()
 ### 12.4 原子性与失败处理
 
 - 鼠标点击封装为带释放保护的事务。
-- 调度器单一持有“当前按下集合”，负责故障时释放。
+- 调度器维护已确认及“可能已按下”的集合；发出按下前登记，超时/异常不能推定没有副作用，故障时均需安全释放。
+- 停止与普通命令有串行提交边界，分别记录停止接收、禁新提交、释放确认；已开始的外部调用未必可撤销，线程超时不等于底层调用取消。
+- 连续绝对位置可最新覆盖，速率由单一控制器积分；相对音量/滚动 delta 不可直接覆盖丢弃，必须限幅合并并在失效时清空。
 - 执行失败应记录原因，不能无界重试。
 - 普通日志失败不能阻止 `release_all()`。
 - 紧急停止、进程退出、摄像头异常和长失跟都应走同一安全收尾路径。
@@ -1279,7 +1281,7 @@ Annotation
 False Activations per Hour = 非操作时段错误提交事件数 / 非操作有效测试小时数
 ```
 
-另外报告命令操作期间的错误事件率，不能只测空画面。非操作时段应包括系统已唤醒时的自然活动，避免“长期禁用，所以零误触”的无意义结果。
+另外报告命令操作期间的错误事件率，不能只测空画面。非操作时段包括协议要求启用后的自然活动，分母按预定协议/真值区间确定，不按模型 ACTIVE、ready 或拒识状态裁剪；同时报告实际活动/不可用时长与召回，防止靠自动挂起取得低误触。预先定义指令及匹配容忍区间，已匹配正确事件不得重复计入背景误触。拟提交、确认注入和应用响应结果分别统计，dry-run 不等于实机完成。
 
 测试应覆盖：演讲手势、办公、端杯、挠头、捏物、旁人入镜、遮挡和相似未知动作；分场景报告实际测试时长。
 
@@ -1423,33 +1425,37 @@ HandShake/
 ### 16.2 关键接口
 
 ```text
-FramePacket
-  frame_id, capture_timestamp, image, camera_metadata
+FramePacket / FrameStatus
+  stream_id, frame_id, capture_timestamp_ns, image, camera_metadata
+  perception_status, processed_at_ns, drop_or_error_reason
+  # 区分已处理无手、未处理和感知失败
 
 FeatureWindow
-  track_id, timestamps, local_features, global_features,
-  masks, schema_version
+  stream_id, track_id, context_epoch, timestamps_ns,
+  local_features, global_features, masks, schema_version, ready, ready_reason
 
 ModelPrediction
-  track_id, source_frame_id, source_timestamp,
-  class_scores, intent_score, phase_scores,
-  optional_embedding, inference_timestamp, model_version
+  stream_id, track_id, context_epoch, source_frame_id, source_timestamp_ns,
+  logits, calibrated_probabilities?, intent_score?, phase_scores?,
+  optional_embedding, inference_timestamp_ns, model_version
 
 GestureEvent
-  event_id, track_id, gesture, phase,
-  reference_window, committed_at, mode,
-  confidence_summary, decision_reason
+  event_id, stream_id, track_id, context_epoch, source_frame_id,
+  source_timestamp_ns, gesture, phase, reference_window, committed_at_ns,
+  mode, confidence_summary, decision_reason
 
 ActionCommand
-  command_id, source_event_id, action, arguments,
-  issued_at, expires_at, required_capabilities
+  command_id, source_event_id, stream_id, context_epoch, target_context,
+  action, arguments, issued_at_ns, expires_at_ns, required_capabilities,
+  control_stream_id?, update_seq?   # 连续更新的顺序与去重
 
 ActionResult
-  command_id, accepted, injected, error_code,
-  completed_at, acknowledgement_level
+  command_id, accepted, injection_status, error_code,
+  completed_at_ns, acknowledgement_level
+  # injection_status: not_attempted / confirmed / failed / uncertain
 ```
 
-`injected=true` 只表示后端接受/注入，不默认表示应用已完成操作。回执级别要区分内部接收、系统注入和应用确认。
+工作提交时捕获 stream/context_epoch，返回时不补写当前代际；输入重连、启停、模式/模型/owner 变化等使旧工作失效。具体字段以 T02 的版本化契约为准。系统确认注入不等于应用已响应，超时不确定也不能用单个 injected=false 掩盖可能已产生的副作用。
 
 ### 16.3 模块协议示意
 

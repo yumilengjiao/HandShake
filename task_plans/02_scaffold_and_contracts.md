@@ -24,16 +24,19 @@
 | 对象 | 必须字段 |
 | --- | --- |
 | FramePacket | stream_id、frame_id、capture_timestamp_ns、image、image_size、transform_metadata |
-| HandObservation | 源帧时间、track_id、landmarks_image[21,3]、validity_mask[21]（派生有效性）、handedness、quality、变换元数据 |
-| FeatureWindow | track_id、timestamps_ns[32]、features[32,D]、schema_version、ready |
-| ModelPrediction | track_id、source_frame_id、source_timestamp_ns、logits/probabilities、模型版本、optional intent/phase |
-| GestureEvent | event_id、track_id、gesture_id、候选起点、commit_timestamp_ns、mode、decision_reason |
-| ActionCommand | command_id、source_event_id、action、arguments、issued_at_ns、expires_at_ns、required_capabilities、context_epoch |
-| ActionResult | accepted、injected、error_code、completed_at_ns、acknowledgement_level |
+| FrameStatus | stream_id、frame_id、source_timestamp_ns、perception_status、processed_at_ns、drop/error_reason；区分检测无手、未处理、失败 |
+| HandObservation | stream_id、源帧 ID/时间、track_id、landmarks_image[21,3]、validity_mask[21]（派生有效性）、observation_valid、handedness、quality/quality_flags、变换元数据 |
+| FeatureWindow | stream_id、track_id、context_epoch、timestamps_ns[T]、features[T,D]、schema_version、ready、ready_reason；首版 T=32 而非接口永久写死 |
+| ModelPrediction | stream_id、track_id、context_epoch、source_frame_id、source_timestamp_ns、inference_timestamp_ns、logits、可选 calibrated_probabilities、模型版本、optional intent/phase |
+| GestureEvent | event_id、stream_id、track_id、context_epoch、source_frame_id/source_timestamp_ns、gesture_id、候选起点、commit_timestamp_ns、mode、decision_reason |
+| ActionCommand | command_id、source_event_id、stream_id、action、arguments、issued_at_ns、expires_at_ns、required_capabilities、context_epoch、target_context；连续控制另带 control_stream_id/update_seq |
+| ActionResult | command_id、accepted、injection_status（not_attempted/confirmed/failed/uncertain）、error_code、completed_at_ns、acknowledgement_level；如保留 injected 布尔值，不得覆盖 uncertain |
+
+运行上下文由控制器创建；工作提交时捕获 `stream_id/context_epoch` 并原样贯穿特征、预测、事件和命令，不能在旧结果返回时补写当前代际。重连/换输入创建新 stream；启停、模式/模型/owner 变更或挂起使旧 context_epoch 失效。录制回放另存上下文/健康事件，不能只存图片时间。
 
 4. 配置分为 runtime、interaction、gestures、actions、training、privacy；加载时拒绝未知动作、缺少映射、负时长、错误 schema。配置示例中的门限均标起点，不称为最优默认值。
 5. 入口预留 collect/train/evaluate/replay/dry_run/live。只有 live 可调用真实后端；其他模式后端依赖注入为 mock。模式切换必须经应用控制器，禁止 UI 直接改内部状态。
-6. `.gitignore` 覆盖原视频、关键点、授权原件、用户档案、密钥、大权重和运行日志；授权状态与匿名清单的公开范围另行控制。代码、脱敏配置和小型合成 fixtures 可入库。
+6. `.gitignore` 覆盖 `private/`、原视频、关键点、授权原件、用户档案、密钥、大权重和运行日志；授权状态与匿名清单的公开范围另行控制。代码、脱敏配置和小型合成 fixtures 可入库。日志/schema 从本任务起定义，T23 负责完整集成，不等待 T23 才具备可复现记录。
 
 ## 交付物
 

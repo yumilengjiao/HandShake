@@ -13,7 +13,7 @@
 
 ## 目标与输入
 
-给 MLP 与 TCN 建立同一训练器，输入固定数据/特征版本，输出可追溯 checkpoint。验证集用于模型和门限选择，最终测试不参加 epoch、学习率或采样策略决定。
+给 MLP 与 TCN 建立同一训练器，输入固定数据/特征版本，输出可追溯 checkpoint。验证集用于模型和门限选择，最终测试不参加 epoch、学习率或采样策略决定。供 checkpoint 选择的基础分类指标在本任务先实现并用合成样例核验，T15 扩充事件评估与校准，不要求先完成 T15 才能训练。
 
 ## 起始配置（验证前不是最优参数）
 
@@ -37,9 +37,9 @@ checkpoint_metric: val_macro_f1
 
 1. 启动校验类表、schema、split 交集、数据哈希、归一化来源；固定 Python/NumPy/框架种子，记录硬件、库版本及可重现设置限制。
 2. 以相同末端样本索引训练 MLP/TCN。先使用普通随机窗口采样与无权重 CE；若背景压倒少数类，再从训练集统计选择一种适度分层或类权重，不能同时强重采样＋强权重＋focal。
-3. 每个 batch 使用 loss mask；记录正负分布、有效标签数、loss、梯度范数、learning rate。NaN 终止本次训练并保存诊断，不能静默跳过大量坏样本。
+3. 每个 batch 使用 loss mask；记录正负分布、有效标签数、loss、梯度范数、learning rate。全批无有效监督时跳过 optimizer/scheduler 更新并计数；NaN 终止并诊断，不能静默跳过大量坏样本。
 4. 每 epoch `model.eval()`、禁梯度、顺序遍历固定验证末端集合，计算包括 no_action 的每类指标与 Macro-F1。按指标选 checkpoint；同分按预定较早 epoch 规则处理，不挑最终测试最好者。
-5. 早停 max_epochs/patience 生效；checkpoint 包含 state_dict、optimizer、epoch、seed、训练配置、schema、类表、split/data/代码哈希。断点恢复检查兼容性，禁止跨版本接着训练却沿用旧 run_id。
+5. 早停 max_epochs/patience 生效；checkpoint 包含 state_dict、optimizer、scheduler（如有）、epoch/global_step、Python/NumPy/框架及采样器 RNG 状态、训练配置、schema、类表、split/data/代码哈希。恢复时校验版本；若不能恢复 worker/采样顺序，明确只支持 epoch 边界或统计近似复现，不声称与未中断逐步一致。禁止跨版本续训却沿用旧 run_id。
 6. TensorBoard 或 JSONL 选一个主记录入口。每次试验独立 run_id，保留失败/负结果；保存至少 best 与 last，最终模型引用 best。
 7. 健康检查：极小训练子集可过拟合、打乱标签诊断、意图头后续是否只识别“有手”。健康诊断使用 train/development，不读取最终测试标签做调参。
 

@@ -29,7 +29,7 @@ artifacts/models/<model_version>/
   checksums.json
 ```
 
-`event_thresholds.yaml` 必须标记 draft/frozen 及选择来源；集成期可使用明确标注的示例起点，最终发布必须使用 T28 完成验证选择后的 frozen 参数，不依赖尚未完成的最终测试来选门限。
+`event_thresholds.yaml` 必须标记 draft/frozen 及选择来源；集成期可使用明确标注的示例起点。模型包不可原位改写：T28 验证选择后的 frozen 参数生成新的 release candidate、清单和哈希，重跑受影响安全/回放检查后才测最终测试集；测试报告作为外部关联产物，不反过来修改已测包。
 
 若无意图/阶段头，架构配置明确 heads=[class]；预测对象对应字段为 None，不伪造恒为 1 的“意图概率”。加载自有、可信来源的权重，不以任意 pickle 为公共模型分发格式。
 
@@ -37,8 +37,8 @@ artifacts/models/<model_version>/
 
 1. 从 best checkpoint 导出推理所需参数、结构、标签与特征协议；校验 D=94、C=类表数、T=32、感受野31和训练/配置哈希。相同维度但 schema/镜像/特征顺序不符同样拒绝。
 2. Predictor 提供 prepare/reset/predict 接口；每轨迹独立 FeatureWindow，batch=1、eval、禁梯度。首版每新观测重算窗口，禁止拼接不同 track 或替换后的旧历史。
-3. 冷启动或长失跟清缓存，按 T11 有效步计数，32 个有效观测前仅预览。短缺失保留掩码但不允许当前失效帧触发；真正执行前仍检查当前质量和控制权。
-4. 输出源 frame_id、源时间、推理完成时间、model_version；丢弃乱序、跨 context_epoch 或超过 max_frame_age_ms 的结果。不能用推理完成时间充当拍摄时间来“刷新”过期帧。
+3. 冷启动或长失跟清缓存，严格复用 T11 的连续 32 个有效步预热、窗口有效比例/时间跨度及 ready_reason；不另写一套累计计数。短缺失保留掩码但当前失效帧禁执行；ready 恢复不等于控制权或候选恢复。
+4. 在提交推理工作时捕获 stream_id/context_epoch/model_version，连同源 frame_id/源时间原样返回；完成时间另记。丢弃乱序、跨 stream/epoch、模型不符或超过 max_frame_age_ms 的结果，不能在旧回调完成时补上当前 epoch 使其复活。
 5. 离线窗口与在线逐步重算在同一输入上比较 logits；推荐 float32 初始容差 atol=1e-5/rtol=1e-4，按实际后端记录。若改 ONNX/量化，复测分类、校准、拒识、事件和延迟，不只比较张量误差。
 6. 模型热切换先暂停、清候选、释放按键、清所有窗口，校验成功后恢复预览并要求重新唤醒；失败回到已知旧包或禁用，不部分替换。
 7. 缺模型、损坏包、NaN logits、维度不符提供可理解错误；不得让真实后端继续用上一条预测执行。

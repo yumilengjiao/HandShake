@@ -22,19 +22,20 @@
 | 文件 | 字段/用途 |
 | --- | --- |
 | manifests/recordings.jsonl | recording_id、subject/session、路径、采集时间、设备、授权范围、哈希、complete 标记 |
-| landmarks/<id>.npz | 帧表 frame_id/time_ns/size；观测表 frame_index/track_id/landmarks[N,21,3]/validity_mask[N,21]/handedness/quality |
-| annotations/<id>.json | 时间区间、词元、intent、phase、reference_event_time、标注者与版本 |
+| landmarks/<id>.npz | 帧表 frame_id/time_ns/size/perception_status/processed_at_ns；观测表 frame_index/track_id/landmarks[N,21,3]/validity_mask[N,21]/observation_valid/handedness/quality/quality_flags |
+| annotations/<id>.json | 时间区间、词元、intent、phase、reference_event_time、标注者与版本；离线人工主体引用独立于不稳定的预测 track_id |
 | manifests/prompts/<id>.jsonl | 提示出现时间、目标词元、练习/正式、取消/重试标记；只供标注者参考 |
+| context/<id>.jsonl | 启停/模式/输入切换、健康事件、context_epoch、目标应用上下文；记录事件发生时间和稳定排序号，不把提示/真值用作预测输入 |
 | raw/<id>.<视频格式> | 仅单独同意保存视频时创建，另存视频帧与观测的时间映射 |
 
-无手帧也必须留在帧表；否则无法还原空背景时长、掉手与误触率分母。所有时间为同一 recording 的相对 ns，绝对采集时间只在受控元数据保存。
+无手帧也必须留在帧表；未做感知、感知失败和成功检测无手分别编码，不能都解释为背景。原始视频帧率与观测率不一致时保留真实映射，不重复帧伪造采样率。所有时间为同一 recording 的相对 ns，绝对采集时间只在受控元数据保存。没有交互上下文的早期采集标 `context_available=false`，后续压力回放须声明使用了人工预设上下文，不能声称还原了原始在线状态。
 
 ## 实施步骤
 
 1. 启动 collect 模式显示用途、保存内容与授权选项；未同意不保存。关键点保存与原视频保存分别说明，默认常规运行不录制。
 2. 建立匿名会话、相机/镜像预检、练习段标记；随机化各动作提示次序并存种子，避免固定顺序透露类别。
 3. 开始/暂停/结束/取消均写标记。连续保存动作前后背景，不以检测到手才开文件。记录感知失败、掉帧和采集线程积压。
-4. 写入先到临时会话文件，结束时校验数组长度/帧索引/时间，再原子标记 complete 和哈希。磁盘不足或崩溃保留 incomplete 并提示恢复，不把残片冒充完整会话。
+4. 按有限时长分块写临时 NPZ/元数据，避免整场视频/全部关键点只留内存到结束才落盘；每块校验后生成哈希，最终以 manifest 原子提交 complete。磁盘不足或崩溃保留 incomplete 和已提交块，恢复工具验证后生成新版本，不把残片冒充完整会话。
 5. 提供时间轴查看、逐帧关键点、区间编辑和标签导出；不保存原视频时支持骨架回放。无法可靠判断阶段/意图的片段必须可标不确定。
 6. 采集模式接 mock 后端，任何手势不得操作桌面。授权原件与真实姓名映射单独受控保存，不进入普通清单或 Git。
 
