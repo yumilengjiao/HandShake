@@ -1,0 +1,51 @@
+# T02 建立工程骨架、配置与公共数据契约
+
+| 项目 | 约定 |
+| --- | --- |
+| 阶段 | S1 工程底座 |
+| 课程优先级 | P0 |
+| 建议主责 | A+B（A/B 实名以总方案为准） |
+| 前置任务 | T01 |
+| 总方案依据 | 第 5、16、17、19 节 |
+| 状态 | 待实施；本文是规划，不代表已有代码、数据或结果 |
+
+总约束和路径解释见 [任务导航](README.md)。下列代码、配置、命令和产物路径均为待实现约定，不代表目前已存在。新增细节属于总方案的实施起点；只有通过试采集和验证后才冻结，不得用最终测试结果反向挑选配置。
+
+## 目标与边界
+
+建立可安装、可验证的最小 Python 项目及跨模块契约。先做运行与 mock 的骨架，不一次创建几十个没有实现的空模块，也不把本文列出的依赖当作已兼容版本。
+
+## 具体步骤
+
+1. 创建 `pyproject.toml`、`src/handshake/`、`configs/`、`tests/`。环境探测后固定 Python、MediaPipe、OpenCV、PyTorch、NumPy、scikit-learn 和一种 YAML 校验方案；UI 库由 T20 选定后加入。先保留 PyTorch CPU 推理，ONNX 为可选依赖。
+2. 增加 README 中的环境创建/安装/启动说明；在实际目标机器验证相机和感知包可加载后才锁版本。失败时记录平台与错误，不凭空填“最低兼容版本”。
+3. 在 `contracts.py` 定义不可歧义的字段，至少覆盖下表。时间字段内部统一整数 ns、单调时钟；录制文件用相对 ns 并记录 timebase。序列化时禁止混用秒/ms/ns。
+
+| 对象 | 必须字段 |
+| --- | --- |
+| FramePacket | stream_id、frame_id、capture_timestamp_ns、image、image_size、transform_metadata |
+| HandObservation | 源帧时间、track_id、landmarks_image[21,3]、validity_mask[21]（派生有效性）、handedness、quality、变换元数据 |
+| FeatureWindow | track_id、timestamps_ns[32]、features[32,D]、schema_version、ready |
+| ModelPrediction | track_id、source_frame_id、source_timestamp_ns、logits/probabilities、模型版本、optional intent/phase |
+| GestureEvent | event_id、track_id、gesture_id、候选起点、commit_timestamp_ns、mode、decision_reason |
+| ActionCommand | command_id、source_event_id、action、arguments、issued_at_ns、expires_at_ns、required_capabilities、context_epoch |
+| ActionResult | accepted、injected、error_code、completed_at_ns、acknowledgement_level |
+
+4. 配置分为 runtime、interaction、gestures、actions、training、privacy；加载时拒绝未知动作、缺少映射、负时长、错误 schema。配置示例中的门限均标起点，不称为最优默认值。
+5. 入口预留 collect/train/evaluate/replay/dry_run/live。只有 live 可调用真实后端；其他模式后端依赖注入为 mock。模式切换必须经应用控制器，禁止 UI 直接改内部状态。
+6. `.gitignore` 覆盖原视频、关键点、授权原件、用户档案、密钥、大权重和运行日志；授权状态与匿名清单的公开范围另行控制。代码、脱敏配置和小型合成 fixtures 可入库。
+
+## 交付物
+
+`contracts.py`、配置 schema、可加载的默认配置、最小入口、依赖锁定记录、README 安装段；`tests/unit/test_contracts.py` 覆盖字段单位、形状、配置错误及序列化。目录名均以总方案第 16 节为基础。
+
+## 验收与交接
+
+- [ ] 无相机、无模型时入口返回可理解错误，不能顺带注入桌面事件。
+- [ ] 合成 FramePacket 能经过 mock predictor、engine、backend 并输出带版本的日志。
+- [ ] 错误维度与时间单位不会静默通过；`injected` 不被解释为应用已响应。
+- [ ] 接口变更更新版本及 T03/T04/T11/T16/T17/T18/T20 的调用方。
+
+## 前置任务文件
+
+[T01 冻结课程范围、平台与验收口径](01_scope_and_platform.md)

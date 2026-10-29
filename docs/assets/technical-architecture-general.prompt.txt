@@ -1,0 +1,6 @@
+Edit this HandShake technical architecture diagram in place stylistically, preserving the three-band layout, all other modules, icons, colors and crisp Chinese typography. Make the output architecture general-purpose rather than only page turning.
+1. Subtitle replace with exact "基于手部关键点与因果时序网络的智能终端交互系统".
+2. Top right module title replace "翻页适配器" with exact "终端功能适配器". Replace its presentation-only icon with a compact tasteful combination of presentation, music note and cursor icons. Replace its body with three readable short lines: "模式映射 / 能力与焦点检查", "翻页 / 切歌 / 播放暂停", "音量调节 / 光标控制".
+3. Footer extension text replace with "扩展方向：更多应用后端 · 多任务学习 · 个性化适配".
+4. Correct purple dashed deployment connector: remove all existing purple dashed connectors near or crossing the emergency stop box, including arrowheads at that box. Route a new purple dashed line from "评估与模型导出" along open space at far right then along open whitespace between online band and middle band, splitting upwards into "自主训练模型" and "安全事件引擎". Label "模型与配置部署" in available whitespace. It must never point to or pass through "独立紧急停止". Keep orange emergency stop arrows to engine and adapter intact.
+Keep all remaining labels exactly unchanged. White background, high-resolution wide landscape.
