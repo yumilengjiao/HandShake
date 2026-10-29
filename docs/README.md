@@ -2,6 +2,8 @@
 
 ## 当前已有内容
 
+- [公开数据路线 public-data-v1](public_data_plan.md)、[官方下载入口](../data/SOURCES.md)、[版本/许可/校验清单](../data/sources.json)
+
 - [范围与待确认项](scope_freeze.md)、[平台支持](platform_support.md)
 - [当前架构/契约](architecture.md)、[原生多端目标与实施边界](native_architecture.md)、[依赖验证](dependencies.md)
 - [手势协议](gesture_protocol.md)、[标注指南](annotation_guide.md)

@@ -1,5 +1,7 @@
 # HandShake 分阶段任务规划
 
+> **最新数据路线 public-data-v1**：公开数据为主，不要求自行录制训练集。T07改为公开数据适配预检，T08改为主数据下载/版本管理，T06真实采集仅为可选路径。来源与当前SHA阻塞见 [data/SOURCES.md](../data/SOURCES.md)，新类别/启停方案及证据边界见 [公开数据方案](../docs/public_data_plan.md)；旧自采人数与手势唤醒要求不再是首版硬门槛，代码契约迁移尚未实施。
+
 本目录将 [PROJECT_MASTER_PLAN.md](../PROJECT_MASTER_PLAN.md) 拆分为 **38 个独立任务文件**。T01/T02/T05 已有核心与草案；T03/T04/T06 已新增采集/感知/标注软件，154项测试通过，兼容依赖下真实模型加载/黑图推理已通过；真手/人工工具等完整实机验收未完成，见 [修复记录](../docs/perception_diagnostics.md)。没有真实参与者训练数据、自训模型、产品UI或真实应用控制。未满足验收的任务继续待验证，历史修订见 [任务审查记录](REVIEW_NOTES.md)。
 
 当前采用 **native-v2：原生多端、桌面先交付、手机本机运行随后验收**，替代此前 Web 约定。优先覆盖 Windows/macOS/Linux、Android/iOS/iPadOS，其他系统按 SDK/运行时能力评估；不承诺所有 OS 任意跨应用控制。native-v2 文档修订时未改代码；后续 T03/T04/T06 实施记录另列，不覆盖历史验证结论。完整边界见 [原生架构](../docs/native_architecture.md) 和 [范围记录](../docs/scope_freeze.md)。新增 T36 早期选型、T37 原生手机/其他平台移植、T38 可选配对控制；T01～T35 编号保留。
@@ -18,7 +20,7 @@
 | --- | --- | --- |
 | S0 范围与协议 | T01、T05 | 课程差异、首平台、词表与两人分工有记录 |
 | S1 工程与工具 | T02～T04、T06、T36；T20 可先做 mock | 原生路线明确，带时间的观测可重载，质量失效可见，采集不执行真实操作 |
-| S2 试采集与早期交互 | T07；T12 可先在 pilot 排错，T17/T18 接合成预测 | 方向/词表/标签可标，状态机能一次动作一次事件 |
+| S2 数据预检与早期交互 | T07；T12 可先在公开训练侧样本排错，T17/T18 接合成预测 | 许可/完整性/类别/时轴可核验，状态机能一次动作一次事件 |
 | S3 主数据与主模型 | T08～T14 | 按用户固定划分，无泄漏，94维特征与32帧因果模型可训练 |
 | S4 部署与主场景 | T15～T20、T23、T24 | 自训模型驱动实机翻页，界面、去重、失跟与停止有证据 |
 | S5 应用/多端/研究增强 | T21、T22、T25～T27、T31～T35、T37/T38 | 多端逐平台验收，远程可选；仅对已完成模块做对照，不阻碍首桌面交付 |
@@ -29,7 +31,7 @@
 
 ## 课程关键路径与并行工作
 
-数据/模型链：T01 → T02/T03/T04＋T05 → T06 → T07 → T08 → T09 → T10 → T11 → T12/T13 → T14 → T15 → T16。
+数据/模型链：T01 → T02/T03/T04＋T05 → T07公开数据预检 → T08获取/版本 → T09 → T10 → T11 → T12/T13 → T14 → T15 → T16。T06是可选自采工具，不是公开数据获取的硬前置。
 
 应用链：T02/T04/T05 → T17 → T18 → T19；T02 → T36 → T20，T20 草图/mock 可在 T02 后先行，正式 UI 按 T36 选定路线实施。T16、T17～T20 汇合至 T23 → T24 → T28 → T29 → T30。
 
@@ -37,7 +39,7 @@
 
 T15 完成分类校准与合成事件评估；T23 使用 draft 参数联调。T28 在验证连续流上联合选择各模型的事件参数，生成不可变 frozen 候选，调用已有 T23/T24 回归通过后再跑最终测试。回归复跑不是新增的循环任务依赖；不能用旧候选的安全报告代替新包验收。
 
-正式数据链可以按批推进：T08 在采集前预登记用户角色，T09 边采边复核，T10 固化版本。T12 的退出交付是模型/接口和冒烟，不要求先完成依赖它的 T14 正式训练；T19/T20 的模块验收不等待 T23 的全链模型/UI 验收。T25 默认后置，但意图研究有需要时可在 T14 后并行；T27 的几何与小头适配不硬依赖多任务网络。
+正式数据链可以按批推进：T08记录公开来源/许可/实际哈希与主体分组依据，T09边导入边复核，T10固化版本。T12 的退出交付是模型/接口和冒烟，不要求先完成依赖它的 T14 正式训练；T19/T20 的模块验收不等待 T23 的全链模型/UI 验收。T25 默认后置，但意图研究有需要时可在 T14 后并行；T27 的几何与小头适配不硬依赖多任务网络。
 
 建议 A 侧重 T10～T16 与研究模型，B 侧重 T03/T04/T06/T17～T24 和应用；两人共同设计、采集、标注复核、集成与交付。
 
@@ -53,8 +55,8 @@ T15 完成分类校准与合成事件评估；T23 使用 draft 参数联调。T2
 | [T04](04_perception_tracking_quality.md) | 实现关键点感知、轨迹关联与质量门控 | P0 | B | [T03](03_camera_and_clock.md) | 待验证：真实模型加载/黑图推理通过，真手待验 |
 | [T05](05_gesture_and_annotation_protocol.md) | 冻结手势词表、动作边界与标签规则 | P0 | A+B（用户待填） | [T01](01_scope_and_platform.md), [T02](02_scaffold_and_contracts.md) | 待验证：草案/合成通过，真实双人试标待T07 |
 | [T06](06_collection_tool.md) | 实现授权采集、会话落盘与标注辅助工具 | P0 | B 主责，A 复核数据格式 | [T04](04_perception_tracking_quality.md), [T05](05_gesture_and_annotation_protocol.md) | 待验证：合成软件通过，GUI/真实会话待验 |
-| [T07](07_pilot_collection.md) | 完成试采集并冻结数据与交互协议 | P0 | A+B | [T06](06_collection_tool.md) | 待实施 |
-| [T08](08_main_dataset_collection.md) | 组织主数据采集与连续自然动作测试资料 | P0；研究规模按资源扩展 | A+B | [T07](07_pilot_collection.md) | 待实施 |
+| [T07](07_pilot_collection.md) | 完成公开数据适配预检（自采可选） | P0 | A+B | [T04](04_perception_tracking_quality.md), [T05](05_gesture_and_annotation_protocol.md) | 进行中：来源已核对，标注SHA问题待解 |
+| [T08](08_main_dataset_collection.md) | 获取公开主数据并建立版本账本（自采可选） | P0 | A+B | [T07](07_pilot_collection.md) | 待实施：大包未下载 |
 | [T09](09_annotation_and_quality_audit.md) | 标注动作时间轴并完成数据质量审核 | P0 | A+B 交叉复核 | [T05](05_gesture_and_annotation_protocol.md), [T08](08_main_dataset_collection.md) | 待实施 |
 | [T10](10_splits_and_dataset_version.md) | 固定用户划分、排查泄漏并版本化数据集 | P0 | A | [T09](09_annotation_and_quality_audit.md) | 待实施 |
 | [T11](11_features_and_windows.md) | 实现共享特征工程、掩码与时序数据加载 | P0 | A | [T04](04_perception_tracking_quality.md), [T05](05_gesture_and_annotation_protocol.md), [T10](10_splits_and_dataset_version.md) | 待实施 |
