@@ -1,0 +1,11 @@
+format_version: model-config-v1
+status: draft
+model_type: tcn
+feature_schema_version: landmarks94-v1
+vocabulary_version: gesture-v1-draft
+input_dim: 94
+window_size: 32
+channels: 64
+kernel_size: 3
+dilations: [1, 2, 4, 8]
+dropout: 0.2

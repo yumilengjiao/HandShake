@@ -1,6 +1,6 @@
 # shared：公共契约与共享基础模块
 
-> T02/T05 契约/配置/标注已实现；T03/T06 新增 `observations.py` 数组帧适配和 `recordings.py` 分块NPZ/manifest/事件校验。共享94维特征仍待T11；新记录格式为recording-v1，旧公共schema未静默改变。
+> T02/T05公共契约/配置/标注、T03/T06的`observations.py`数组帧适配与`recordings.py`分块NPZ/manifest/事件校验，以及T11的`classes.py`和`features/`均已实现。94维几何、字段级train统计、掩码和32帧窗口由离线/在线共用；正式统计待T10。recording-v1与T11草案Dataset适配的格式边界仍须后续集成，不改旧公共schema。见[感知协议](../docs/perception_contract.md)与[特征和模型](../docs/features_and_models.md)。
 
 ## 主责与任务
 

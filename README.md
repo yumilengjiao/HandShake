@@ -2,7 +2,7 @@
 
 基于 MediaPipe 手部关键点与自主训练时序神经网络的手势终端控制项目。
 
-> 已有 T01/T02/T05 核心与协议，以及 T03/T04/T06 的相机/视频输入、感知适配、授权分块采集和骨架标注工具。154项自动测试通过；固定兼容依赖后，真实 MediaPipe 模型加载、合成图像推理及关闭通过，见 [修复记录](docs/perception_diagnostics.md)。真手/人工工具等完整实机验收仍待完成。尚无自训模型或真实应用控制；原生产品 UI 与移动移植仍按 T20/T37 推进。
+> 已实现T01/T02/T05核心与协议、T03/T04/T06相机/视频输入与授权分块采集/骨架标注，以及T11/T12/T13的94维共享特征、数据/缓存、规则/MLP/因果TCN模块。兼容依赖下真实MediaPipe模型加载、合成图像推理与关闭已通过，见 [感知修复](docs/perception_diagnostics.md)；特征与模型交付见 [验证记录](docs/verification_t11_t12_t13.md)。正式数据训练、公开数据类别迁移和完整实机验收仍待完成，尚无正式训练权重、产品UI或真实翻页；原生桌面与手机分别验收。
 
 ## 先看这些文档
 
@@ -16,6 +16,7 @@
 - [本轮范围与待确认项](docs/scope_freeze.md)
 - [手势协议](docs/gesture_protocol.md)与[标注指南](docs/annotation_guide.md)
 - [T01/T02/T05 验证记录](docs/verification_t01_t02_t05.md)
+- [T11/T12/T13 特征与模型使用说明](docs/features_and_models.md)及[验证记录](docs/verification_t11_t12_t13.md)
 - [采集/感知/骨架标注操作指南](docs/collection_workflow.md)
 - [T03/T04/T06 初次交付验证](docs/verification_t03_t04_t06.md)
 - [MediaPipe 兼容修复、模型探针与剩余验收](docs/perception_diagnostics.md)
@@ -124,7 +125,7 @@ frontend / backend / algorithm --> shared
 
 ## 当前下一步
 
-按 [public-data-v1](docs/public_data_plan.md) 核对公开数据完整性/许可 → 导入关键点和时间标签、冻结类别与分组划分 → T11特征/MLP/TCN → 界面、受控翻页与实机评估。**不以T07自行录制或T08招募为训练前置**；首版计划用UI/键盘启停，模型负责左右动作，手势唤醒/退出可后续增强。T36/T20和安全状态机可用合成输入并行；T37/T38后续推进。不把数据来源清单、合成结果或作者预训练模型当成自主训练成果。
+按 [public-data-v1](docs/public_data_plan.md) 核对公开数据完整性/许可 → 导入关键点和时间标签、冻结类别与分组划分 → 复用已有T11/MLP/TCN模块，完成类别适配与T14正式训练 → 界面、受控翻页与实机评估。**不以T07自行录制或T08招募为训练前置**；首版计划用UI/键盘启停，模型负责左右动作，手势唤醒/退出可后续增强。T36/T20和安全状态机可用合成输入并行；T37/T38后续推进。不把数据来源清单、合成结果或作者预训练模型当成自主训练成果。
 
 ## 安装与合成验证
 
@@ -150,6 +151,15 @@ env -u PYTHONPATH .venv/bin/python scripts/check_environment.py
 ```
 
 uv 配置将 Linux/Windows 的可选 torch 指向官方 CPU 索引；感知依赖只使用 `opencv-contrib-python` 一个 cv2 提供包。`shared/defaults/` 是打包默认配置，`configs/` 中的链接指向同一来源；若系统不支持符号链接，可直接使用包内默认值，或复制 YAML 为独立目录传给 `--config-dir`。
+
+## 特征与模型模块
+
+```bash
+uv sync --locked --extra dev --extra training
+env -u PYTHONPATH .venv/bin/python -m algorithm.smoke --output artifacts/model-smoke.json
+```
+
+该命令只做人造张量可过拟合/CPU前向检查和规则fixture诊断，不保存正式模型，报告文件拒绝覆盖。MLP为94→128→64→5；TCN为单卷积残差块d=1/2/4/8、56,325参数、31帧感受野。这里仍是旧5类草案，公开数据15类方案须迁移类表/契约并重训，不能直接复用为已完成的新类别模型。三种模型共用32帧输入就绪与新鲜度门控；MLP只取末帧但特征含速度。训练统计仅由train拟合，验证/测试构建必须复用同一统计。缓存构建命令与草案输入格式见 [模块说明](docs/features_and_models.md)，正式实验等待T04/T07/T10及T14。
 
 ## 新增工具快速开始
 

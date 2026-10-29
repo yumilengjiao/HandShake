@@ -4,6 +4,8 @@
 
 本目录将 [PROJECT_MASTER_PLAN.md](../PROJECT_MASTER_PLAN.md) 拆分为 **38 个独立任务文件**。T01/T02/T05 已有核心与草案；T03/T04/T06 已新增采集/感知/标注软件，154项测试通过，兼容依赖下真实模型加载/黑图推理已通过；真手/人工工具等完整实机验收未完成，见 [修复记录](../docs/perception_diagnostics.md)。没有真实参与者训练数据、自训模型、产品UI或真实应用控制。未满足验收的任务继续待验证，历史修订见 [任务审查记录](REVIEW_NOTES.md)。
 
+同日新增T11/T12/T13软件交付：共享94维特征、字段级训练统计、窗口/数据/缓存、规则/MLP/TCN与统一预测接口；见 [模块与验证](../docs/verification_t11_t12_t13.md)。正式统计须等待T04/T07/T10，正式模型训练/校准/事件实验仍属T14及后续，不以合成检查替代。
+
 当前采用 **native-v2：原生多端、桌面先交付、手机本机运行随后验收**，替代此前 Web 约定。优先覆盖 Windows/macOS/Linux、Android/iOS/iPadOS，其他系统按 SDK/运行时能力评估；不承诺所有 OS 任意跨应用控制。native-v2 文档修订时未改代码；后续 T03/T04/T06 实施记录另列，不覆盖历史验证结论。完整边界见 [原生架构](../docs/native_architecture.md) 和 [范围记录](../docs/scope_freeze.md)。新增 T36 早期选型、T37 原生手机/其他平台移植、T38 可选配对控制；T01～T35 编号保留。
 
 ## 如何使用
@@ -59,9 +61,9 @@ T15 完成分类校准与合成事件评估；T23 使用 draft 参数联调。T2
 | [T08](08_main_dataset_collection.md) | 获取公开主数据并建立版本账本（自采可选） | P0 | A+B | [T07](07_pilot_collection.md) | 待实施：大包未下载 |
 | [T09](09_annotation_and_quality_audit.md) | 标注动作时间轴并完成数据质量审核 | P0 | A+B 交叉复核 | [T05](05_gesture_and_annotation_protocol.md), [T08](08_main_dataset_collection.md) | 待实施 |
 | [T10](10_splits_and_dataset_version.md) | 固定用户划分、排查泄漏并版本化数据集 | P0 | A | [T09](09_annotation_and_quality_audit.md) | 待实施 |
-| [T11](11_features_and_windows.md) | 实现共享特征工程、掩码与时序数据加载 | P0 | A | [T04](04_perception_tracking_quality.md), [T05](05_gesture_and_annotation_protocol.md), [T10](10_splits_and_dataset_version.md) | 待实施 |
-| [T12](12_rules_and_mlp_baselines.md) | 建立规则与单帧 MLP 对照基线 | P0：MLP；规则作为工程对照 | A | [T11](11_features_and_windows.md) | 待实施 |
-| [T13](13_causal_tcn_network.md) | 搭建可验证的单分支因果 TCN 神经网络 | P0 | A | [T11](11_features_and_windows.md) | 待实施 |
+| [T11](11_features_and_windows.md) | 实现共享特征工程、掩码与时序数据加载 | P0 | A（用户待填） | [T04](04_perception_tracking_quality.md), [T05](05_gesture_and_annotation_protocol.md), [T10](10_splits_and_dataset_version.md) | 待验证：软件/合成通过，正式统计待T10 |
+| [T12](12_rules_and_mlp_baselines.md) | 建立规则与单帧 MLP 对照基线 | P0：MLP；规则作为工程对照 | A（用户待填） | [T11](11_features_and_windows.md) | 已完成：模块及合成冒烟；正式实验待T14+ |
+| [T13](13_causal_tcn_network.md) | 搭建可验证的单分支因果 TCN 神经网络 | P0 | A（用户待填） | [T11](11_features_and_windows.md) | 已完成：结构/因果/梯度验收 |
 | [T14](14_training_and_experiment_tracking.md) | 实现可复现训练、采样与模型选择 | P0 | A | [T12](12_rules_and_mlp_baselines.md), [T13](13_causal_tcn_network.md) | 待实施 |
 | [T15](15_validation_and_calibration.md) | 建立分类与事件评估、验证集校准和门限选择 | P0 | A | [T14](14_training_and_experiment_tracking.md) | 待实施 |
 | [T16](16_export_and_online_inference.md) | 打包模型并实现带新鲜度校验的在线推理 | P0 桌面参考；移动导出归 T37 | A 主责，B 集成 | [T14](14_training_and_experiment_tracking.md), [T15](15_validation_and_calibration.md) | 待实施 |

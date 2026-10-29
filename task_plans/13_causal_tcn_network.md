@@ -7,7 +7,7 @@
 | 建议主责 | A（A/B 实名以总方案为准） |
 | 前置任务 | T11 |
 | 总方案依据 | 第 8.2、8.4、20.1 节 |
-| 状态 | 待实施；本文是规划，不代表已有代码、数据或结果 |
+| 状态 | 已完成（网络结构、因果性与合成CPU前后向验收）；正式训练待T14 |
 
 总约束和路径解释见 [任务导航](README.md)。下列代码、配置、命令和产物路径均为待实现约定，不代表目前已存在。新增细节属于总方案的实施起点；只有通过试采集和验证后才冻结，不得用最终测试结果反向挑选配置。
 
@@ -43,13 +43,21 @@
 
 `models/tcn.py`、`configs/training/tcn.yaml`、网络结构与参数量报告、`tests/unit/test_tcn_causality.py`。
 
-- [ ] 维度、参数量、31 帧感受野与总方案对齐，代码每块确为一次卷积。
-- [ ] 前向/反向无 NaN；输入不足、类表错误及时报错。
-- [ ] 未来扰动不影响过去输出；验证窗口最后预测与逐帧窗口重算一致。
-- [ ] 未通过此验收不开展双分支/多任务叠加，交给 T14 训练。
+- [x] 维度、参数量、31 帧感受野与总方案对齐，代码每块确为一次卷积。
+- [x] 前向/反向无 NaN；输入不足、类表错误及时报错。
+- [x] 未来扰动不影响过去输出；验证窗口最后预测与逐帧窗口重算一致。
+- [x] 未通过此验收不开展双分支/多任务叠加，交给 T14 训练。
 
 实现语义核对 [PyTorch Conv1d](https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv1d.html) 与 [LayerNorm](https://docs.pytorch.org/docs/stable/generated/torch.nn.LayerNorm.html)。层数、维度和容量为本项目设计。
 
 ## 前置任务文件
 
 [T11 实现共享特征工程、掩码与时序数据加载](11_features_and_windows.md)
+
+## 2026-10-29 实施记录
+
+- 执行：Codex；成员A/B待用户填写。开始/结构验收2026-10-29。
+- `algorithm/models/tcn.py`实现CausalConv1d、CausalResidualBlock、GestureTCN；`configs/training/tcn.yaml`为打包draft配置，`algorithm/model_config.py`加载。每块恰一层左pad卷积，LayerNorm只在同一时刻的通道维，末帧分类无时间池化。
+- 默认[32,94]→[5]，程序计数56,325参数，RF31；forward_all支持短前缀诊断，常规forward要求完整窗口。`algorithm/models/losses.py`按有效末端标签CE，全无监督返回None供T14跳步。
+- `tests/unit/test_tcn_causality.py`、`test_model_losses.py`覆盖未来扰动、感受野最早影响、整流末端与32帧重算、batch独立、全零mask、有限CPU梯度、无效维度/类表/窗口；合成可过拟合也通过。
+- 结构、梯度、因果性各项通过，未开展双分支/多任务；无正式checkpoint。命令/配置与实现哈希、报告见 [统一验证记录](../docs/verification_t11_t12_t13.md)。
