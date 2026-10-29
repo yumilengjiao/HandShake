@@ -1,0 +1,936 @@
+{
+  "status": "draft",
+  "feature_schema_version": "landmarks94-v1",
+  "dimension": 94,
+  "layout": {
+    "local": [
+      0,
+      63
+    ],
+    "global": [
+      63,
+      73
+    ],
+    "mask": [
+      73,
+      94
+    ]
+  },
+  "vocabulary_version": "gesture-v1-draft",
+  "class_ids": {
+    "no_action": 0,
+    "wake_open": 1,
+    "swipe_left": 2,
+    "swipe_right": 3,
+    "exit_pose": 4
+  },
+  "field_names": [
+    "local_0_x",
+    "local_0_y",
+    "local_0_z",
+    "local_1_x",
+    "local_1_y",
+    "local_1_z",
+    "local_2_x",
+    "local_2_y",
+    "local_2_z",
+    "local_3_x",
+    "local_3_y",
+    "local_3_z",
+    "local_4_x",
+    "local_4_y",
+    "local_4_z",
+    "local_5_x",
+    "local_5_y",
+    "local_5_z",
+    "local_6_x",
+    "local_6_y",
+    "local_6_z",
+    "local_7_x",
+    "local_7_y",
+    "local_7_z",
+    "local_8_x",
+    "local_8_y",
+    "local_8_z",
+    "local_9_x",
+    "local_9_y",
+    "local_9_z",
+    "local_10_x",
+    "local_10_y",
+    "local_10_z",
+    "local_11_x",
+    "local_11_y",
+    "local_11_z",
+    "local_12_x",
+    "local_12_y",
+    "local_12_z",
+    "local_13_x",
+    "local_13_y",
+    "local_13_z",
+    "local_14_x",
+    "local_14_y",
+    "local_14_z",
+    "local_15_x",
+    "local_15_y",
+    "local_15_z",
+    "local_16_x",
+    "local_16_y",
+    "local_16_z",
+    "local_17_x",
+    "local_17_y",
+    "local_17_z",
+    "local_18_x",
+    "local_18_y",
+    "local_18_z",
+    "local_19_x",
+    "local_19_y",
+    "local_19_z",
+    "local_20_x",
+    "local_20_y",
+    "local_20_z",
+    "cx",
+    "cy",
+    "vx",
+    "vy",
+    "s",
+    "ds_dt",
+    "dt_seconds",
+    "missing_ms",
+    "q_geom",
+    "motion_valid",
+    "mask_0",
+    "mask_1",
+    "mask_2",
+    "mask_3",
+    "mask_4",
+    "mask_5",
+    "mask_6",
+    "mask_7",
+    "mask_8",
+    "mask_9",
+    "mask_10",
+    "mask_11",
+    "mask_12",
+    "mask_13",
+    "mask_14",
+    "mask_15",
+    "mask_16",
+    "mask_17",
+    "mask_18",
+    "mask_19",
+    "mask_20"
+  ],
+  "fields": [
+    {
+      "index": 0,
+      "name": "local_0_x",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 1,
+      "name": "local_0_y",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 2,
+      "name": "local_0_z",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 3,
+      "name": "local_1_x",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 4,
+      "name": "local_1_y",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 5,
+      "name": "local_1_z",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 6,
+      "name": "local_2_x",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 7,
+      "name": "local_2_y",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 8,
+      "name": "local_2_z",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 9,
+      "name": "local_3_x",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 10,
+      "name": "local_3_y",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 11,
+      "name": "local_3_z",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 12,
+      "name": "local_4_x",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 13,
+      "name": "local_4_y",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 14,
+      "name": "local_4_z",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 15,
+      "name": "local_5_x",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 16,
+      "name": "local_5_y",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 17,
+      "name": "local_5_z",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 18,
+      "name": "local_6_x",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 19,
+      "name": "local_6_y",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 20,
+      "name": "local_6_z",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 21,
+      "name": "local_7_x",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 22,
+      "name": "local_7_y",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 23,
+      "name": "local_7_z",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 24,
+      "name": "local_8_x",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 25,
+      "name": "local_8_y",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 26,
+      "name": "local_8_z",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 27,
+      "name": "local_9_x",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 28,
+      "name": "local_9_y",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 29,
+      "name": "local_9_z",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 30,
+      "name": "local_10_x",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 31,
+      "name": "local_10_y",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 32,
+      "name": "local_10_z",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 33,
+      "name": "local_11_x",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 34,
+      "name": "local_11_y",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 35,
+      "name": "local_11_z",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 36,
+      "name": "local_12_x",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 37,
+      "name": "local_12_y",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 38,
+      "name": "local_12_z",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 39,
+      "name": "local_13_x",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 40,
+      "name": "local_13_y",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 41,
+      "name": "local_13_z",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 42,
+      "name": "local_14_x",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 43,
+      "name": "local_14_y",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 44,
+      "name": "local_14_z",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 45,
+      "name": "local_15_x",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 46,
+      "name": "local_15_y",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 47,
+      "name": "local_15_z",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 48,
+      "name": "local_16_x",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 49,
+      "name": "local_16_y",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 50,
+      "name": "local_16_z",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 51,
+      "name": "local_17_x",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 52,
+      "name": "local_17_y",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 53,
+      "name": "local_17_z",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 54,
+      "name": "local_18_x",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 55,
+      "name": "local_18_y",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 56,
+      "name": "local_18_z",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 57,
+      "name": "local_19_x",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 58,
+      "name": "local_19_y",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 59,
+      "name": "local_19_z",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 60,
+      "name": "local_20_x",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 61,
+      "name": "local_20_y",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 62,
+      "name": "local_20_z",
+      "valid_when": "observation_valid and derived landmark mask; key palm points and scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "palm_scale",
+      "formula": "(q_i-q_0)/max(s,epsilon)"
+    },
+    {
+      "index": 63,
+      "name": "cx",
+      "valid_when": "observation_valid and key palm points/scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "image_width",
+      "formula": "mean(q_[0,5,9,13,17].x)"
+    },
+    {
+      "index": 64,
+      "name": "cy",
+      "valid_when": "observation_valid and key palm points/scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "image_width",
+      "formula": "mean(q_[0,5,9,13,17].y)"
+    },
+    {
+      "index": 65,
+      "name": "vx",
+      "valid_when": "observation_valid and previous processed observation valid; same stream/track/epoch/timebase and min_motion_dt_ns <= source dt <= max_motion_gap_ns",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "image_width_per_second",
+      "formula": "(cx-cx_prev)/dt"
+    },
+    {
+      "index": 66,
+      "name": "vy",
+      "valid_when": "observation_valid and previous processed observation valid; same stream/track/epoch/timebase and min_motion_dt_ns <= source dt <= max_motion_gap_ns",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "image_width_per_second",
+      "formula": "(cy-cy_prev)/dt"
+    },
+    {
+      "index": 67,
+      "name": "s",
+      "valid_when": "observation_valid and key palm points/scale valid",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "image_width",
+      "formula": "mean(norm(q_j.xy-q_0.xy)), j=[5,9,17]"
+    },
+    {
+      "index": 68,
+      "name": "ds_dt",
+      "valid_when": "observation_valid and previous processed observation valid; same stream/track/epoch/timebase and min_motion_dt_ns <= source dt <= max_motion_gap_ns",
+      "normalization": "train mean/std; invalid -> 0 after standardization",
+      "units": "image_width_per_second",
+      "formula": "(s-s_prev)/dt"
+    },
+    {
+      "index": 69,
+      "name": "dt_seconds",
+      "valid_when": "all processed observations; first after reset is 0",
+      "normalization": "clip(dt_seconds/dt_scale_seconds,0,dt_clip); no fitting",
+      "units": "seconds_raw",
+      "formula": "(current_source_timestamp_ns-previous_processed_source_timestamp_ns)/1e9"
+    },
+    {
+      "index": 70,
+      "name": "missing_ms",
+      "valid_when": "history_initialized; otherwise 0 and execution disabled",
+      "normalization": "clip(missing_ms/missing_scale_ms,0,missing_clip); no fitting",
+      "units": "milliseconds_raw",
+      "formula": "valid -> 0; invalid -> (source_timestamp_ns-last_valid_source_timestamp_ns)/1e6"
+    },
+    {
+      "index": 71,
+      "name": "q_geom",
+      "valid_when": "all observations; deterministic upstream quality; invalid palm scale/key points -> 0",
+      "normalization": "identity; no fitting",
+      "units": "unit_interval",
+      "formula": "HandObservation.quality; not a calibrated probability"
+    },
+    {
+      "index": 72,
+      "name": "motion_valid",
+      "valid_when": "all observations",
+      "normalization": "identity; no fitting",
+      "units": "boolean",
+      "formula": "1 only if derivative is usable, else 0"
+    },
+    {
+      "index": 73,
+      "name": "mask_0",
+      "valid_when": "all observations",
+      "normalization": "identity; no fitting",
+      "units": "boolean",
+      "formula": "observation valid and point structure/finite checks and usable palm scale; not confidence"
+    },
+    {
+      "index": 74,
+      "name": "mask_1",
+      "valid_when": "all observations",
+      "normalization": "identity; no fitting",
+      "units": "boolean",
+      "formula": "observation valid and point structure/finite checks and usable palm scale; not confidence"
+    },
+    {
+      "index": 75,
+      "name": "mask_2",
+      "valid_when": "all observations",
+      "normalization": "identity; no fitting",
+      "units": "boolean",
+      "formula": "observation valid and point structure/finite checks and usable palm scale; not confidence"
+    },
+    {
+      "index": 76,
+      "name": "mask_3",
+      "valid_when": "all observations",
+      "normalization": "identity; no fitting",
+      "units": "boolean",
+      "formula": "observation valid and point structure/finite checks and usable palm scale; not confidence"
+    },
+    {
+      "index": 77,
+      "name": "mask_4",
+      "valid_when": "all observations",
+      "normalization": "identity; no fitting",
+      "units": "boolean",
+      "formula": "observation valid and point structure/finite checks and usable palm scale; not confidence"
+    },
+    {
+      "index": 78,
+      "name": "mask_5",
+      "valid_when": "all observations",
+      "normalization": "identity; no fitting",
+      "units": "boolean",
+      "formula": "observation valid and point structure/finite checks and usable palm scale; not confidence"
+    },
+    {
+      "index": 79,
+      "name": "mask_6",
+      "valid_when": "all observations",
+      "normalization": "identity; no fitting",
+      "units": "boolean",
+      "formula": "observation valid and point structure/finite checks and usable palm scale; not confidence"
+    },
+    {
+      "index": 80,
+      "name": "mask_7",
+      "valid_when": "all observations",
+      "normalization": "identity; no fitting",
+      "units": "boolean",
+      "formula": "observation valid and point structure/finite checks and usable palm scale; not confidence"
+    },
+    {
+      "index": 81,
+      "name": "mask_8",
+      "valid_when": "all observations",
+      "normalization": "identity; no fitting",
+      "units": "boolean",
+      "formula": "observation valid and point structure/finite checks and usable palm scale; not confidence"
+    },
+    {
+      "index": 82,
+      "name": "mask_9",
+      "valid_when": "all observations",
+      "normalization": "identity; no fitting",
+      "units": "boolean",
+      "formula": "observation valid and point structure/finite checks and usable palm scale; not confidence"
+    },
+    {
+      "index": 83,
+      "name": "mask_10",
+      "valid_when": "all observations",
+      "normalization": "identity; no fitting",
+      "units": "boolean",
+      "formula": "observation valid and point structure/finite checks and usable palm scale; not confidence"
+    },
+    {
+      "index": 84,
+      "name": "mask_11",
+      "valid_when": "all observations",
+      "normalization": "identity; no fitting",
+      "units": "boolean",
+      "formula": "observation valid and point structure/finite checks and usable palm scale; not confidence"
+    },
+    {
+      "index": 85,
+      "name": "mask_12",
+      "valid_when": "all observations",
+      "normalization": "identity; no fitting",
+      "units": "boolean",
+      "formula": "observation valid and point structure/finite checks and usable palm scale; not confidence"
+    },
+    {
+      "index": 86,
+      "name": "mask_13",
+      "valid_when": "all observations",
+      "normalization": "identity; no fitting",
+      "units": "boolean",
+      "formula": "observation valid and point structure/finite checks and usable palm scale; not confidence"
+    },
+    {
+      "index": 87,
+      "name": "mask_14",
+      "valid_when": "all observations",
+      "normalization": "identity; no fitting",
+      "units": "boolean",
+      "formula": "observation valid and point structure/finite checks and usable palm scale; not confidence"
+    },
+    {
+      "index": 88,
+      "name": "mask_15",
+      "valid_when": "all observations",
+      "normalization": "identity; no fitting",
+      "units": "boolean",
+      "formula": "observation valid and point structure/finite checks and usable palm scale; not confidence"
+    },
+    {
+      "index": 89,
+      "name": "mask_16",
+      "valid_when": "all observations",
+      "normalization": "identity; no fitting",
+      "units": "boolean",
+      "formula": "observation valid and point structure/finite checks and usable palm scale; not confidence"
+    },
+    {
+      "index": 90,
+      "name": "mask_17",
+      "valid_when": "all observations",
+      "normalization": "identity; no fitting",
+      "units": "boolean",
+      "formula": "observation valid and point structure/finite checks and usable palm scale; not confidence"
+    },
+    {
+      "index": 91,
+      "name": "mask_18",
+      "valid_when": "all observations",
+      "normalization": "identity; no fitting",
+      "units": "boolean",
+      "formula": "observation valid and point structure/finite checks and usable palm scale; not confidence"
+    },
+    {
+      "index": 92,
+      "name": "mask_19",
+      "valid_when": "all observations",
+      "normalization": "identity; no fitting",
+      "units": "boolean",
+      "formula": "observation valid and point structure/finite checks and usable palm scale; not confidence"
+    },
+    {
+      "index": 93,
+      "name": "mask_20",
+      "valid_when": "all observations",
+      "normalization": "identity; no fitting",
+      "units": "boolean",
+      "formula": "observation valid and point structure/finite checks and usable palm scale; not confidence"
+    }
+  ],
+  "default_config": {
+    "epsilon": 1e-06,
+    "min_palm_scale": 0.005,
+    "min_geometry_quality": 0.5,
+    "min_motion_dt_ns": 1000000,
+    "max_motion_gap_ns": 100000000,
+    "max_sampling_gap_ns": 100000000,
+    "reset_gap_ns": 500000000,
+    "window_size": 32,
+    "min_valid_ratio": 0.8,
+    "max_window_span_ns": 3200000000,
+    "max_age_ns": 150000000,
+    "dt_scale_seconds": 0.1,
+    "dt_clip": 10.0,
+    "missing_scale_ms": 1000.0,
+    "missing_clip": 10.0,
+    "std_epsilon": 1e-08
+  },
+  "coordinate_rules": {
+    "input": "unmirrored normalized image xyz; world coordinates unused",
+    "q": "q_i=(x_i,y_i*height/width,z_i)",
+    "palm_indices": [
+      0,
+      5,
+      9,
+      13,
+      17
+    ],
+    "scale_indices": [
+      5,
+      9,
+      17
+    ],
+    "handedness_normalization": false,
+    "rotation_normalization": false
+  },
+  "time_unit": "ns",
+  "sampling": "causal processed source observations; no resampling; unprocessed frames only advance health clock",
+  "warmup": "32 consecutive valid observations, gap <= max_sampling_gap_ns; invalid resets count; after warmup retain short missing windows but current invalid disables ready",
+  "ready": "warmed up and T=32 and current valid and history initialized and valid_ratio>=min_valid_ratio and span<=max_window_span_ns and age<=max_age_ns",
+  "reset": "stream/track/context_epoch/timebase change or source/health gap > reset_gap_ns; duplicate/decreasing processed source times rejected",
+  "statistics": {
+    "fit_split": "train",
+    "fit_fields": [
+      0,
+      69
+    ],
+    "variance": "population",
+    "empty_fallback": "mean=0,std=1 with warning",
+    "near_constant_fallback": "keep train mean,std=1 with warning",
+    "provenance": [
+      "dataset_hash",
+      "split_hash",
+      "schema_hash",
+      "config_hash"
+    ],
+    "invalid_standardized_geometry": 0
+  },
+  "validation_status": "Synthetic verification only; requires T04/T10 real/pilot data and validation before freezing thresholds."
+}

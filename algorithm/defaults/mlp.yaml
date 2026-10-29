@@ -1,0 +1,9 @@
+format_version: model-config-v1
+status: draft
+model_type: mlp
+feature_schema_version: landmarks94-v1
+vocabulary_version: gesture-v1-draft
+input_dim: 94
+window_size: 32
+hidden_dims: [128, 64]
+dropout: 0.2

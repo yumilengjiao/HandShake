@@ -2,6 +2,8 @@
 
 > T02 已提供 `check_environment.py` 限时依赖导入/CPU冒烟脚本，运行 `.venv/bin/python scripts/check_environment.py`。主 CLI 为 `.venv/bin/handshake dry_run`。以下采集/训练/回放入口仍为后续规划。
 
+T11/T12/T13 已提供 `build_features.py`（草案观测JSON＋预分配划分→绑定版本的NPZ缓存）和 `smoke_models.py`（纯合成可过拟合/结构诊断，不保存权重）。完整用法见 [特征与模型](../docs/features_and_models.md)。正式train/evaluate/replay仍未实现。
+
 ## 原则
 
 脚本只处理参数、加载配置和调用模块，不复制算法、状态机或平台逻辑。后续若同时提供 CLI 子命令，二者应复用同一实现，不维护两套流程。

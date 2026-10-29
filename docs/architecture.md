@@ -1,5 +1,7 @@
 # T02 当前工程与未来 Web 边界
 
+后续进展：T11/T12/T13已新增真实公式的共享特征、数据/缓存适配、规则/MLP/TCN与受门控预测接口，详见 [特征与模型](features_and_models.md)。下方链路仍专指保留的T02合成dry-run，不将其零值fixture冒充T11的几何提取；正式相机/训练/事件闭环仍未实施。
+
 当前实现是单仓库 Python 项目，`handshake-core` 是发行名，`shared/backend/algorithm/frontend` 是职责包。安装、命令见根 README。没有 HTTP/WebSocket 服务、网页、移动应用或真实系统输入实现。
 
 ## 当前可运行链路

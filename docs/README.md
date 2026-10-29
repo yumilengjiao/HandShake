@@ -6,6 +6,7 @@
 - [当前架构/契约](architecture.md)、[依赖验证](dependencies.md)
 - [手势协议](gesture_protocol.md)、[标注指南](annotation_guide.md)
 - [T01/T02/T05 验证与完成边界](verification_t01_t02_t05.md)
+- [T11/T12/T13 特征与模型](features_and_models.md)、[模块验证记录](verification_t11_t12_t13.md)
 - [通用技术架构图](assets/technical-architecture-general.png)
 - [架构图生成说明](assets/technical-architecture-general.prompt.txt)
 
