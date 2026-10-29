@@ -1,5 +1,7 @@
 # T03/T04/T06 实施与验证记录
 
+> **历史记录，保留初次交付结论。** 后续 `fix/capture-perception-validation` 已固定 MediaPipe 0.10.21/OpenCV 4.11 兼容组合，真实模型加载、三帧合成图像推理、关闭及154项回归通过；命令、对照证据和剩余实机验收见 [修复记录](perception_diagnostics.md)。下文的131项测试、旧依赖与exit137是修复前结果，不代表当前锁文件。
+
 记录日期：2026-10-29。先提交原生多端文档为 `8121d0d`，随后实现本轮代码。依据 `task_plans/03_camera_and_clock.md`、`04_perception_tracking_quality.md`、`06_collection_tool.md` 及总方案课程要求；仓库内未发现独立的作业 PDF/Word 附件。没有使用 `data/` 中的第三方数据包，没有采集参与者训练数据或生成自训模型。
 
 ## 状态与实际交付

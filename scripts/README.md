@@ -1,6 +1,6 @@
 # scripts：采集、训练与运维命令入口
 
-> 现有 `check_environment.py`；T03/T06新增 `camera_probe.py`、`collect.py`、`annotate.py` 薄入口，均转发已安装包的 `backend.cli`。训练/评估/事件回放仍未实现。完整命令和授权要求见 [采集指南](../docs/collection_workflow.md)。
+> 现有 `check_environment.py`；T03/T06新增 `camera_probe.py`、`collect.py`、`annotate.py` 薄入口，转发已安装包的 `backend.cli`。`perception_probe.py` 转发 `backend.perception.probe`，与 `handshake-perception-probe` 共用不访问相机的真实模型诊断，见 [感知修复](../docs/perception_diagnostics.md)。训练/评估/事件回放仍未实现。完整命令和授权要求见 [采集指南](../docs/collection_workflow.md)。
 
 ## 原则
 

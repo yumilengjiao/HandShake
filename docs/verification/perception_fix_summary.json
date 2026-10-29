@@ -1,0 +1,1227 @@
+{
+  "schema": "handshake-perception-fix-verification-v1",
+  "date": "2026-10-29",
+  "branch": "fix/capture-perception-validation",
+  "base_commit": "a4894a183c03597894e762ef614a32c218ee9761",
+  "working_tree_changes_included": true,
+  "source_sha256": {
+    "pyproject.toml": "1f29e546024c6b2f5321cb7505e915697cf3e14833ba96bf0de0647778c77e99",
+    "uv.lock": "acab1c2d85eec7439fb2946a5afc88ea9b73ce42496d2bc71c7c9f1666534acd",
+    "backend/perception/probe.py": "418fe10b626a7ace8375fcd35579d07648a1d7c1a563e65de9a3d34277ca54b1",
+    "tests/unit/test_perception_probe.py": "a8f46019568e2386ecde748b57af7259ead4b50789946472cb4a061581973e5d"
+  },
+  "tests": {
+    "tests": "154",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "4.147"
+  },
+  "original_environment_reproduction": {
+    "versions": {
+      "mediapipe": "1.2.0",
+      "numpy": "2.5.4",
+      "opencv-contrib-python": "5.0.0.93"
+    },
+    "returncode": -9,
+    "monitor_reason": null,
+    "elapsed_seconds": 2.2091284979999273,
+    "sampled_peak_rss_kib": 153548
+  },
+  "probes": {
+    "isolated_compatible_candidate": {
+      "schema": "perception-probe-v1",
+      "recorded_at": "2026-10-29T11:14:35.695964+00:00",
+      "scope": "real_sdk_three_black_RGB_frames_no_camera_no_recording_no_actions",
+      "real_hand_validated": false,
+      "python": "3.12.14",
+      "os": "Linux",
+      "kernel": "7.2.11-arch1-1",
+      "architecture": "x86_64",
+      "versions": {
+        "mediapipe": "0.10.21",
+        "numpy": "1.26.4",
+        "opencv-contrib-python": "4.11.0.86",
+        "protobuf": "4.25.9",
+        "certifi": null
+      },
+      "thread_environment": {
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "expected_asset_sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+      "stages": [
+        {
+          "probe_stage": "adapter_import"
+        },
+        {
+          "probe_stage": "model_load"
+        },
+        {
+          "probe_stage": "model_ready",
+          "load_seconds": 1.207097234999992,
+          "perception": {
+            "kind": "mediapipe_hand_landmarker",
+            "sdk_version": "0.10.21",
+            "asset_sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+            "asset_source": "user-supplied-local-asset",
+            "asset_license": "verify asset license before redistribution",
+            "mode": "VIDEO",
+            "max_hands": 2,
+            "synthetic": false
+          }
+        },
+        {
+          "probe_stage": "inference",
+          "frame_index": 0,
+          "timestamp_ms": 0,
+          "hand_count": 0,
+          "inference_seconds": 0.04610133999995014
+        },
+        {
+          "probe_stage": "inference",
+          "frame_index": 1,
+          "timestamp_ms": 34,
+          "hand_count": 0,
+          "inference_seconds": 0.034520196000130454
+        },
+        {
+          "probe_stage": "inference",
+          "frame_index": 2,
+          "timestamp_ms": 68,
+          "hand_count": 0,
+          "inference_seconds": 0.03896621900003083
+        },
+        {
+          "probe_stage": "model_close"
+        },
+        {
+          "probe_stage": "complete",
+          "frames": 3,
+          "camera_accessed": false,
+          "pixels_saved": false,
+          "landmarks_saved": false
+        }
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "signal": null,
+      "monitor_reason": null,
+      "launch_error": null,
+      "elapsed_seconds": 1.827477627999997,
+      "timeout_seconds": 30.0,
+      "rss_limit_mib": 768.0,
+      "rss_monitor_supported": true,
+      "rss_samples": 89,
+      "sampled_peak_rss_bytes": 371122176,
+      "stdout_truncated": false,
+      "stderr_truncated": false,
+      "cgroup_memory_events": [
+        {
+          "ancestor_level": 0,
+          "memory.max": "max",
+          "memory.high": "max",
+          "before": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "after": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "delta": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          }
+        },
+        {
+          "ancestor_level": 1,
+          "memory.max": "max",
+          "memory.high": "max",
+          "before": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "after": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "delta": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          }
+        },
+        {
+          "ancestor_level": 2,
+          "memory.max": "max",
+          "memory.high": "max",
+          "before": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "after": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "delta": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          }
+        },
+        {
+          "ancestor_level": 3,
+          "memory.max": "max",
+          "memory.high": "max",
+          "before": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "after": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "delta": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          }
+        },
+        {
+          "ancestor_level": 4,
+          "memory.max": "max",
+          "memory.high": "max",
+          "before": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "after": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "delta": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          }
+        }
+      ]
+    },
+    "isolated_1_2_0_control": {
+      "schema": "perception-probe-v1",
+      "recorded_at": "2026-10-29T11:14:38.606521+00:00",
+      "scope": "real_sdk_three_black_RGB_frames_no_camera_no_recording_no_actions",
+      "real_hand_validated": false,
+      "python": "3.12.14",
+      "os": "Linux",
+      "kernel": "7.2.11-arch1-1",
+      "architecture": "x86_64",
+      "versions": {
+        "mediapipe": "1.2.0",
+        "numpy": "1.26.4",
+        "opencv-contrib-python": "4.11.0.86",
+        "protobuf": "4.25.9",
+        "certifi": "2026.10.23"
+      },
+      "thread_environment": {
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "expected_asset_sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+      "stages": [
+        {
+          "probe_stage": "adapter_import"
+        },
+        {
+          "probe_stage": "model_load"
+        }
+      ],
+      "status": "failed",
+      "returncode": -9,
+      "signal": "SIGKILL",
+      "monitor_reason": null,
+      "launch_error": null,
+      "elapsed_seconds": 2.7111875670000245,
+      "timeout_seconds": 30.0,
+      "rss_limit_mib": 768.0,
+      "rss_monitor_supported": true,
+      "rss_samples": 132,
+      "sampled_peak_rss_bytes": 190906368,
+      "stdout_truncated": false,
+      "stderr_truncated": false,
+      "cgroup_memory_events": [
+        {
+          "ancestor_level": 0,
+          "memory.max": "max",
+          "memory.high": "max",
+          "before": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "after": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "delta": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          }
+        },
+        {
+          "ancestor_level": 1,
+          "memory.max": "max",
+          "memory.high": "max",
+          "before": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "after": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "delta": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          }
+        },
+        {
+          "ancestor_level": 2,
+          "memory.max": "max",
+          "memory.high": "max",
+          "before": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "after": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "delta": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          }
+        },
+        {
+          "ancestor_level": 3,
+          "memory.max": "max",
+          "memory.high": "max",
+          "before": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "after": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "delta": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          }
+        },
+        {
+          "ancestor_level": 4,
+          "memory.max": "max",
+          "memory.high": "max",
+          "before": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "after": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "delta": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          }
+        }
+      ]
+    },
+    "final_locked_environment": {
+      "schema": "perception-probe-v1",
+      "recorded_at": "2026-10-29T11:17:01.879250+00:00",
+      "scope": "real_sdk_three_black_RGB_frames_no_camera_no_recording_no_actions",
+      "real_hand_validated": false,
+      "python": "3.12.14",
+      "os": "Linux",
+      "kernel": "7.2.11-arch1-1",
+      "architecture": "x86_64",
+      "versions": {
+        "mediapipe": "0.10.21",
+        "numpy": "1.26.4",
+        "opencv-contrib-python": "4.11.0.86",
+        "protobuf": "4.25.9",
+        "certifi": null
+      },
+      "thread_environment": {
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "expected_asset_sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+      "stages": [
+        {
+          "probe_stage": "adapter_import"
+        },
+        {
+          "probe_stage": "model_load"
+        },
+        {
+          "probe_stage": "model_ready",
+          "load_seconds": 1.4264658780000445,
+          "perception": {
+            "kind": "mediapipe_hand_landmarker",
+            "sdk_version": "0.10.21",
+            "asset_sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+            "asset_source": "user-supplied-local-asset",
+            "asset_license": "verify asset license before redistribution",
+            "mode": "VIDEO",
+            "max_hands": 2,
+            "synthetic": false
+          }
+        },
+        {
+          "probe_stage": "inference",
+          "frame_index": 0,
+          "timestamp_ms": 0,
+          "hand_count": 0,
+          "inference_seconds": 0.028665694999972402
+        },
+        {
+          "probe_stage": "inference",
+          "frame_index": 1,
+          "timestamp_ms": 34,
+          "hand_count": 0,
+          "inference_seconds": 0.03577149700004156
+        },
+        {
+          "probe_stage": "inference",
+          "frame_index": 2,
+          "timestamp_ms": 68,
+          "hand_count": 0,
+          "inference_seconds": 0.027206234999994194
+        },
+        {
+          "probe_stage": "model_close"
+        },
+        {
+          "probe_stage": "complete",
+          "frames": 3,
+          "camera_accessed": false,
+          "pixels_saved": false,
+          "landmarks_saved": false
+        }
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "signal": null,
+      "monitor_reason": null,
+      "launch_error": null,
+      "elapsed_seconds": 2.4241069080001125,
+      "timeout_seconds": 30.0,
+      "rss_limit_mib": 768.0,
+      "rss_monitor_supported": true,
+      "rss_samples": 117,
+      "sampled_peak_rss_bytes": 398155776,
+      "stdout_truncated": false,
+      "stderr_truncated": false,
+      "cgroup_memory_events": [
+        {
+          "ancestor_level": 0,
+          "memory.max": "max",
+          "memory.high": "max",
+          "before": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "after": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "delta": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          }
+        },
+        {
+          "ancestor_level": 1,
+          "memory.max": "max",
+          "memory.high": "max",
+          "before": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "after": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "delta": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          }
+        },
+        {
+          "ancestor_level": 2,
+          "memory.max": "max",
+          "memory.high": "max",
+          "before": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "after": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "delta": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          }
+        },
+        {
+          "ancestor_level": 3,
+          "memory.max": "max",
+          "memory.high": "max",
+          "before": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "after": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "delta": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          }
+        },
+        {
+          "ancestor_level": 4,
+          "memory.max": "max",
+          "memory.high": "max",
+          "before": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "after": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "delta": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          }
+        }
+      ]
+    },
+    "independent_wheel_outside_source": {
+      "schema": "perception-probe-v1",
+      "recorded_at": "2026-10-29T11:18:21.246244+00:00",
+      "scope": "real_sdk_three_black_RGB_frames_no_camera_no_recording_no_actions",
+      "real_hand_validated": false,
+      "python": "3.12.14",
+      "os": "Linux",
+      "kernel": "7.2.11-arch1-1",
+      "architecture": "x86_64",
+      "versions": {
+        "mediapipe": "0.10.21",
+        "numpy": "1.26.4",
+        "opencv-contrib-python": "4.11.0.86",
+        "protobuf": "4.25.9",
+        "certifi": null
+      },
+      "thread_environment": {
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "expected_asset_sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+      "stages": [
+        {
+          "probe_stage": "adapter_import"
+        },
+        {
+          "probe_stage": "model_load"
+        },
+        {
+          "probe_stage": "model_ready",
+          "load_seconds": 2.543107505999842,
+          "perception": {
+            "kind": "mediapipe_hand_landmarker",
+            "sdk_version": "0.10.21",
+            "asset_sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+            "asset_source": "user-supplied-local-asset",
+            "asset_license": "verify asset license before redistribution",
+            "mode": "VIDEO",
+            "max_hands": 2,
+            "synthetic": false
+          }
+        },
+        {
+          "probe_stage": "inference",
+          "frame_index": 0,
+          "timestamp_ms": 0,
+          "hand_count": 0,
+          "inference_seconds": 0.023344607000126416
+        },
+        {
+          "probe_stage": "inference",
+          "frame_index": 1,
+          "timestamp_ms": 34,
+          "hand_count": 0,
+          "inference_seconds": 0.03817962700009048
+        },
+        {
+          "probe_stage": "inference",
+          "frame_index": 2,
+          "timestamp_ms": 68,
+          "hand_count": 0,
+          "inference_seconds": 0.02660274999993817
+        },
+        {
+          "probe_stage": "model_close"
+        },
+        {
+          "probe_stage": "complete",
+          "frames": 3,
+          "camera_accessed": false,
+          "pixels_saved": false,
+          "landmarks_saved": false
+        }
+      ],
+      "status": "passed",
+      "returncode": 0,
+      "signal": null,
+      "monitor_reason": null,
+      "launch_error": null,
+      "elapsed_seconds": 3.4902178309998817,
+      "timeout_seconds": 30.0,
+      "rss_limit_mib": 768.0,
+      "rss_monitor_supported": true,
+      "rss_samples": 170,
+      "sampled_peak_rss_bytes": 377651200,
+      "stdout_truncated": false,
+      "stderr_truncated": false,
+      "cgroup_memory_events": [
+        {
+          "ancestor_level": 0,
+          "memory.max": "max",
+          "memory.high": "max",
+          "before": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "after": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "delta": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          }
+        },
+        {
+          "ancestor_level": 1,
+          "memory.max": "max",
+          "memory.high": "max",
+          "before": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "after": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "delta": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          }
+        },
+        {
+          "ancestor_level": 2,
+          "memory.max": "max",
+          "memory.high": "max",
+          "before": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "after": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "delta": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          }
+        },
+        {
+          "ancestor_level": 3,
+          "memory.max": "max",
+          "memory.high": "max",
+          "before": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "after": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "delta": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          }
+        },
+        {
+          "ancestor_level": 4,
+          "memory.max": "max",
+          "memory.high": "max",
+          "before": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "after": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          },
+          "delta": {
+            "low": 0,
+            "high": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_kill": 0,
+            "oom_group_kill": 0,
+            "sock_throttled": 0
+          }
+        }
+      ]
+    }
+  },
+  "real_sdk_synthetic_preview": {
+    "capture": {
+      "acquired": 10,
+      "consumer_skipped": 0,
+      "status_overflow": 0,
+      "max_pending_frames": 1,
+      "first_received_ns": 1793626649623,
+      "last_received_ns": 1793926785755,
+      "actual_capture_hz": 29.986392974505314,
+      "driver_drops": null
+    },
+    "processed_frames": 10,
+    "consumed_frames": 10,
+    "consumer_hz": 29.849741178864186,
+    "frame_age": {
+      "clock": "local_read_complete_to_consumer_not_exposure",
+      "last_n_samples": 0,
+      "sample_capacity": 4096,
+      "p50_ns": null,
+      "p95_ns": null,
+      "max_ns": null
+    },
+    "status_counts": {
+      "processed_hands": 0,
+      "processed_no_hand": 10,
+      "not_processed": 0,
+      "error": 0
+    },
+    "elapsed_ns": 335011280,
+    "error": null,
+    "complete": false,
+    "source": {
+      "kind": "synthetic",
+      "synthetic": true,
+      "timestamp_kind": "synthetic_index_fps",
+      "pixel_format": "RGB8"
+    },
+    "perception": {
+      "kind": "mediapipe_hand_landmarker",
+      "sdk_version": "0.10.21",
+      "asset_sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+      "asset_source": "user-supplied-local-asset",
+      "asset_license": "verify license before redistribution",
+      "mode": "VIDEO",
+      "max_hands": 2,
+      "synthetic": false
+    },
+    "synthetic": true,
+    "control_backend": "none (collection cannot inject actions)",
+    "shutdown_confirmed": true
+  },
+  "camera_300s_no_model": {
+    "capture": {
+      "acquired": 3003,
+      "consumer_skipped": 0,
+      "status_overflow": 0,
+      "max_pending_frames": 1,
+      "first_received_ns": 1790859984104,
+      "last_received_ns": 2090622271738,
+      "actual_capture_hz": 10.014601982439313,
+      "driver_drops": null
+    },
+    "processed_frames": 0,
+    "consumed_frames": 3002,
+    "consumer_hz": 9.997340767766088,
+    "frame_age": {
+      "clock": "local_read_complete_to_consumer_not_exposure",
+      "last_n_samples": 3002,
+      "sample_capacity": 4096,
+      "p50_ns": 914615,
+      "p95_ns": 2295526,
+      "max_ns": 6317967
+    },
+    "status_counts": {
+      "processed_hands": 0,
+      "processed_no_hand": 0,
+      "not_processed": 3003,
+      "error": 0
+    },
+    "elapsed_ns": 300279851386,
+    "error": null,
+    "complete": false,
+    "source": {
+      "kind": "camera",
+      "opencv_version": "4.11.0",
+      "backend": "V4L2",
+      "requests": {
+        "width": {
+          "requested": 640,
+          "set_accepted": true
+        },
+        "height": {
+          "requested": 480,
+          "set_accepted": true
+        },
+        "fps": {
+          "requested": 30.0,
+          "set_accepted": true
+        },
+        "buffer_size": {
+          "requested": 1,
+          "set_accepted": true
+        }
+      },
+      "reported_size": [
+        640,
+        480
+      ],
+      "reported_fps": 30.0,
+      "timestamp_kind": "software_read_complete_not_exposure",
+      "source_format": "BGR8",
+      "pixel_format": "RGB8",
+      "crop": "none",
+      "transform": {
+        "schema_version": "1.0.0",
+        "time_unit": "ns",
+        "timebase": "monotonic",
+        "model_mirrored": false,
+        "preview_mirrored": true,
+        "rotation_degrees": 0,
+        "coordinate_system": "normalized_image_xy_relative_z"
+      },
+      "driver_drops": null,
+      "exposure_age_known": false,
+      "actual_size": [
+        640,
+        480
+      ]
+    },
+    "perception": {
+      "kind": "disabled_no_model",
+      "disabled": true,
+      "synthetic": false
+    },
+    "synthetic": false,
+    "control_backend": "none (collection cannot inject actions)",
+    "shutdown_confirmed": true
+  },
+  "camera_reopen_no_model": {
+    "capture": {
+      "acquired": 47,
+      "consumer_skipped": 0,
+      "status_overflow": 0,
+      "max_pending_frames": 1,
+      "first_received_ns": 2092560970874,
+      "last_received_ns": 2097160490797,
+      "actual_capture_hz": 10.001043754583167,
+      "driver_drops": null
+    },
+    "processed_frames": 0,
+    "consumed_frames": 46,
+    "consumer_hz": 8.965052751377984,
+    "frame_age": {
+      "clock": "local_read_complete_to_consumer_not_exposure",
+      "last_n_samples": 46,
+      "sample_capacity": 4096,
+      "p50_ns": 1022410,
+      "p95_ns": 2181571,
+      "max_ns": 2811397
+    },
+    "status_counts": {
+      "processed_hands": 0,
+      "processed_no_hand": 0,
+      "not_processed": 47,
+      "error": 0
+    },
+    "elapsed_ns": 5131035062,
+    "error": null,
+    "complete": false,
+    "source": {
+      "kind": "camera",
+      "opencv_version": "4.11.0",
+      "backend": "V4L2",
+      "requests": {
+        "width": {
+          "requested": 640,
+          "set_accepted": true
+        },
+        "height": {
+          "requested": 480,
+          "set_accepted": true
+        },
+        "fps": {
+          "requested": 30.0,
+          "set_accepted": true
+        },
+        "buffer_size": {
+          "requested": 1,
+          "set_accepted": true
+        }
+      },
+      "reported_size": [
+        640,
+        480
+      ],
+      "reported_fps": 30.0,
+      "timestamp_kind": "software_read_complete_not_exposure",
+      "source_format": "BGR8",
+      "pixel_format": "RGB8",
+      "crop": "none",
+      "transform": {
+        "schema_version": "1.0.0",
+        "time_unit": "ns",
+        "timebase": "monotonic",
+        "model_mirrored": false,
+        "preview_mirrored": true,
+        "rotation_degrees": 0,
+        "coordinate_system": "normalized_image_xy_relative_z"
+      },
+      "driver_drops": null,
+      "exposure_age_known": false,
+      "actual_size": [
+        640,
+        480
+      ]
+    },
+    "perception": {
+      "kind": "disabled_no_model",
+      "disabled": true,
+      "synthetic": false
+    },
+    "synthetic": false,
+    "control_backend": "none (collection cannot inject actions)",
+    "shutdown_confirmed": true
+  },
+  "build": {
+    "sdist_and_wheel": "passed_offline",
+    "independent_wheel_install": "passed",
+    "wheel_sha256": "8dcb84a64e9cd53b96c7b4470e46bbd11949a09b96fb982d85d3e568641261e1"
+  },
+  "limitations": [
+    "SIGKILL_sender_and_root_cause_unknown",
+    "black_RGB_inference_is_not_real_hand_accuracy",
+    "camera_probe_is_headless_without_model",
+    "no_exposure_latency_claim",
+    "no_real_participant_data_or_raw_camera_recording",
+    "manual_GUI_device_faults_and_real_hand_scenarios_pending",
+    "training_extra_and_other_OS_ABIs_not_revalidated"
+  ]
+}
