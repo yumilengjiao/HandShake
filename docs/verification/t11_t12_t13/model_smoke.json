@@ -1,0 +1,340 @@
+{
+  "scope": "synthetic_tensor_memorization_and_rule_fixtures_only",
+  "seed": 42,
+  "cpu_threads": 1,
+  "torch_version": "2.14.1+cpu",
+  "numpy_version": "2.2.6",
+  "feature_schema_version": "landmarks94-v1",
+  "schema_sha256": "e0df738963ff2a706ed13c8efbd4da181a5922464c24d2da4bd3c98320927dea",
+  "classes_sha256": "c7d03f896906e3720779061d20c7e9a6b682c5bc220647d12fc80f837614e90d",
+  "classes": [
+    "no_action",
+    "wake_open",
+    "swipe_left",
+    "swipe_right",
+    "exit_pose"
+  ],
+  "synthetic_input_sha256": "0ab9cdaab58f586da79373a91863fa6452231789b5a26b17994fe8ea2fb62667",
+  "dataset_version": null,
+  "checkpoint_saved": false,
+  "formal_validation_performed": false,
+  "feature_config": {
+    "epsilon": 1e-06,
+    "min_palm_scale": 0.005,
+    "min_geometry_quality": 0.5,
+    "min_motion_dt_ns": 1000000,
+    "max_motion_gap_ns": 100000000,
+    "max_sampling_gap_ns": 100000000,
+    "reset_gap_ns": 500000000,
+    "window_size": 32,
+    "min_valid_ratio": 0.8,
+    "max_window_span_ns": 3200000000,
+    "max_age_ns": 150000000,
+    "dt_scale_seconds": 0.1,
+    "dt_clip": 10.0,
+    "missing_scale_ms": 1000.0,
+    "missing_clip": 10.0,
+    "std_epsilon": 1e-08
+  },
+  "models": {
+    "mlp": {
+      "parameters": 20741,
+      "receptive_field": null,
+      "config": {
+        "format_version": "model-config-v1",
+        "status": "draft",
+        "feature_schema_version": "landmarks94-v1",
+        "vocabulary_version": "gesture-v1-draft",
+        "input_dim": 94,
+        "window_size": 32,
+        "dropout": 0.2,
+        "model_type": "mlp",
+        "hidden_dims": [
+          128,
+          64
+        ]
+      },
+      "samples": 20,
+      "updates": 100,
+      "first_training_loss": 1.610425591468811,
+      "last_training_loss": 0.0004492296720854938,
+      "training_ms": 55.42794699977094,
+      "cpu_forward_ms": {
+        "p50": 0.026941,
+        "p95": 0.0294955,
+        "repeats": 30
+      },
+      "memorized_all": true,
+      "synthetic_training_metrics": {
+        "confusion_matrix": [
+          [
+            4,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            4,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            4,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            4,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            4
+          ]
+        ],
+        "per_class": {
+          "no_action": {
+            "support": 4,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "wake_open": {
+            "support": 4,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "swipe_left": {
+            "support": 4,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "swipe_right": {
+            "support": 4,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "exit_pose": {
+            "support": 4,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "macro_f1": 1.0
+      }
+    },
+    "tcn": {
+      "parameters": 56325,
+      "receptive_field": 31,
+      "config": {
+        "format_version": "model-config-v1",
+        "status": "draft",
+        "feature_schema_version": "landmarks94-v1",
+        "vocabulary_version": "gesture-v1-draft",
+        "input_dim": 94,
+        "window_size": 32,
+        "dropout": 0.2,
+        "model_type": "tcn",
+        "channels": 64,
+        "kernel_size": 3,
+        "dilations": [
+          1,
+          2,
+          4,
+          8
+        ]
+      },
+      "samples": 20,
+      "updates": 100,
+      "first_training_loss": 2.20196270942688,
+      "last_training_loss": 0.0005458281957544386,
+      "training_ms": 588.6747399999877,
+      "cpu_forward_ms": {
+        "p50": 0.3041695,
+        "p95": 0.31389315,
+        "repeats": 30
+      },
+      "memorized_all": true,
+      "synthetic_training_metrics": {
+        "confusion_matrix": [
+          [
+            4,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            4,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            4,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            4,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            4
+          ]
+        ],
+        "per_class": {
+          "no_action": {
+            "support": 4,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "wake_open": {
+            "support": 4,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "swipe_left": {
+            "support": 4,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "swipe_right": {
+            "support": 4,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "exit_pose": {
+            "support": 4,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "macro_f1": 1.0
+      }
+    },
+    "rule": {
+      "parameters": 0,
+      "history_frames": 32,
+      "thresholds": {
+        "history_size": 32,
+        "extended_pip_degrees_min": 150.0,
+        "folded_pip_degrees_max": 100.0,
+        "extended_tip_to_pip_distance_ratio_min": 1.05,
+        "folded_tip_to_mcp_distance_max": 1.5,
+        "static_max_speed_widths_per_s": 0.05,
+        "min_quality": 0.5,
+        "max_sample_gap_ns": 100000000,
+        "swipe_min_duration_ns": 150000000,
+        "swipe_max_duration_ns": 1500000000,
+        "swipe_min_displacement_widths": 0.18,
+        "swipe_max_vertical_span_widths": 0.15,
+        "swipe_min_mean_speed_widths_per_s": 0.15,
+        "swipe_min_current_speed_widths_per_s": 0.05,
+        "swipe_min_direction_consistency": 0.8
+      },
+      "synthetic_fixture_metrics": {
+        "confusion_matrix": [
+          [
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            1
+          ]
+        ],
+        "per_class": {
+          "no_action": {
+            "support": 1,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "wake_open": {
+            "support": 1,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "swipe_left": {
+            "support": 1,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "swipe_right": {
+            "support": 1,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "exit_pose": {
+            "support": 1,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "macro_f1": 1.0
+      }
+    }
+  }
+}

@@ -2,6 +2,8 @@
 
 本目录将 [PROJECT_MASTER_PLAN.md](../PROJECT_MASTER_PLAN.md) 拆分为 **35 个独立任务文件**。2026-10-29 已按 T01 → T02 → T05 实施范围记录、核心工程与协议草案，验证见 [本轮记录](../docs/verification_t01_t02_t05.md)。没有真实采集、训练模型、Web或真实应用；未满足实机/pilot条件的任务仍标待验证。逐项审查结论与修订原因见 [任务审查记录](REVIEW_NOTES.md)。
 
+同日新增T11/T12/T13软件交付：共享94维特征、字段级训练统计、窗口/数据/缓存、规则/MLP/TCN与统一预测接口；见 [模块与验证](../docs/verification_t11_t12_t13.md)。正式统计须等待T04/T07/T10，正式模型训练/校准/事件实验仍属T14及后续，不以合成检查替代。
+
 用户已确定最终为 Web 且支持手机，本轮不实现 Web。T20 文件名保留，但目标改为电脑/手机 Web UI；T03 后续适配手机相机时保留源时钟/旋转/镜像语义，T18/T19 核验明确控制目标和授权，T23/T24 覆盖后台/断线/重连与停止。早期桌面工程措辞不覆盖这项新约定，详见 [T01 范围记录](../docs/scope_freeze.md)。
 
 ## 如何使用
@@ -55,9 +57,9 @@ T15 完成分类校准与合成事件评估；T23 使用 draft 参数联调。T2
 | [T08](08_main_dataset_collection.md) | 组织主数据采集与连续自然动作测试资料 | P0；研究规模按资源扩展 | A+B | [T07](07_pilot_collection.md) | 待实施 |
 | [T09](09_annotation_and_quality_audit.md) | 标注动作时间轴并完成数据质量审核 | P0 | A+B 交叉复核 | [T05](05_gesture_and_annotation_protocol.md), [T08](08_main_dataset_collection.md) | 待实施 |
 | [T10](10_splits_and_dataset_version.md) | 固定用户划分、排查泄漏并版本化数据集 | P0 | A | [T09](09_annotation_and_quality_audit.md) | 待实施 |
-| [T11](11_features_and_windows.md) | 实现共享特征工程、掩码与时序数据加载 | P0 | A | [T04](04_perception_tracking_quality.md), [T05](05_gesture_and_annotation_protocol.md), [T10](10_splits_and_dataset_version.md) | 待实施 |
-| [T12](12_rules_and_mlp_baselines.md) | 建立规则与单帧 MLP 对照基线 | P0：MLP；规则作为工程对照 | A | [T11](11_features_and_windows.md) | 待实施 |
-| [T13](13_causal_tcn_network.md) | 搭建可验证的单分支因果 TCN 神经网络 | P0 | A | [T11](11_features_and_windows.md) | 待实施 |
+| [T11](11_features_and_windows.md) | 实现共享特征工程、掩码与时序数据加载 | P0 | A（用户待填） | [T04](04_perception_tracking_quality.md), [T05](05_gesture_and_annotation_protocol.md), [T10](10_splits_and_dataset_version.md) | 待验证：软件/合成通过，正式统计待T10 |
+| [T12](12_rules_and_mlp_baselines.md) | 建立规则与单帧 MLP 对照基线 | P0：MLP；规则作为工程对照 | A（用户待填） | [T11](11_features_and_windows.md) | 已完成：模块及合成冒烟；正式实验待T14+ |
+| [T13](13_causal_tcn_network.md) | 搭建可验证的单分支因果 TCN 神经网络 | P0 | A（用户待填） | [T11](11_features_and_windows.md) | 已完成：结构/因果/梯度验收 |
 | [T14](14_training_and_experiment_tracking.md) | 实现可复现训练、采样与模型选择 | P0 | A | [T12](12_rules_and_mlp_baselines.md), [T13](13_causal_tcn_network.md) | 待实施 |
 | [T15](15_validation_and_calibration.md) | 建立分类与事件评估、验证集校准和门限选择 | P0 | A | [T14](14_training_and_experiment_tracking.md) | 待实施 |
 | [T16](16_export_and_online_inference.md) | 打包模型并实现带新鲜度校验的在线推理 | P0：PyTorch；ONNX 选做 | A 主责，B 集成 | [T14](14_training_and_experiment_tracking.md), [T15](15_validation_and_calibration.md) | 待实施 |

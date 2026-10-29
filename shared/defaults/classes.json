@@ -1,0 +1,12 @@
+{
+  "schema_version": "classes-v1",
+  "vocabulary_version": "gesture-v1-draft",
+  "class_count": 5,
+  "classes": [
+    {"id": 0, "token": "no_action"},
+    {"id": 1, "token": "wake_open"},
+    {"id": 2, "token": "swipe_left"},
+    {"id": 3, "token": "swipe_right"},
+    {"id": 4, "token": "exit_pose"}
+  ]
+}

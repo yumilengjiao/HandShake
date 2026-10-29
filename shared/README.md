@@ -1,6 +1,6 @@
 # shared：公共契约与共享基础模块
 
-> T02/T05 已实现 `contracts.py`、`config.py`、`records.py`、`annotations.py` 与包内 draft 默认配置。契约/配置/合成标注校验已接入测试；共享特征和真实 NPZ 会话格式尚待 T11/T06。
+> T02/T05 已实现公共契约/配置/标注；T11 新增 `classes.py` 和 `features/` 的94维几何、字段级训练统计、掩码与32帧窗口。离线与在线调用同一实现，真实统计待T10；T06真实NPZ会话格式仍未实现。说明见 [特征与模型](../docs/features_and_models.md)。
 
 ## 主责与任务
 

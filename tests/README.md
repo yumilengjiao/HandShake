@@ -39,4 +39,6 @@ tests/
 
 T02/T05 当前测试运行：`env -u PYTHONPATH PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/python -m pytest`。覆盖契约、配置、合成标注和 mock 集成，不需要相机、模型或设备权限；具体执行结果见 [验证记录](../docs/verification_t01_t02_t05.md)。完整安全与回放尚属 [T23](../task_plans/23_replay_and_integration.md)、[T24](../task_plans/24_safety_faults_and_performance.md)。
 
+T11/T12/T13 增加特征/统计/窗口、用户划分与缓存、规则/MLP/TCN因果/梯度及统一预测器测试。完整测试先安装`uv sync --locked --extra dev --extra training`；缺少可选torch时神经模型测试会明确skip。实际309项全通过的环境和合成边界见 [新验证记录](../docs/verification_t11_t12_t13.md)。
+
 返回 [根目录说明](../README.md)。
