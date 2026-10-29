@@ -2,6 +2,10 @@
 
 ## 当前已有内容
 
+- [范围与待确认项](scope_freeze.md)、[平台支持](platform_support.md)
+- [当前架构/契约](architecture.md)、[依赖验证](dependencies.md)
+- [手势协议](gesture_protocol.md)、[标注指南](annotation_guide.md)
+- [T01/T02/T05 验证与完成边界](verification_t01_t02_t05.md)
 - [通用技术架构图](assets/technical-architecture-general.png)
 - [架构图生成说明](assets/technical-architecture-general.prompt.txt)
 
@@ -26,7 +30,7 @@
 | `demo_guide.md` | 安装、离线资产、演示脚本、停止和备份 |
 | 报告/PPT | 实际完成内容、个人贡献、证据和边界 |
 
-上述文件尚未创建，不先生成空白报告或虚构图表。
+其中范围、架构、协议已在本轮落盘；数据卡、实验、模型、报告仍待真实工作，不生成虚构结果。
 
 ## 什么可以提交
 

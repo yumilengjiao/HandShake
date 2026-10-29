@@ -1,6 +1,6 @@
 # scripts：采集、训练与运维命令入口
 
-> 当前没有可运行脚本，以下仅说明后续入口及归属，不要把文件名当作已实现命令。
+> T02 已提供 `check_environment.py` 限时依赖导入/CPU冒烟脚本，运行 `.venv/bin/python scripts/check_environment.py`。主 CLI 为 `.venv/bin/handshake dry_run`。以下采集/训练/回放入口仍为后续规划。
 
 ## 原则
 

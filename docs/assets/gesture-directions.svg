@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="390" viewBox="0 0 1080 390" role="img" aria-labelledby="title desc">
+  <title id="title">Unmirrored model coordinates and mirrored preview</title>
+  <desc id="desc">A left swipe decreases model x; in a mirrored preview the same movement appears to the right. Tokens and command mapping do not change with preview mirroring.</desc>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0 0L8 3L0 6Z" fill="#2563eb"/></marker></defs>
+  <rect width="1080" height="390" rx="14" fill="#f8fafc"/>
+  <g font-family="sans-serif" fill="#0f172a">
+    <text x="35" y="38" font-size="24" font-weight="bold">Synthetic coordinate teaching example / gesture-v1-draft</text>
+    <rect x="30" y="60" width="495" height="255" rx="12" fill="#e2e8f0"/>
+    <rect x="555" y="60" width="495" height="255" rx="12" fill="#e2e8f0"/>
+    <text x="55" y="95" font-size="20">MODEL: unmirrored</text>
+    <text x="580" y="95" font-size="20">PREVIEW: mirrored</text>
+    <path d="M65 135H475" stroke="#2563eb" stroke-width="3" marker-end="url(#arrow)"/>
+    <text x="80" y="125" font-size="16">x = 0</text><text x="425" y="125" font-size="16">x = 1</text>
+    <path d="M590 135H1000" stroke="#64748b" stroke-width="2"/>
+    <text x="600" y="125" font-size="16">model x = 1</text><text x="900" y="125" font-size="16">model x = 0</text>
+    <circle cx="380" cy="205" r="25" fill="#94a3b8"/>
+    <circle cx="180" cy="205" r="25" fill="#2563eb"/>
+    <path d="M335 205H225" stroke="#2563eb" stroke-width="8" marker-end="url(#arrow)"/>
+    <circle cx="700" cy="205" r="25" fill="#94a3b8"/>
+    <circle cx="900" cy="205" r="25" fill="#2563eb"/>
+    <path d="M745 205H855" stroke="#2563eb" stroke-width="8" marker-end="url(#arrow)"/>
+    <text x="55" y="275" font-size="20">swipe_left: model x decreases</text>
+    <text x="580" y="275" font-size="20">Same token: swipe_left</text>
+    <text x="35" y="348" font-size="19">Default mapping: swipe_left → previous_slide; swipe_right → next_slide</text>
+    <text x="35" y="377" font-size="16" fill="#475569">Circles show palm center positions. This is a diagram, not participant data or a recognition result.</text>
+  </g>
+</svg>

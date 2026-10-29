@@ -37,6 +37,6 @@ tests/
 
 常规自动测试使用合成输入和 mock/dry-run，不需要真实参与者数据、相机或桌面注入权限。硬件/应用/live 测试必须显式选择，并在隔离的无敏感内容环境中授权运行。
 
-测试框架、marker 和实际命令在 T02/T24 实现后补充；只有有真实执行证据才写“通过”。关联任务：[T23](../task_plans/23_replay_and_integration.md)、[T24](../task_plans/24_safety_faults_and_performance.md)。
+T02/T05 当前测试运行：`env -u PYTHONPATH PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/python -m pytest`。覆盖契约、配置、合成标注和 mock 集成，不需要相机、模型或设备权限；具体执行结果见 [验证记录](../docs/verification_t01_t02_t05.md)。完整安全与回放尚属 [T23](../task_plans/23_replay_and_integration.md)、[T24](../task_plans/24_safety_faults_and_performance.md)。
 
 返回 [根目录说明](../README.md)。

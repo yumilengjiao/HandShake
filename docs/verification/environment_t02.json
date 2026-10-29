@@ -1,0 +1,65 @@
+{
+  "python": "3.10.12",
+  "os": "Linux",
+  "kernel": "6.8.0-138-generic",
+  "architecture": "x86_64",
+  "desktop_session": "wayland",
+  "camera_nodes": [
+    "/dev/video3",
+    "/dev/video2",
+    "/dev/video1",
+    "/dev/video0"
+  ],
+  "probes": {
+    "numpy": {
+      "status": "passed",
+      "version": "2.2.6",
+      "stdout": "2.2.6",
+      "stderr": "",
+      "returncode": 0
+    },
+    "pydantic": {
+      "status": "passed",
+      "version": "2.14.1",
+      "stdout": "2.14.1",
+      "stderr": "",
+      "returncode": 0
+    },
+    "PyYAML": {
+      "status": "passed",
+      "version": "6.0.3",
+      "stdout": "6.0.3",
+      "stderr": "",
+      "returncode": 0
+    },
+    "opencv-contrib-python": {
+      "status": "passed",
+      "version": "5.0.0.93",
+      "stdout": "5.0.0",
+      "stderr": "",
+      "returncode": 0
+    },
+    "mediapipe": {
+      "status": "passed",
+      "version": "1.2.0",
+      "stdout": "1.2.0",
+      "stderr": "",
+      "returncode": 0
+    },
+    "torch": {
+      "status": "passed",
+      "version": "2.14.1+cpu",
+      "stdout": "2.14.1+cpu CPU tensor + NumPy bridge OK",
+      "stderr": "",
+      "returncode": 0
+    },
+    "scikit-learn": {
+      "status": "passed",
+      "version": "1.7.2",
+      "stdout": "1.7.2 GroupKFold import OK",
+      "stderr": "",
+      "returncode": 0
+    }
+  },
+  "scope": "imports_and_synthetic_CPU_operations_only"
+}

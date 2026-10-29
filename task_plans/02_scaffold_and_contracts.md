@@ -7,7 +7,7 @@
 | 建议主责 | A+B（A/B 实名以总方案为准） |
 | 前置任务 | T01 |
 | 总方案依据 | 第 5、16、17、19 节 |
-| 状态 | 待实施；本文是规划，不代表已有代码、数据或结果 |
+| 状态 | 待验证；核心软件已实现并验证，真实相机加载待T03/T04 |
 
 总约束和路径解释见 [任务导航](README.md)。下列代码、配置、命令和产物路径均为待实现约定，不代表目前已存在。新增细节属于总方案的实施起点；只有通过试采集和验证后才冻结，不得用最终测试结果反向挑选配置。
 
@@ -44,11 +44,21 @@ shared 契约与配置 schema、可加载默认配置、最小入口、依赖锁
 
 ## 验收与交接
 
-- [ ] 无相机、无模型时入口返回可理解错误，不能顺带注入桌面事件。
-- [ ] 合成 FramePacket 能经过 mock predictor、engine、backend 并输出带版本的日志。
-- [ ] 错误维度与时间单位不会静默通过；`injected` 不被解释为应用已响应。
-- [ ] 接口变更更新版本及 T03/T04/T11/T16/T17/T18/T20 的调用方。
+- [x] 无相机、无模型时入口返回可理解错误，不能顺带注入桌面事件。
+- [x] 合成 FramePacket 能经过 mock predictor、engine、backend 并输出带版本的日志。
+- [x] 错误维度与时间单位不会静默通过；`injected` 不被解释为应用已响应。
+- [x] 接口变更更新版本及 T03/T04/T11/T16/T17/T18/T20 的调用方（现有mock调用方已同步，未实现任务交接到版本化契约）。
 
 ## 前置任务文件
 
 [T01 冻结课程范围、平台与验收口径](01_scope_and_platform.md)
+
+## 2026-10-29 实施记录
+
+- 执行：Codex；成员A/B待用户填写。开始/软件验证日期2026-10-29，实机最终验收日期待填。
+- 步骤1～2：`pyproject.toml`、`uv.lock`、四个职责包、`backend/cli.py` 和根 README 安装说明；基础/感知/CPU训练依赖导入实测见 [依赖记录](../docs/dependencies.md)。没有 Web依赖、网页或服务。
+- 步骤3：`shared/contracts.py`、`algorithm/predictor.py`、`backend/controller.py`；ns/timebase、形状、可选头、context传播与注入状态保留。
+- 步骤4：`shared/config.py`、`shared/defaults/` 和 `configs/`；拒绝未知字段/动作、重复YAML键、缺失映射、负时长与错误版本，门限标draft。
+- 步骤5～6：`backend/mock.py`、`shared/records.py`、`.gitignore`；合成帧→mock预测/事件/派发→带版本JSONL可验证；无图像/身份进入日志。collect/train/evaluate/replay/live保留入口并明确不可用。
+- 单元/集成测试、wheel安装冒烟、配置/锁/fixture哈希及结果见 [统一验证记录](../docs/verification_t01_t02_t05.md)。无真实数据或模型哈希，标不适用。
+- 验收：无相机/模型可运行合成入口，其余入口可理解地拒绝；维度、单位标签、旧epoch、过期/重复命令与序列化通过。`mock=not_attempted` 不冒充注入/应用响应。真实相机与模型加载尚未完成，不宣称已完成T03/T04或后续安全竞态。

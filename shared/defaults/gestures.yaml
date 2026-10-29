@@ -1,0 +1,40 @@
+version: gesture-v1-draft
+status: draft
+class_count: 5
+coordinate_system: unmirrored_model_image
+palm_landmark_indices: [0, 5, 9, 13, 17]
+extended_pip_degrees_min: 150
+folded_pip_degrees_max: 100
+static_max_speed_widths_per_s: 0.05
+static_max_gap_ns: 100000000
+swipe_min_displacement_widths: 0.18
+swipe_max_vertical_displacement_heights: 0.15
+swipe_min_duration_ns: 150000000
+swipe_max_duration_ns: 1500000000
+neutral_region_xy: [0.2, 0.8, 0.2, 0.8]
+gestures:
+  - id: 0
+    token: no_action
+    visible_definition: 清晰可见且不满足其他词元；缺失另标质量与损失掩码
+    reference_rule: 不产生目标事件
+    release_rule: 可测中性手型与低速连续保持，不以置信度下降代替释放
+  - id: 1
+    token: wake_open
+    visible_definition: 四指PIP均伸展且掌心低速保持，拇指不作硬约束
+    reference_rule: 可见稳定起点加wake_hold_ns，不重复持有等待
+    release_rule: 先经中性停留再接受新的离散动作
+  - id: 2
+    token: swipe_left
+    visible_definition: 未镜像模型掌心x减少，满足位移、时长与纵向漂移条件
+    reference_rule: 从可见横移起点起首次满足位移且达到最短时长的源帧
+    release_rule: 回程仍标可见词元但无新目标，需中性停留再武装
+  - id: 3
+    token: swipe_right
+    visible_definition: 未镜像模型掌心x增加，满足位移、时长与纵向漂移条件
+    reference_rule: 从可见横移起点起首次满足位移且达到最短时长的源帧
+    release_rule: 回程仍标可见词元但无新目标，需中性停留再武装
+  - id: 4
+    token: exit_pose
+    visible_definition: 四指PIP均屈曲的候选握拳，低速保持；不能代替独立停止
+    reference_rule: 可见稳定起点加exit_hold_ns
+    release_rule: 退出清除owner，重新启用和唤醒后才能恢复

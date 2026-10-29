@@ -1,0 +1,8 @@
+mode: dry_run
+enabled_on_start: false
+backend: mock
+input_source: synthetic
+max_hands: 2
+max_control_hands: 1
+target_context: mock-presentation
+command_ttl_ns: 500000000
