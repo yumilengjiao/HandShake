@@ -2,7 +2,7 @@
 
 基于 MediaPipe 手部关键点与自主训练时序神经网络的手势终端控制项目。
 
-> 已有 T01/T02/T05 核心与协议；本轮增加 T03/T04/T06 的相机/视频输入、感知适配、授权分块采集和骨架标注工具。131项自动测试及短时真实相机探针通过；真实 MediaPipe 模型初始化被宿主终止（exit137），完整实机验收仍待完成。尚无自训模型或真实应用控制；原生产品 UI 与移动移植仍按 T20/T37 推进。
+> 已有 T01/T02/T05 核心与协议，以及 T03/T04/T06 的相机/视频输入、感知适配、授权分块采集和骨架标注工具。154项自动测试通过；固定兼容依赖后，真实 MediaPipe 模型加载、合成图像推理及关闭通过，见 [修复记录](docs/perception_diagnostics.md)。真手/人工工具等完整实机验收仍待完成。尚无自训模型或真实应用控制；原生产品 UI 与移动移植仍按 T20/T37 推进。
 
 ## 先看这些文档
 
@@ -15,7 +15,8 @@
 - [手势协议](docs/gesture_protocol.md)与[标注指南](docs/annotation_guide.md)
 - [T01/T02/T05 验证记录](docs/verification_t01_t02_t05.md)
 - [采集/感知/骨架标注操作指南](docs/collection_workflow.md)
-- [T03/T04/T06 验证与当前阻塞](docs/verification_t03_t04_t06.md)
+- [T03/T04/T06 初次交付验证](docs/verification_t03_t04_t06.md)
+- [MediaPipe 兼容修复、模型探针与剩余验收](docs/perception_diagnostics.md)
 
 课程版先完成 **手势翻页、原生桌面基础界面、自训 TCN、MLP 对照、安全控制与实验报告**。产品目标覆盖 Windows/macOS/Linux、Android/iOS/iPadOS；手机本地运行列为 T37 后续交付，其他 OS 按能力评估。可安装、本机识别、应用内控制、外部应用控制分别验收，不承诺任意系统控制任意 App。
 
@@ -121,11 +122,11 @@ frontend / backend / algorithm --> shared
 
 ## 当前下一步
 
-先解决真实 MediaPipe 初始化 exit137 → 补5分钟相机与人工工具验收 → 真实授权短采集/T07 双人试标。算法主线、T36 原生选型和 T20 mock 可按依赖并行；T37 手机/T38 配对后续推进。不能把合成资料当训练数据，A/B 分工与真实参与者授权仍需补齐。
+真实模型启动已有兼容修复 → 补真手左右/镜像/遮挡/交叉、设备异常与人工工具验收 → 真实授权短采集/T07 双人试标。算法主线、T36 原生选型和 T20 mock 可按依赖并行；T37 手机/T38 配对后续推进。不能把合成资料当训练数据，A/B 分工与真实参与者授权仍需补齐。
 
 ## 安装与合成验证
 
-以下基础安装原在 Linux/Python 3.10 验证；本轮 T03/T04/T06 另在 Linux/Python 3.12.14 按同一锁文件验证，见本轮记录。用 uv 创建项目 `.venv`；不以锁文件推断所有宿主兼容。
+历史基础安装在 Linux/Python 3.10 验证；当前感知兼容修复在 Linux/Python 3.12.14 验证，已更新依赖与锁文件，见 [修复记录](docs/perception_diagnostics.md)。建议感知工具显式使用 Python 3.12；不以锁文件推断其他 Python/OS/ABI 兼容。
 
 ```bash
 # 在 HandShake 仓库根目录运行
@@ -163,6 +164,6 @@ uv sync --locked --python 3.12 --extra dev --extra perception
 .venv/bin/handshake annotate --recording <录制目录> --annotator A
 ```
 
-真实感知先解决当前 SDK 初始化问题并提供本地 `.task`；真实采集必须另行取得授权，不能照抄合成授权引用。OpenCV工具窗口不是T20产品UI。完整命令和当前限制见 [操作指南](docs/collection_workflow.md)。
+真实感知先提供本地 `.task` 并运行 `.venv/bin/handshake-perception-probe --model <资产路径>`，通过后再预览；真实采集必须另行取得授权，不能照抄合成授权引用。OpenCV工具窗口不是T20产品UI。完整命令和当前限制见 [操作指南](docs/collection_workflow.md)。
 
 完整边界见 [架构与契约说明](docs/architecture.md)和[平台支持矩阵](docs/platform_support.md)。T01课程/设备签认、T03/T04/T06完整实机验收和T05真实双人标注仍待完成。

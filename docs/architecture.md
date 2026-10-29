@@ -8,7 +8,7 @@
 
 相机实时输入丢旧帧并保留状态；离线视频背压保留所有解码帧。未授权预览不保存资料，采集路径不构造动作后端。原FramePacket作为JSON边界保留，显式转换，不改旧schema。完整字段见 [感知协议](perception_contract.md) 和 [采集指南](collection_workflow.md)。
 
-131项软件测试和短相机探针通过；真实MediaPipe初始化exit137、人工GUI/真实会话仍待验证。`inspect/recover`不等于T23完整事件回放。
+154项软件测试及兼容依赖下的真实模型加载/合成图像推理通过，见 [感知修复](perception_diagnostics.md)；真手效果、人工GUI/真实会话仍待验证。独立模型探针不访问相机，记录子进程原生故障；`inspect/recover`不等于T23完整事件回放。
 
 ## T02 既有合成链路
 

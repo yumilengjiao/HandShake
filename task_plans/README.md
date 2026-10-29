@@ -1,6 +1,6 @@
 # HandShake 分阶段任务规划
 
-本目录将 [PROJECT_MASTER_PLAN.md](../PROJECT_MASTER_PLAN.md) 拆分为 **38 个独立任务文件**。T01/T02/T05 已有核心与草案；T03/T04/T06 已新增采集/感知/标注软件，131项测试通过，短时相机可用，但真实MediaPipe加载exit137和完整实机验收未解决，见 [本轮记录](../docs/verification_t03_t04_t06.md)。没有真实参与者训练数据、自训模型、产品UI或真实应用控制。未满足验收的任务继续待验证，历史修订见 [任务审查记录](REVIEW_NOTES.md)。
+本目录将 [PROJECT_MASTER_PLAN.md](../PROJECT_MASTER_PLAN.md) 拆分为 **38 个独立任务文件**。T01/T02/T05 已有核心与草案；T03/T04/T06 已新增采集/感知/标注软件，154项测试通过，兼容依赖下真实模型加载/黑图推理已通过；真手/人工工具等完整实机验收未完成，见 [修复记录](../docs/perception_diagnostics.md)。没有真实参与者训练数据、自训模型、产品UI或真实应用控制。未满足验收的任务继续待验证，历史修订见 [任务审查记录](REVIEW_NOTES.md)。
 
 当前采用 **native-v2：原生多端、桌面先交付、手机本机运行随后验收**，替代此前 Web 约定。优先覆盖 Windows/macOS/Linux、Android/iOS/iPadOS，其他系统按 SDK/运行时能力评估；不承诺所有 OS 任意跨应用控制。native-v2 文档修订时未改代码；后续 T03/T04/T06 实施记录另列，不覆盖历史验证结论。完整边界见 [原生架构](../docs/native_architecture.md) 和 [范围记录](../docs/scope_freeze.md)。新增 T36 早期选型、T37 原生手机/其他平台移植、T38 可选配对控制；T01～T35 编号保留。
 
@@ -49,8 +49,8 @@ T15 完成分类校准与合成事件评估；T23 使用 draft 参数联调。T2
 | --- | --- | --- | --- | --- | --- |
 | [T01](01_scope_and_platform.md) | 冻结课程范围、平台与验收口径 | P0 | A+B（用户待填） | 无 | 待验证：记录已完成，课程/设备待确认 |
 | [T02](02_scaffold_and_contracts.md) | 建立工程骨架、配置与公共数据契约 | P0 | A+B（用户待填） | [T01](01_scope_and_platform.md) | 待验证：工程已验证，真实相机加载待后续 |
-| [T03](03_camera_and_clock.md) | 实现摄像头采集、时间戳与最新帧输入 | P0 | B | [T02](02_scaffold_and_contracts.md) | 待验证：软件/短相机探针通过，完整实机待验 |
-| [T04](04_perception_tracking_quality.md) | 实现关键点感知、轨迹关联与质量门控 | P0 | B | [T03](03_camera_and_clock.md) | 待验证：软件通过，真实SDK初始化exit137 |
+| [T03](03_camera_and_clock.md) | 实现摄像头采集、时间戳与最新帧输入 | P0 | B | [T02](02_scaffold_and_contracts.md) | 待验证：5分钟headless相机/重开通过，人工实机待验 |
+| [T04](04_perception_tracking_quality.md) | 实现关键点感知、轨迹关联与质量门控 | P0 | B | [T03](03_camera_and_clock.md) | 待验证：真实模型加载/黑图推理通过，真手待验 |
 | [T05](05_gesture_and_annotation_protocol.md) | 冻结手势词表、动作边界与标签规则 | P0 | A+B（用户待填） | [T01](01_scope_and_platform.md), [T02](02_scaffold_and_contracts.md) | 待验证：草案/合成通过，真实双人试标待T07 |
 | [T06](06_collection_tool.md) | 实现授权采集、会话落盘与标注辅助工具 | P0 | B 主责，A 复核数据格式 | [T04](04_perception_tracking_quality.md), [T05](05_gesture_and_annotation_protocol.md) | 待验证：合成软件通过，GUI/真实会话待验 |
 | [T07](07_pilot_collection.md) | 完成试采集并冻结数据与交互协议 | P0 | A+B | [T06](06_collection_tool.md) | 待实施 |

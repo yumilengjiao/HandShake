@@ -7,7 +7,8 @@
 - [手势协议](gesture_protocol.md)、[标注指南](annotation_guide.md)
 - [T01/T02/T05 验证与完成边界](verification_t01_t02_t05.md)
 - [T03/T04/T06 采集操作指南](collection_workflow.md)、[感知协议](perception_contract.md)
-- [T03/T04/T06 验证与SDK阻塞](verification_t03_t04_t06.md)
+- [T03/T04/T06 初次交付验证与旧SDK阻塞](verification_t03_t04_t06.md)
+- [MediaPipe兼容修复、独立模型探针与剩余实机验收](perception_diagnostics.md)
 - [通用技术架构图](assets/technical-architecture-general.png)
 - [架构图生成说明](assets/technical-architecture-general.prompt.txt)
 

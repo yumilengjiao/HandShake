@@ -2,7 +2,7 @@
 
 ## 实现与部署边界
 
-实现位于 `backend/perception/`、`backend/tracking/association.py`；公共帧/观测聚合在 `shared/observations.py`。这是 MediaPipe Hand Landmarker 适配，不是现成 Gesture Recognizer；没有自训 TCN、手势分类或设备控制。真实 SDK 初始化目前在宿主被终止，见 [验证记录](verification_t03_t04_t06.md)，以下软件接口不等于已通过真实手部效果验收。
+实现位于 `backend/perception/`、`backend/tracking/association.py`；公共帧/观测聚合在 `shared/observations.py`。这是 MediaPipe Hand Landmarker 适配，不是现成 Gesture Recognizer；没有自训 TCN、手势分类或设备控制。真实模型加载/合成图像推理已通过兼容修复，见 [感知诊断](perception_diagnostics.md)；以下软件接口不等于已通过真实手部效果验收。
 
 ## 输入/时间/像素
 
@@ -40,4 +40,4 @@
 
 `MediaPipeDetector` 显式加载本地 `.task`，计算 SHA256，可要求匹配预期值；元数据记 SDK版本、模式、最大手数、来源和许可说明。不联网自动取模型，不将加载失败回退为合成检测。Python 异常转 `error` 并结束当前采集；原生进程被杀不能靠 try/except 恢复，已开始录制的 manifest 初始为 incomplete，须人工排错/恢复检查。
 
-核查入口：[官方 Hand Landmarker Python 指南](https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker/python)。本轮已验证 Python API 可导入、fake SDK 适配与合成整帧语义，尚未取得真实模型初始化/真手输出证据。
+核查入口：[官方 Hand Landmarker Python 指南](https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker/python)。当前已验证 fake SDK 适配、合成整帧语义及兼容依赖下的真实模型加载/黑图推理/关闭，尚未取得真手效果验收。`handshake-perception-probe` 通过独立进程留下超时/信号/日志/资源证据，不将原生故障标成无手；常规 preview/collect 仍在进程内加载模型，不能声称探针为所有原生调用提供崩溃恢复。
