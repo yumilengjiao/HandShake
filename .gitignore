@@ -1,0 +1,42 @@
+# Local datasets and generated artifacts: keep only directory documentation.
+/data/*
+!/data/README.md
+/artifacts/*
+!/artifacts/README.md
+
+# Consent forms, identity mappings, personal profiles and private course files.
+/private/
+.env
+.env.*
+!.env.example
+
+# Model binaries belong in controlled artifact storage, not ordinary Git.
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.safetensors
+*.task
+
+# Python environments, bytecode, packaging and test/tool caches.
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+build/
+dist/
+
+# Local runtime and editor/OS files.
+*.log
+.DS_Store
+Thumbs.db
+.idea/

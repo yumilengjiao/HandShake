@@ -1362,65 +1362,33 @@ False Activations per Hour = 非操作时段错误提交事件数 / 非操作有
 
 ## 16. 软件工程结构与模块接口
 
-### 16.1 建议目录
+### 16.1 根目录与两人分工
 
-以下是后续计划，不表示目录已经建立。
+根目录已按两人协作建立以下分区，各目录目前只有 README；内部代码、配置实例和数据尚未创建。职责和原任务路径映射以 [根 README](README.md) 为准。
 
 ```text
 HandShake/
+  frontend/                  # B：桌面界面、预览、状态、设置、标注/校准视图
+  backend/                   # B：相机、感知、轨迹、事件、安全调度、平台适配
+  algorithm/                 # A：数据加载、模型、训练、评估、推理与学习适配
+  shared/                    # A+B：契约、共享特征、时间/配置/记录格式
+  data/                      # 数据集；只跟踪 README，真实内容受控共享
+  artifacts/                 # 权重、实验和运行产物；只跟踪 README
+  configs/                   # 训练/运行/手势/平台的可公开配置
+  scripts/                   # 调用业务模块的薄命令入口
+  tests/                     # 单元、集成、回放、安全和合成 fixtures
+  docs/                      # 方案、支持矩阵、可公开总结和答辩资料
+  task_plans/                # 35 个任务及依赖/审查记录
   PROJECT_MASTER_PLAN.md
   README.md
-  pyproject.toml
-  configs/
-    default.yaml
-    gestures.yaml
-    actions.yaml
-    training/
-    platforms/
-  src/handshake/
-    app.py
-    cli.py
-    contracts.py             # 公共数据结构、枚举、协议
-    capture/                 # 摄像头、视频输入、时钟
-    perception/              # MediaPipe 适配、质量评估
-    tracking/                # 轨迹关联、控制权
-    features/                # 坐标、骨特征、时序缓冲
-    models/                  # MLP、TCN、多任务头、导出包装
-    inference/               # 后端、校准、拒识
-    interaction/             # 状态机、候选、事件、连续控制
-    actions/                 # 命令映射、调度、安全释放
-      backends/              # dry-run、各系统后端
-    personalization/         # 校准、档案、少样本适配
-    data/                    # 清单、读取、增强、采样
-    training/                # 训练器、损失、评估
-    ui/                      # 预览、状态、配置、标注辅助
-    telemetry/               # 结构化日志、延迟统计
-  scripts/
-    collect.py
-    extract_landmarks.py
-    validate_dataset.py
-    build_splits.py
-    train.py
-    evaluate.py
-    export_model.py
-    benchmark.py
-  tests/
-    unit/
-    integration/
-    replay/
-    safety/
-    fixtures/
-  docs/
-    annotation_guide.md
-    architecture.md
-    experiments.md
-    platform_support.md
-    demo_guide.md
-  data/                      # 默认不入 Git
-  artifacts/                 # 权重和报告，按策略版本管理
+  .gitignore
 ```
 
-早期可以合并小模块，按职责演进，不要求第一天创建大量空文件。
+- 首版仍为单仓库 Python 桌面工程，不因前后端分目录强制改成 Web、HTTP 服务或微服务。构建配置、包发现与依赖由 T02 实测完成。
+- 原 `src/handshake/` 统一源码树按职责迁入 frontend/backend/algorithm/shared，不同时维护两套实现。共享特征只放 shared，后端和算法共同调用。
+- 根 data 是数据集；algorithm 中的数据加载模块是代码；algorithm 的 models 是网络定义，实际权重放 artifacts。
+- 前端只发用户指令/接状态快照，后端调用算法 Predictor 并持有唯一真实操作调度器；shared 不反向依赖其他模块。
+- 采集、标注、公共接口、集成、实验核查和答辩由两人共同完成，具体分工按实际投入调整。建立目录不代表 T02 的工程/契约验收已完成。
 
 ### 16.2 关键接口
 

@@ -17,9 +17,9 @@
 
 ## 具体步骤
 
-1. 创建 `pyproject.toml`、`src/handshake/`、`configs/`、`tests/`。环境探测后固定 Python、MediaPipe、OpenCV、PyTorch、NumPy、scikit-learn 和一种 YAML 校验方案；UI 库由 T20 选定后加入。先保留 PyTorch CPU 推理，ONNX 为可选依赖。
+1. 在已建立的 `frontend/`、`backend/`、`algorithm/`、`shared/` 分区内逐步实现代码，根 `configs/`/`tests/` 按职责使用，不再另建 `src/handshake/` 副本。创建根 `pyproject.toml`，明确包名、包发现和入口，保持单工程/共用环境；不要求四套安装或 HTTP 服务。实测固定 Python、MediaPipe、OpenCV、PyTorch、NumPy、scikit-learn 和配置校验方案；UI 库由 T20 确定，PyTorch CPU 优先、ONNX 可选。
 2. 增加 README 中的环境创建/安装/启动说明；在实际目标机器验证相机和感知包可加载后才锁版本。失败时记录平台与错误，不凭空填“最低兼容版本”。
-3. 在 `contracts.py` 定义不可歧义的字段，至少覆盖下表。时间字段内部统一整数 ns、单调时钟；录制文件用相对 ns 并记录 timebase。序列化时禁止混用秒/ms/ns。
+3. 在 `shared/` 的契约模块定义下表字段，公共特征、时间/记录协议也由 shared 供两端复用；具体包路径随构建配置确认。内部时间统一整数 ns、单调时钟；录制相对 ns 并记录 timebase，序列化不混用秒/ms/ns。
 
 | 对象 | 必须字段 |
 | --- | --- |
@@ -40,7 +40,7 @@
 
 ## 交付物
 
-`contracts.py`、配置 schema、可加载的默认配置、最小入口、依赖锁定记录、README 安装段；`tests/unit/test_contracts.py` 覆盖字段单位、形状、配置错误及序列化。目录名均以总方案第 16 节为基础。
+shared 契约与配置 schema、可加载默认配置、最小入口、依赖锁定记录、README 安装段；`tests/unit/test_contracts.py` 覆盖单位、形状、配置错误与序列化。目录职责按根 README 和总方案第16节落地。现有分区 README 与 `.gitignore` 仅是起点，不代表本任务已完成。
 
 ## 验收与交接
 

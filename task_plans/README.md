@@ -102,7 +102,9 @@ T15 完成分类校准与合成事件评估；T23 使用 draft 参数联调。T2
 
 ## 路径、时间与发布约定
 
-- 文中 `src/`、`configs/`、`data/`、`artifacts/`、`docs/`、`scripts/` 均相对 HandShake 仓库根目录；任务文件在本目录，来源总方案为上级 `PROJECT_MASTER_PLAN.md`。
+- 根目录职责及旧路径迁移以 [根 README](../README.md) 为准：界面归 `frontend/`，相机/感知/控制/平台归 `backend/`，训练/模型/推理归 `algorithm/`，契约/共享特征/记录格式归 `shared/`。原 `src/handshake/...` 和任务中的省略前缀路径按此映射落盘，不另建重复源码树。
+- `configs/`、`data/`、`artifacts/`、`docs/`、`scripts/`、`tests/` 保留根目录职责。根 data 是数据集，源码中的数据加载/采集/读写模块按职责分别落 algorithm/backend/shared；源码 models 不存权重。
+- 当前已创建分区 README 与忽略规则，但尚无业务代码；T02 仍须完成包配置、依赖实测、公共契约和测试，不能仅因目录存在标完成。
 - 内部时间统一单调ns，录制采用同一 recording 的相对ns并记录 timebase；平台API要求ms时只在适配边界转换。实际曝光时间不可得时注明软件采集近似，回放不混入墙钟时间。
 - 当前仅创建规划文件，不创建虚构数据/结果、不安装依赖、不运行live、不上传报告。具体库版本与平台方法在相应实施任务实机核对后固定。
 - 数据/模型/日志默认受控存储，原视频、身份映射、个人档案和大权重不进入普通Git发布；公开需符合实际授权和各自许可。
