@@ -13,11 +13,11 @@
 
 ## 目标与边界
 
-建立可安装、可验证的最小 Python 项目及跨模块契约。先做运行与 mock 的骨架，不一次创建几十个没有实现的空模块，也不把本文列出的依赖当作已兼容版本。
+建立可安装、可验证的最小 Python 训练/桌面参考核心及跨模块契约。现有实现保留；原生壳、平台 SDK 和移动推理运行时在 T36/T37 另行构建，不要求手机共用 Python 环境。跨语言 schema/绑定有一致性测试，不直接导入 Python 作为移植方案。
 
 ## 具体步骤
 
-1. 在已建立的 `frontend/`、`backend/`、`algorithm/`、`shared/` 分区内逐步实现代码，根 `configs/`/`tests/` 按职责使用，不再另建 `src/handshake/` 副本。创建根 `pyproject.toml`，明确包名、包发现和入口，保持单工程/共用环境；不要求四套安装或 HTTP 服务。实测固定 Python、MediaPipe、OpenCV、PyTorch、NumPy、scikit-learn 和配置校验方案；UI 库由 T20 确定，PyTorch CPU 优先、ONNX 可选。
+1. 保留 `frontend/`、`backend/`、`algorithm/`、`shared/` 职责及已有 `pyproject.toml`/Python 核心；不另建 `src/handshake/` 副本。T36 冻结原生子工程、包发现、IPC/FFI 与按平台依赖分组，T20 实现桌面壳，T37 增加移动工具链，不把所有 SDK 装入共用 Python 环境。核心导入不得强依赖某一 OS 的相机/输入库，缺插件返回能力不可用；PyTorch 为桌面参考，移动运行时另测。
 2. 增加 README 中的环境创建/安装/启动说明；在实际目标机器验证相机和感知包可加载后才锁版本。失败时记录平台与错误，不凭空填“最低兼容版本”。
 3. 在 `shared/` 的契约模块定义下表字段，公共特征、时间/记录协议也由 shared 供两端复用；具体包路径随构建配置确认。内部时间统一整数 ns、单调时钟；录制相对 ns 并记录 timebase，序列化不混用秒/ms/ns。
 
@@ -41,6 +41,12 @@
 ## 交付物
 
 shared 契约与配置 schema、可加载默认配置、最小入口、依赖锁定记录、README 安装段；`tests/unit/test_contracts.py` 覆盖单位、形状、配置错误与序列化。目录职责按根 README 和总方案第16节落地。现有分区 README 与 `.gitignore` 仅是起点，不代表本任务已完成。
+
+## 原生需求增量交接（尚未实施）
+
+- T36/T37 需定义 CameraSource、感知/Predictor、权限/生命周期与 ActionBackend 的适配边界，既有对象是参考，不代表已具备多端绑定。
+- 本地单调 ns/timebase 不变；跨语言整数无损编码，跨设备不能直接减两端时间。未知版本/能力拒绝，不用 Web/移动字段静默扩充 schema 1.0.0。
+- 下方已勾选项只对应历史 T02 软件验证，不覆盖新接口、原生打包或跨平台测试；此次不改代码和锁文件。
 
 ## 验收与交接
 
