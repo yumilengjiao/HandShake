@@ -1,0 +1,125 @@
+{
+  "schema": "perception-probe-v1",
+  "recorded_at": "2026-10-29T15:07:35.010927+00:00",
+  "scope": "real_sdk_three_black_RGB_frames_no_camera_no_recording_no_actions",
+  "real_hand_validated": false,
+  "python": "3.12.14",
+  "os": "Linux",
+  "kernel": "6.8.0-138-generic",
+  "architecture": "x86_64",
+  "versions": {
+    "mediapipe": "0.10.21",
+    "numpy": "1.26.4",
+    "opencv-contrib-python": "4.11.0.86",
+    "protobuf": "4.25.9",
+    "certifi": null
+  },
+  "thread_environment": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "expected_asset_sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+  "stages": [
+    {
+      "probe_stage": "adapter_import"
+    },
+    {
+      "probe_stage": "model_load"
+    }
+  ],
+  "status": "timeout",
+  "returncode": -9,
+  "signal": "SIGKILL",
+  "monitor_reason": "timeout",
+  "launch_error": null,
+  "elapsed_seconds": 30.011336078000113,
+  "timeout_seconds": 30.0,
+  "rss_limit_mib": 768.0,
+  "rss_monitor_supported": true,
+  "rss_samples": 1474,
+  "sampled_peak_rss_bytes": 127401984,
+  "cgroup_before": [
+    {
+      "ancestor_level": 0,
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.current": "4618895360",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+    },
+    {
+      "ancestor_level": 1,
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.current": "8090476544",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+    },
+    {
+      "ancestor_level": 2,
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.current": "8828997632",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+    },
+    {
+      "ancestor_level": 3,
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.current": "8843321344",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+    },
+    {
+      "ancestor_level": 4,
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.current": "8843366400",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+    },
+    {
+      "ancestor_level": 5
+    }
+  ],
+  "cgroup_after": [
+    {
+      "ancestor_level": 0,
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.current": "4624543744",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+    },
+    {
+      "ancestor_level": 1,
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.current": "8092655616",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+    },
+    {
+      "ancestor_level": 2,
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.current": "8830795776",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+    },
+    {
+      "ancestor_level": 3,
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.current": "8845119488",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+    },
+    {
+      "ancestor_level": 4,
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.current": "8845164544",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+    },
+    {
+      "ancestor_level": 5
+    }
+  ],
+  "stdout": "{\"probe_stage\": \"adapter_import\"}\n{\"probe_stage\": \"model_load\"}\n",
+  "stdout_truncated": false,
+  "stderr": "",
+  "stderr_truncated": false
+}

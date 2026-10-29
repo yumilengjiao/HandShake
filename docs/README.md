@@ -2,6 +2,8 @@
 
 ## 当前已有内容
 
+- [T14/T17/T18 训练与交互说明](training_and_interaction.md)、[最新master适配验证](verification_master_sync.md)
+
 - [公开数据路线 public-data-v1](public_data_plan.md)、[官方下载入口](../data/SOURCES.md)、[版本/许可/校验清单](../data/sources.json)
 
 - [范围与待确认项](scope_freeze.md)、[平台支持](platform_support.md)

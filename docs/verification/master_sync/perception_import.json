@@ -1,0 +1,97 @@
+{
+  "status": "passed",
+  "returncode": 0,
+  "signal": null,
+  "monitor_reason": null,
+  "launch_error": null,
+  "elapsed_seconds": 0.5893884370000251,
+  "timeout_seconds": 15,
+  "rss_limit_mib": 768.0,
+  "rss_monitor_supported": true,
+  "rss_samples": 29,
+  "sampled_peak_rss_bytes": 137723904,
+  "cgroup_before": [
+    {
+      "ancestor_level": 0,
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.current": "4618616832",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+    },
+    {
+      "ancestor_level": 1,
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.current": "8089817088",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+    },
+    {
+      "ancestor_level": 2,
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.current": "8829145088",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+    },
+    {
+      "ancestor_level": 3,
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.current": "8843468800",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+    },
+    {
+      "ancestor_level": 4,
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.current": "8843513856",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+    },
+    {
+      "ancestor_level": 5
+    }
+  ],
+  "cgroup_after": [
+    {
+      "ancestor_level": 0,
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.current": "4622073856",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+    },
+    {
+      "ancestor_level": 1,
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.current": "8094711808",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+    },
+    {
+      "ancestor_level": 2,
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.current": "8833257472",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+    },
+    {
+      "ancestor_level": 3,
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.current": "8847581184",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+    },
+    {
+      "ancestor_level": 4,
+      "memory.max": "max",
+      "memory.high": "max",
+      "memory.current": "8847626240",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+    },
+    {
+      "ancestor_level": 5
+    }
+  ],
+  "stdout": "before_mediapipe_import\nmediapipe_imported\n",
+  "stdout_truncated": false,
+  "stderr": "",
+  "stderr_truncated": false
+}

@@ -1,0 +1,90 @@
+{
+  "format_version": "perception-probe-v1",
+  "camera_opened": false,
+  "synthetic_image": true,
+  "attempts": 1,
+  "historical_exit137_reproduced": false,
+  "asset_sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+  "asset_bytes": 7819105,
+  "status": "passed_synthetic_image",
+  "returncode": 0,
+  "elapsed_seconds": 1.7788705580001078,
+  "stdout": "stage:imported\nstage:initialized\n{\"hands\": 0, \"max_rss_kib_linux\": 182140}\n",
+  "limitation": "synthetic image SDK probe only; no real-hand/camera/GUI acceptance; SIGKILL alone does not establish OOM",
+  "asset_source": "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+  "stderr": "mkdir -p failed for path <user-home>/.config/matplotlib: [Errno 30] Read-only file system: '<user-home>/.config/matplotlib'\nMatplotlib created a temporary cache directory at /tmp/matplotlib-0cqjmbvt because there was an issue with the default path (<user-home>/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.\nINFO: Created TensorFlow Lite XNNPACK delegate for CPU.\nWARNING: Logging before InitGoogle() is written to STDERR\nW0000 00:00:1793271416.851828      21 inference_feedback_manager.cc:121] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.\nW0000 00:00:1793271416.867191      21 inference_feedback_manager.cc:121] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.\nW0000 00:00:1793271416.900394      21 landmark_projection_calculator.cc:81] Using NORM_RECT without IMAGE_DIMENSIONS is only supported for the square ROI. Provide IMAGE_DIMENSIONS or use PROJECTION_MATRIX.\n",
+  "before": {
+    "python": "3.10.12",
+    "system": "Linux",
+    "machine": "x86_64",
+    "packages": {
+      "mediapipe": "1.2.0",
+      "numpy": "2.2.6",
+      "opencv-contrib-python": "5.0.0.93"
+    },
+    "cgroup_limits": [
+      {
+        "memory.max": "max",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "pids.max": "37845"
+      },
+      {
+        "memory.max": "max",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "pids.max": "max"
+      },
+      {
+        "memory.max": "max",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "pids.max": "max"
+      },
+      {
+        "memory.max": "max",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "pids.max": "83260"
+      },
+      {
+        "memory.max": "max",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "pids.max": "max"
+      }
+    ]
+  },
+  "after": {
+    "python": "3.10.12",
+    "system": "Linux",
+    "machine": "x86_64",
+    "packages": {
+      "mediapipe": "1.2.0",
+      "numpy": "2.2.6",
+      "opencv-contrib-python": "5.0.0.93"
+    },
+    "cgroup_limits": [
+      {
+        "memory.max": "max",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "pids.max": "37845"
+      },
+      {
+        "memory.max": "max",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "pids.max": "max"
+      },
+      {
+        "memory.max": "max",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "pids.max": "max"
+      },
+      {
+        "memory.max": "max",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "pids.max": "83260"
+      },
+      {
+        "memory.max": "max",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+        "pids.max": "max"
+      }
+    ]
+  }
+}

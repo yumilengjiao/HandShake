@@ -6,6 +6,8 @@
 
 同日新增T11/T12/T13软件交付：共享94维特征、字段级训练统计、窗口/数据/缓存、规则/MLP/TCN与统一预测接口；见 [模块与验证](../docs/verification_t11_t12_t13.md)。正式统计须等待T04/T07/T10，正式模型训练/校准/事件实验仍属T14及后续，不以合成检查替代。
 
+T14/T17/T18已交付旧5类契约的软件模块（训练/恢复、唤醒/释放、安全调度），见[使用说明](../docs/training_and_interaction.md)及[master适配验证](../docs/verification_master_sync.md)。公开数据路线以UI/键盘启停为首版目标；现有张掌/握拳流程只是旧协议参考，尚未迁移15类，也未导入公开数据正式训练。
+
 当前采用 **native-v2：原生多端、桌面先交付、手机本机运行随后验收**，替代此前 Web 约定。优先覆盖 Windows/macOS/Linux、Android/iOS/iPadOS，其他系统按 SDK/运行时能力评估；不承诺所有 OS 任意跨应用控制。native-v2 文档修订时未改代码；后续 T03/T04/T06 实施记录另列，不覆盖历史验证结论。完整边界见 [原生架构](../docs/native_architecture.md) 和 [范围记录](../docs/scope_freeze.md)。新增 T36 早期选型、T37 原生手机/其他平台移植、T38 可选配对控制；T01～T35 编号保留。
 
 ## 如何使用
@@ -55,7 +57,7 @@ T15 完成分类校准与合成事件评估；T23 使用 draft 参数联调。T2
 | [T02](02_scaffold_and_contracts.md) | 建立工程骨架、配置与公共数据契约 | P0 | A+B（用户待填） | [T01](01_scope_and_platform.md) | 待验证：工程已验证，真实相机加载待后续 |
 | [T03](03_camera_and_clock.md) | 实现摄像头采集、时间戳与最新帧输入 | P0 | B | [T02](02_scaffold_and_contracts.md) | 待验证：5分钟headless相机/重开通过，人工实机待验 |
 | [T04](04_perception_tracking_quality.md) | 实现关键点感知、轨迹关联与质量门控 | P0 | B | [T03](03_camera_and_clock.md) | 待验证：真实模型加载/黑图推理通过，真手待验 |
-| [T05](05_gesture_and_annotation_protocol.md) | 冻结手势词表、动作边界与标签规则 | P0 | A+B（用户待填） | [T01](01_scope_and_platform.md), [T02](02_scaffold_and_contracts.md) | 待验证：草案/合成通过，真实双人试标待T07 |
+| [T05](05_gesture_and_annotation_protocol.md) | 冻结手势词表、动作边界与标签规则 | P0 | A+B（用户待填） | [T01](01_scope_and_platform.md), [T02](02_scaffold_and_contracts.md) | 待验证：旧草案/合成通过；公开类别与方向核验/迁移待T07 |
 | [T06](06_collection_tool.md) | 实现授权采集、会话落盘与标注辅助工具 | P0 | B 主责，A 复核数据格式 | [T04](04_perception_tracking_quality.md), [T05](05_gesture_and_annotation_protocol.md) | 待验证：合成软件通过，GUI/真实会话待验 |
 | [T07](07_pilot_collection.md) | 完成公开数据适配预检（自采可选） | P0 | A+B | [T04](04_perception_tracking_quality.md), [T05](05_gesture_and_annotation_protocol.md) | 进行中：来源已核对，标注SHA问题待解 |
 | [T08](08_main_dataset_collection.md) | 获取公开主数据并建立版本账本（自采可选） | P0 | A+B | [T07](07_pilot_collection.md) | 待实施：大包未下载 |
@@ -64,11 +66,11 @@ T15 完成分类校准与合成事件评估；T23 使用 draft 参数联调。T2
 | [T11](11_features_and_windows.md) | 实现共享特征工程、掩码与时序数据加载 | P0 | A（用户待填） | [T04](04_perception_tracking_quality.md), [T05](05_gesture_and_annotation_protocol.md), [T10](10_splits_and_dataset_version.md) | 待验证：软件/合成通过，正式统计待T10 |
 | [T12](12_rules_and_mlp_baselines.md) | 建立规则与单帧 MLP 对照基线 | P0：MLP；规则作为工程对照 | A（用户待填） | [T11](11_features_and_windows.md) | 已完成：模块及合成冒烟；正式实验待T14+ |
 | [T13](13_causal_tcn_network.md) | 搭建可验证的单分支因果 TCN 神经网络 | P0 | A（用户待填） | [T11](11_features_and_windows.md) | 已完成：结构/因果/梯度验收 |
-| [T14](14_training_and_experiment_tracking.md) | 实现可复现训练、采样与模型选择 | P0 | A | [T12](12_rules_and_mlp_baselines.md), [T13](13_causal_tcn_network.md) | 待实施 |
+| [T14](14_training_and_experiment_tracking.md) | 实现可复现训练、采样与模型选择 | P0 | A | [T12](12_rules_and_mlp_baselines.md), [T13](13_causal_tcn_network.md) | 模块完成：旧5类合成训练/恢复通过；公开迁移/正式训练待T07/T10 |
 | [T15](15_validation_and_calibration.md) | 建立分类与事件评估、验证集校准和门限选择 | P0 | A | [T14](14_training_and_experiment_tracking.md) | 待实施 |
 | [T16](16_export_and_online_inference.md) | 打包模型并实现带新鲜度校验的在线推理 | P0 桌面参考；移动导出归 T37 | A 主责，B 集成 | [T14](14_training_and_experiment_tracking.md), [T15](15_validation_and_calibration.md) | 待实施 |
-| [T17](17_interaction_state_machine.md) | 实现唤醒、控制权、释放去重与独立停止状态机 | P0 | B | [T02](02_scaffold_and_contracts.md), [T04](04_perception_tracking_quality.md), [T05](05_gesture_and_annotation_protocol.md) | 待实施 |
-| [T18](18_generic_action_dispatch.md) | 实现通用命令映射、调度器与 mock 适配器 | P0 | B | [T02](02_scaffold_and_contracts.md), [T05](05_gesture_and_annotation_protocol.md), [T17](17_interaction_state_machine.md) | 待实施 |
+| [T17](17_interaction_state_machine.md) | 实现唤醒、控制权、释放去重与独立停止状态机 | P0 | B | [T02](02_scaffold_and_contracts.md), [T04](04_perception_tracking_quality.md), [T05](05_gesture_and_annotation_protocol.md) | 模块完成：旧5类合成/停止通过；公开版启停迁移及实机待验 |
+| [T18](18_generic_action_dispatch.md) | 实现通用命令映射、调度器与 mock 适配器 | P0 | B | [T02](02_scaffold_and_contracts.md), [T05](05_gesture_and_annotation_protocol.md), [T17](17_interaction_state_machine.md) | 模块完成：dry-run/mock调度通过；真实后端待T19/T24 |
 | [T19](19_presentation_application.md) | 实现演示文稿上层应用与实机翻页 | P0 | B | [T01](01_scope_and_platform.md), [T18](18_generic_action_dispatch.md) | 待实施 |
 | [T20](20_desktop_ui.md) | 实现原生桌面界面与多端交互契约 | P0 桌面；手机归 T37 | B | [T02](02_scaffold_and_contracts.md), [T36](36_native_platform_foundation.md) | 待实施 |
 | [T21](21_music_and_volume_application.md) | 实现歌曲切换、播放暂停与音量上层应用 | P1 | B 主责，A 补数据/识别 | [T18](18_generic_action_dispatch.md), [T19](19_presentation_application.md), [T23](23_replay_and_integration.md) | 待实施 |
@@ -101,7 +103,7 @@ T15 完成分类校准与合成事件评估；T23 使用 draft 参数联调。T2
 | 主网络 | T13：94→64投影，4个单卷积残差块d=1/2/4/8，感受野31，32帧窗口，末帧64→C |
 | 缺失/冷启动 | T11/T16：连续32个有效步完成预热，短缺失禁执行；另检查窗口有效比例/跨度，ready不等于owner恢复 |
 | 上下文 | T02/T16～T18：工作提交时捕获stream/epoch并贯穿全链，旧结果不得回填新代际；整帧多手关联后才做决策 |
-| 事件 | T17：显式启用/唤醒、owner、候选、回程/释放去重、冷却、失跟挂起，独立停止 |
+| 事件 | T17：旧5类已实现启用/唤醒、owner、释放/冷却/停止；公开版计划UI/键盘启停，迁移时保留同等安全语义 |
 | 连续控制/释放 | T18/T21/T22：绝对值可覆盖，速率单点积分，delta不可直接丢弃；可能已按下的异常结果也须释放 |
 | 应用 | T18：词元→模式命令→调度→能力后端；T19翻页、T21媒体、T22光标、T35新增应用 |
 | 评价 | T15/T28：拟提交/注入/应用响应分层；背景分母不按模型状态裁剪，记录可用时长和漏检；同事件逻辑及公平调参预算 |

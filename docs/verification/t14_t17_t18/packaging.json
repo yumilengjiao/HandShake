@@ -1,0 +1,17 @@
+{
+  "installed_path": "/tmp/handshake-t14-final-wheel-installed/backend/interaction/smoke.py",
+  "isolated_python": true,
+  "source_cwd": false,
+  "runtime_without_torch": true,
+  "interaction_commands": 2,
+  "installed_trainer_status": "completed",
+  "installed_trainer_epochs": 2,
+  "build_command": "UV_CACHE_DIR=/tmp/handshake-uv-cache uv build --offline --no-build-isolation --python .venv/bin/python --out-dir /tmp/handshake-t14-delivery",
+  "setuptools": "84.2.1",
+  "installed_packages_check": 47,
+  "note": "initial offline isolated build lacked cached setuptools; used already installed locked setuptools, no dependency update",
+  "artifacts": {
+    "handshake_core-0.2.0-py3-none-any.whl": "8d0bef4052a0102fbfaad5757b43a49c0cbadf31321b9c3c92d3b6b6301b6fb7",
+    "handshake_core-0.2.0.tar.gz": "5b47aeb0cad4d0bb22142da7fedb0222a48ed7a017225ac48b985d0a7f9d0d81"
+  }
+}

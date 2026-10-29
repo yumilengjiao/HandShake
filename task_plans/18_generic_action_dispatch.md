@@ -7,7 +7,11 @@
 | 建议主责 | B（A/B 实名以总方案为准） |
 | 前置任务 | T02, T05, T17 |
 | 总方案依据 | 第 3.3、12、16.2～16.4 节；通用架构图 |
-| 状态 | 待实施；本文是规划，不代表已有代码、数据或结果 |
+| 状态 | 模块完成；dry-run/mock映射、去重、有界队列、超时/迟到释放通过；真实后端待T19/T24 |
+
+实施日期：2026-10-29。实际源码位于 `algorithm/training/`、`backend/interaction/`、`backend/actions/`（按本任务职责），使用与限制见 [说明](../docs/training_and_interaction.md)，证据见 [验证报告](../docs/verification_t14_t17_t18.md)。以下未验收项仍保留；规划路径以已实现职责目录为准。
+
+**public-data-v1适配**：以[公开数据方案](../docs/public_data_plan.md)优先，不强制自采。现有模块只验证旧5类草案；15类数据须经T07来源/语义核验、统一契约迁移与T10划分后再接入。公开首版计划UI/键盘启停，不把Open twice/Grab伪映射为张掌/握拳。最新整体验证见[master适配记录](../docs/verification_master_sync.md)。
 
 总约束和路径解释见 [任务导航](README.md)。下列代码、配置、命令和产物路径均为待实现约定，不代表目前已存在。新增细节属于总方案的实施起点；只有通过试采集和验证后才冻结，不得用最终测试结果反向挑选配置。
 
@@ -50,10 +54,10 @@ Backend.release_all() -> None
 
 `actions/mapper.py`、`actions/dispatcher.py`、`actions/backends/dry_run.py`、`mock.py`、动作 schema 与能力矩阵。
 
-- [ ] 相同词元在演示与音乐模式生成不同标准命令，inactive 无命令。
-- [ ] 未实现能力清楚报 BACKEND_UNAVAILABLE，不静默当成功。
-- [ ] 重复、过期、旧 epoch、停止后的排队命令均不会注入。
-- [ ] 后端异常、失焦、重复 stop、释放日志失败有故障注入记录。
+- [x] 合成/mock验证：相同词元在演示与音乐模式生成不同标准命令，inactive 无命令。
+- [x] 合成/mock验证：未实现能力清楚报 BACKEND_UNAVAILABLE，不静默当成功。
+- [x] 合成/mock验证：重复、过期、旧 epoch、停止后的排队命令均不会注入。
+- [x] 合成/mock验证：后端异常、失焦、重复stop、释放失败，以及外部日志抛错/阻塞均有故障注入记录；真实平台仍待T23/T24。
 
 T19/T21/T22 仅添加具体能力后端；不重新实现识别、去重或权限逻辑。
 

@@ -76,7 +76,7 @@ def test_dispatch_rechecks_context_expiry_target_and_deduplicates(smoke_records,
     assert not dispatcher.dispatch(command, controller.snapshot(), command.issued_at_ns).accepted
 
 
-@pytest.mark.parametrize("mode", ["train", "evaluate", "replay", "live"])
+@pytest.mark.parametrize("mode", ["evaluate", "replay", "live"])
 def test_unimplemented_modes_fail_before_work(mode, capsys):
     assert main([mode]) == 2
     output = capsys.readouterr()

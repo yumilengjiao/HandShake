@@ -2,7 +2,7 @@
 
 基于 MediaPipe 手部关键点与自主训练时序神经网络的手势终端控制项目。
 
-> 已实现T01/T02/T05核心与协议、T03/T04/T06相机/视频输入与授权分块采集/骨架标注，以及T11/T12/T13的94维共享特征、数据/缓存、规则/MLP/因果TCN模块。兼容依赖下真实MediaPipe模型加载、合成图像推理与关闭已通过，见 [感知修复](docs/perception_diagnostics.md)；特征与模型交付见 [验证记录](docs/verification_t11_t12_t13.md)。正式数据训练、公开数据类别迁移和完整实机验收仍待完成，尚无正式训练权重、产品UI或真实翻页；原生桌面与手机分别验收。
+> 已实现T01/T02/T05核心、T03/T04/T06采集工具、T11～T13特征/模型，以及T14训练器、T17交互状态机、T18映射与安全调度模块。感知依赖采用master固定的MediaPipe 0.10.21/OpenCV 4.11.0.86，统一探针见[感知修复](docs/perception_diagnostics.md)。公开数据为主，当前代码仍是旧5类契约；15类导入/协议迁移、正式训练、产品UI和真实翻页待完成。
 
 ## 先看这些文档
 
@@ -17,6 +17,7 @@
 - [手势协议](docs/gesture_protocol.md)与[标注指南](docs/annotation_guide.md)
 - [T01/T02/T05 验证记录](docs/verification_t01_t02_t05.md)
 - [T11/T12/T13 特征与模型使用说明](docs/features_and_models.md)及[验证记录](docs/verification_t11_t12_t13.md)
+- [T14/T17/T18 训练与交互说明](docs/training_and_interaction.md)、[基于最新master的适配验证](docs/verification_master_sync.md)
 - [采集/感知/骨架标注操作指南](docs/collection_workflow.md)
 - [T03/T04/T06 初次交付验证](docs/verification_t03_t04_t06.md)
 - [MediaPipe 兼容修复、模型探针与剩余验收](docs/perception_diagnostics.md)
@@ -139,7 +140,7 @@ uv sync --locked --extra dev
 env -u PYTHONPATH PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/python -m pytest
 ```
 
-`dry_run` 仍只运行有限合成脚本，不访问相机、不训练、不注入事件；无参数默认 dry_run。`train/evaluate/replay/live` 仍不可用。新增显式 `preview/camera_probe/collect/inspect/recover/annotate` 工具；采集授权、格式和失败边界见操作指南，`inspect` 不等于 T23 事件回放。
+`dry_run` 仍只运行有限合成脚本，不访问相机、不训练、不注入事件；无参数默认 dry_run。`train --train-cache ... --val-cache ... --output ...` 已可运行旧5类版本缓存训练；`evaluate/replay/live` 仍不可用。新增显式 `preview/camera_probe/collect/inspect/recover/annotate` 工具；采集授权、格式和失败边界见操作指南，`inspect` 不等于 T23 事件回放。
 
 当前环境的 ROS `PYTHONPATH` 和全局 pytest 插件会干扰测试，因此命令显式隔离；普通环境也可使用同一命令。基础链路不导入 MediaPipe/OpenCV/PyTorch。
 
@@ -159,7 +160,7 @@ uv sync --locked --extra dev --extra training
 env -u PYTHONPATH .venv/bin/python -m algorithm.smoke --output artifacts/model-smoke.json
 ```
 
-该命令只做人造张量可过拟合/CPU前向检查和规则fixture诊断，不保存正式模型，报告文件拒绝覆盖。MLP为94→128→64→5；TCN为单卷积残差块d=1/2/4/8、56,325参数、31帧感受野。这里仍是旧5类草案，公开数据15类方案须迁移类表/契约并重训，不能直接复用为已完成的新类别模型。三种模型共用32帧输入就绪与新鲜度门控；MLP只取末帧但特征含速度。训练统计仅由train拟合，验证/测试构建必须复用同一统计。缓存构建命令与草案输入格式见 [模块说明](docs/features_and_models.md)，正式实验等待T04/T07/T10及T14。
+该命令只做人造张量可过拟合/CPU前向检查和规则fixture诊断，不保存正式模型，报告文件拒绝覆盖。MLP为94→128→64→5；TCN为单卷积残差块d=1/2/4/8、56,325参数、31帧感受野。这里仍是旧5类草案，公开数据15类方案须迁移类表/契约并重训，不能直接复用为已完成的新类别模型。三种模型共用32帧输入就绪与新鲜度门控；MLP只取末帧但特征含速度。训练统计仅由train拟合，验证/测试构建必须复用同一统计。缓存构建命令与草案输入格式见 [模块说明](docs/features_and_models.md)，正式实验等待T07公开数据完整性/类别核验、协议迁移、T10划分后再使用T14；不要求自采。
 
 ## 新增工具快速开始
 
