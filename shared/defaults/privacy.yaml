@@ -1,0 +1,4 @@
+consent_required: true
+save_raw_video: false
+log_images: false
+publish_identity: false

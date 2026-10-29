@@ -1,0 +1,8 @@
+feature_schema_version: landmarks94-v1
+feature_dimension: 94
+window_size: 32
+class_count: 5
+split_unit: subject
+fit_statistics_on: train_only
+device: cpu
+seed: 42

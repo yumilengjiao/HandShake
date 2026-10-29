@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-29",
+  "status": "passed",
+  "build_tool": "setuptools==84.2.1",
+  "source_distribution_built": true,
+  "wheel_built": true,
+  "package_files": {
+    "handshake_core-0.1.0-py3-none-any.whl": "f79c44776116246cf84e7e4bb0dd1cc23d11cdc1d45043aa098746757d09a181",
+    "handshake_core-0.1.0.tar.gz": "2191de6dfc5d5ec8f6b28ac286ed25522934fd89d780df36135633c7d3b65c51"
+  },
+  "clean_environment": "/tmp/handshake-t02-wheel-env",
+  "command_workdir": "/tmp",
+  "imported_backend": "/tmp/handshake-t02-wheel-env/lib/python3.10/site-packages/backend/__init__.py",
+  "records_validated": 8,
+  "packaged_default_config_sha256": "a782059f0dae035aed5d56088b56d75546cd0aa2f8b972e7538b7f77c9598321",
+  "injection_status": "not_attempted",
+  "acknowledgement_level": "mock"
+}

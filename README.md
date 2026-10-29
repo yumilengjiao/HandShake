@@ -2,7 +2,7 @@
 
 基于 MediaPipe 手部关键点与自主训练时序神经网络的手势终端控制项目。
 
-> 当前只建立项目分区、职责说明与任务规划，尚无可运行程序、训练模型或真实数据集。本文中的内部子目录和启动入口为后续实施约定，不代表已经存在。
+> 已按 T01 → T02 → T05 建立范围记录、可安装 Python 核心、配置/契约、合成 dry-run 和手势标注协议草案。尚无真实数据、训练模型、相机采集、真实翻页或 Web。最终产品采用 Web，需支持电脑和手机；本轮暂不实现 Web。
 
 ## 先看这些文档
 
@@ -10,6 +10,9 @@
 - [35 个实施任务与依赖](task_plans/README.md)
 - [任务审查记录](task_plans/REVIEW_NOTES.md)
 - [文档与答辩资料](docs/README.md)
+- [本轮范围与待确认项](docs/scope_freeze.md)
+- [手势协议](docs/gesture_protocol.md)与[标注指南](docs/annotation_guide.md)
+- [T01/T02/T05 验证记录](docs/verification_t01_t02_t05.md)
 
 课程版先完成 **手势翻页、基础界面、自训 TCN、MLP 对照、安全控制与实验报告**；音乐、光标和研究增强按总方案优先级推进。
 
@@ -17,7 +20,7 @@
 
 ```text
 HandShake/
-├── frontend/              # 桌面前端：预览、状态、启停、设置与标注界面
+├── frontend/              # 未来电脑/手机 Web 前端；本轮仅保留职责包
 ├── backend/               # 运行后端：相机、感知、状态机、安全调度、终端适配
 ├── algorithm/             # 算法：数据加载、训练、评估、模型推理与导出
 ├── shared/                # 公共契约、共享特征、配置校验与数据格式
@@ -83,9 +86,9 @@ frontend <--状态快照-- backend <--预测-- algorithm
 frontend / backend / algorithm --> shared
 ```
 
-- 这里的“前端/后端”是桌面项目的职责分区，**不默认等于网页加 HTTP 服务器**。
+- 这里的“前端/后端”先作为职责分区；用户已确定最终为电脑/手机 Web，当前只实现可复用核心与 CLI，尚无 HTTP 服务。
 - 首版采用单仓库、一个 Python 工程和共用环境；UI 与工作单元通过接口/消息协作，不为分目录强制引入微服务、数据库或 Docker。
-- Python 包名、构建配置和依赖锁定在 T02 实测确定。若采用多个顶层源码包，须显式配置包发现；目前没有可运行安装命令。
+- Python 发行名为 `handshake-core`，显式配置四个职责包的发现；依赖见 `pyproject.toml` 和 `uv.lock`，当前机器验证结果见 [依赖记录](docs/dependencies.md)。
 - `shared/` 不反向依赖其余三个模块；`algorithm/` 不导入设备控制或界面代码；只有 `backend/` 的调度器能走真实操作后端。
 - 共享特征只维护一份，离线训练与在线推理使用相同实现。紧急停止不依赖模型返回或界面绘制。
 
@@ -115,6 +118,31 @@ frontend / backend / algorithm --> shared
 
 ## 当前下一步
 
-确认 A/B 与演示平台 → 执行 T01/T02 的范围与接口冻结 → 并行建立相机/前端 mock 和共享特征/模型冒烟 → 试采集 → 正式数据与安全闭环。
+补充课程与演示设备信息 → T03/T04 相机/感知 → T06 授权采集 → T07 真实试采集和双人试标 → 后续数据、模型与安全闭环。A/B 分工由用户之后填写。Web/手机 UI 在后续 T20 实施，本轮无网页。
 
-仅建立目录和 README 不代表 T02 已完成：依赖安装、包配置、契约实现和测试仍待实施。
+## 安装与合成验证
+
+以下在 Linux x86_64 / Python 3.10.12 验证。推荐用 uv 按锁文件创建/更新本项目 `.venv`；其他 Python/宿主须重新验证，不以锁文件推断兼容性。
+
+```bash
+cd /home/soaring/programs/HandShake
+uv sync --locked --extra dev
+.venv/bin/handshake dry_run
+.venv/bin/handshake dry_run --config-dir configs --log artifacts/t02-smoke.jsonl
+env -u PYTHONPATH PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/python -m pytest
+```
+
+`dry_run` 只运行一段有限的纯合成脚本并输出版本化 JSONL；不访问相机、不训练、不注入设备、不启动 Web。日志路径父目录须已存在，拒绝覆盖同名文件。没有参数时也默认 dry_run。`collect/train/evaluate/replay/live` 已保留 CLI 名称，当前均返回退出码2及对应未实现任务说明。
+
+当前环境的 ROS `PYTHONPATH` 和全局 pytest 插件会干扰测试，因此命令显式隔离；普通环境也可使用同一命令。基础链路不导入 MediaPipe/OpenCV/PyTorch。
+
+可选依赖仅用于导入/CPU操作验证，安装不等于相机或模型已可用：
+
+```bash
+uv sync --locked --extra dev --extra perception --extra training
+env -u PYTHONPATH .venv/bin/python scripts/check_environment.py
+```
+
+uv 配置将 Linux/Windows 的可选 torch 指向官方 CPU 索引；感知依赖只使用 `opencv-contrib-python` 一个 cv2 提供包。`shared/defaults/` 是打包默认配置，`configs/` 中的链接指向同一来源；若系统不支持符号链接，可直接使用包内默认值，或复制 YAML 为独立目录传给 `--config-dir`。
+
+完整边界见 [架构与契约说明](docs/architecture.md)和[平台支持矩阵](docs/platform_support.md)。T01 设备/课程确认、T02 真实相机加载和 T05 真实双人标注仍待验证，不能以合成测试替代。

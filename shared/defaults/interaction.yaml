@@ -1,0 +1,7 @@
+# Starting values for pilot/validation, never claimed to be optimal.
+status: draft
+wake_hold_ns: 600000000
+exit_hold_ns: 800000000
+neutral_hold_ns: 400000000
+cooldown_ns: 500000000
+max_prediction_age_ns: 150000000

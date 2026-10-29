@@ -1,0 +1,9 @@
+allowlist: [previous_slide, next_slide]
+capabilities: [presentation]
+mappings:
+  presentation:
+    no_action: null
+    wake_open: null
+    swipe_left: previous_slide
+    swipe_right: next_slide
+    exit_pose: null

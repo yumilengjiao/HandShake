@@ -1,6 +1,6 @@
 # configs：公共配置与实验设置
 
-> 当前只有目录说明，尚未创建可加载配置、依赖版本或经验证的默认门限。
+> T02/T05 已提供 runtime、interaction、gestures、actions、training、privacy 和 platforms/mock 配置，通过符号链接使用 `shared/defaults/` 的同一来源。所有门限均为 draft 起点；包内默认值和 `--config-dir configs` 加载结果一致，尚无验证集选择的最优门限。
 
 ## 主责
 

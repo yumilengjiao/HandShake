@@ -1,0 +1,6 @@
+platform_id: linux-wayland-development-mock
+status: mock_only
+capabilities: [presentation]
+allowed_targets: [mock-presentation]
+independent_stop_verified: false
+live_supported: false

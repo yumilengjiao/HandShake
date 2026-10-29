@@ -40,3 +40,11 @@ dist/
 .DS_Store
 Thumbs.db
 .idea/
+
+# Web tooling and local TLS material.
+node_modules/
+playwright-report/
+test-results/
+*.pem
+*.key
+*.crt

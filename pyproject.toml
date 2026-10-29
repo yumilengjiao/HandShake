@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools==84.2.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "handshake-core"
+version = "0.1.0"
+description = "HandShake core contracts, configuration and synthetic dry-run"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["pydantic>=2.10,<3", "PyYAML>=6,<7", "numpy>=1.26,<3"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10"]
+# Import smoke tests do not certify camera/model operation. See docs/dependencies.md.
+perception = ["mediapipe", "opencv-contrib-python"]
+training = ["torch", "scikit-learn"]
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux' or sys_platform == 'win32'" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[project.scripts]
+handshake = "backend.cli:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["shared*", "backend*", "algorithm*", "frontend*"]
+exclude = ["tests*", "configs*", "data*", "artifacts*"]
+
+[tool.setuptools.package-data]
+shared = ["defaults/*.yaml", "defaults/platforms/*.yaml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
