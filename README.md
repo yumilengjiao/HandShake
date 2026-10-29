@@ -2,7 +2,7 @@
 
 基于 MediaPipe 手部关键点与自主训练时序神经网络的手势终端控制项目。
 
-> 已有 T01/T02/T05 核心与协议；本轮增加 T03/T04/T06 的相机/视频输入、感知适配、授权分块采集和骨架标注工具。131项自动测试及短时真实相机探针通过；真实 MediaPipe 模型初始化被宿主终止（exit137），完整实机验收仍待完成。尚无自训模型或真实应用控制；原生产品 UI 与移动移植仍按 T20/T37 推进。
+> 已实现T01/T02/T05核心与协议、T03/T04/T06相机/视频输入与授权分块采集/骨架标注，以及T11/T12/T13的94维共享特征、数据/缓存、规则/MLP/因果TCN。真实MediaPipe初始化exit137和完整实机验收仍待解决；尚无参与者训练数据、正式训练权重、产品UI或真实翻页。当前目标按native-v2采用原生多端，桌面与手机分别验收。
 
 ## 先看这些文档
 
@@ -14,6 +14,7 @@
 - [本轮范围与待确认项](docs/scope_freeze.md)
 - [手势协议](docs/gesture_protocol.md)与[标注指南](docs/annotation_guide.md)
 - [T01/T02/T05 验证记录](docs/verification_t01_t02_t05.md)
+- [T11/T12/T13 特征与模型使用说明](docs/features_and_models.md)及[验证记录](docs/verification_t11_t12_t13.md)
 - [采集/感知/骨架标注操作指南](docs/collection_workflow.md)
 - [T03/T04/T06 验证与当前阻塞](docs/verification_t03_t04_t06.md)
 
@@ -147,6 +148,15 @@ env -u PYTHONPATH .venv/bin/python scripts/check_environment.py
 ```
 
 uv 配置将 Linux/Windows 的可选 torch 指向官方 CPU 索引；感知依赖只使用 `opencv-contrib-python` 一个 cv2 提供包。`shared/defaults/` 是打包默认配置，`configs/` 中的链接指向同一来源；若系统不支持符号链接，可直接使用包内默认值，或复制 YAML 为独立目录传给 `--config-dir`。
+
+## 特征与模型模块
+
+```bash
+uv sync --locked --extra dev --extra training
+env -u PYTHONPATH .venv/bin/python -m algorithm.smoke --output artifacts/model-smoke.json
+```
+
+该命令只做人造张量可过拟合/CPU前向检查和规则fixture诊断，不保存正式模型，报告文件拒绝覆盖。MLP为94→128→64→5；TCN为单卷积残差块d=1/2/4/8、56,325参数、31帧感受野。三种模型共用32帧输入就绪与新鲜度门控；MLP只取末帧但特征含速度。训练统计仅由train拟合，验证/测试构建必须复用同一统计。缓存构建命令与草案输入格式见 [模块说明](docs/features_and_models.md)，正式实验等待T04/T07/T10及T14。
 
 ## 新增工具快速开始
 

@@ -1,6 +1,8 @@
 # 当前工程、采集链路与原生多端边界
 
-当前实现是单仓库 Python 项目，`handshake-core` 是发行名，`shared/backend/algorithm/frontend` 是职责包。安装、命令见根 README。没有原生 UI、移动应用、HTTP/WebSocket 服务或真实系统输入实现。目标架构为 [原生多端](native_architecture.md)；T03/T04/T06 的 OpenCV 工具窗口不等于 T20 产品 UI，旧源码占位说明不覆盖最新需求。
+当前实现是单仓库Python项目，`handshake-core`为发行名，`shared/backend/algorithm/frontend`为职责包。T03/T04/T06采集/记录工具与T11/T12/T13特征/模型模块均已落盘；没有原生产品UI、移动应用、HTTP/WebSocket服务或真实系统输入实现。目标架构为[原生多端](native_architecture.md)，OpenCV工具窗口不等于T20产品UI。
+
+T11/T12/T13使用共享几何、训练统计和窗口实现，详见[特征与模型](features_and_models.md)。下方T02链路仅指保留的零值fixture冒烟，不代表真实感知、特征或训练结果；正式端到端控制闭环仍待后续集成。
 
 ## 新增 T03/T04/T06 链路
 
@@ -14,7 +16,7 @@
 
 `FramePacket（1×1 合成 RGB） → FrameStatus（脚本） → FeatureWindow（32×94 零值 fixture） → MockPredictor → MockGestureEngine → ActionCommand → MockDispatcher → MockBackend → JSONL`
 
-这些都是 T02 的软件连接验证。FrameStatus 的 processed_hands 是合成状态；没有从图像检测手，没有实现 94 维特征提取、实际唤醒/释放状态机，也没有训练模型。mock 预测不提供 intent、phase 或校准概率。T11、T13、T17、T18 的生产逻辑尚待实施。
+这些是保留的T02软件连接验证，processed_hands为合成状态，零值fixture未调用感知或94维特征提取。真正的特征与模型模块已由T11/T13提供；实际唤醒/释放、生产调度和正式模型训练仍待T17/T18/T14。mock预测不提供intent、phase或校准概率。
 
 控制器默认未启用、无 owner；合成脚本显式启用并绑定合成 track。每次启停、模式/模型/owner 变化、挂起、重连都会增加 epoch，重连还要求新 stream。提交工作前捕获上下文，后续对象保留同一 stream/epoch；预测返回时不得贴上新 epoch。mock 在发事件与派发前复检当前上下文、新鲜度/过期、目标白名单和能力，重复 command_id 被拒绝。当前检查为同步测试实现，不宣称处理了 T24 的线程竞态或迟到外部副作用。
 

@@ -38,7 +38,7 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
     if args.mode in {"train", "evaluate", "replay", "live"}:
         reason = {
-            "train": "dataset/training/model is not implemented (T10-T14)",
+            "train": "formal dataset/trainer/checkpoints are not implemented (T10/T14); model modules and algorithm.smoke are available",
             "evaluate": "trained model and evaluator are not implemented (T15)",
             "replay": "recording replay is not implemented (T23); JSONL validation alone is not replay",
             "live": "no real backend or independent stop has been verified (T18/T19/T24)",

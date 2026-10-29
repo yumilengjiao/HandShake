@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "version": "0.2.0",
+  "mode": "installed_wheel_from_outside_source_with_python_isolated",
+  "working_directory": "/tmp",
+  "features_module": "/home/soaring/programs/HandShake/.venv/lib/python3.10/site-packages/shared/features/__init__.py",
+  "source_directory_excluded": true,
+  "resources": [
+    "feature_schema.json",
+    "classes.json",
+    "mlp.yaml",
+    "tcn.yaml"
+  ],
+  "delayed_stale_sample_clears_history": true,
+  "parameter_counts": {
+    "mlp": 20741,
+    "tcn": 56325
+  },
+  "receptive_field": 31,
+  "distribution_hashes": {
+    "handshake_core-0.2.0-py3-none-any.whl": "71b23913691bd5d1c1deae9aebd26191d87cad2bc3309b4e99cc43dbd6deb4c6",
+    "handshake_core-0.2.0.tar.gz": "96b36601bbb32a0db2f419c854d9c5095bd80f46a5718d313bbbc502bbc040ff"
+  },
+  "editable_install_restored_after_check": true
+}
