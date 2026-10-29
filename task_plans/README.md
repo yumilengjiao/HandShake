@@ -1,8 +1,8 @@
 # HandShake 分阶段任务规划
 
-本目录将 [PROJECT_MASTER_PLAN.md](../PROJECT_MASTER_PLAN.md) 拆分为 **38 个独立任务文件**。2026-10-29 已按 T01 → T02 → T05 实施范围记录、核心工程与协议草案，验证见 [历史记录](../docs/verification_t01_t02_t05.md)。没有真实采集、训练模型、原生 UI 或真实应用；未满足实机/pilot条件的任务仍标待验证。逐项审查结论与修订原因见 [任务审查记录](REVIEW_NOTES.md)。
+本目录将 [PROJECT_MASTER_PLAN.md](../PROJECT_MASTER_PLAN.md) 拆分为 **38 个独立任务文件**。T01/T02/T05 已有核心与草案；T03/T04/T06 已新增采集/感知/标注软件，131项测试通过，短时相机可用，但真实MediaPipe加载exit137和完整实机验收未解决，见 [本轮记录](../docs/verification_t03_t04_t06.md)。没有真实参与者训练数据、自训模型、产品UI或真实应用控制。未满足验收的任务继续待验证，历史修订见 [任务审查记录](REVIEW_NOTES.md)。
 
-当前采用 **native-v2：原生多端、桌面先交付、手机本机运行随后验收**，替代此前 Web 约定。优先覆盖 Windows/macOS/Linux、Android/iOS/iPadOS，其他系统按 SDK/运行时能力评估；不承诺所有 OS 任意跨应用控制。本次只改文档，不改变已有代码或历史验证结论。完整边界见 [原生架构](../docs/native_architecture.md) 和 [范围记录](../docs/scope_freeze.md)。新增 T36 早期选型、T37 原生手机/其他平台移植、T38 可选配对控制；T01～T35 编号保留。
+当前采用 **native-v2：原生多端、桌面先交付、手机本机运行随后验收**，替代此前 Web 约定。优先覆盖 Windows/macOS/Linux、Android/iOS/iPadOS，其他系统按 SDK/运行时能力评估；不承诺所有 OS 任意跨应用控制。native-v2 文档修订时未改代码；后续 T03/T04/T06 实施记录另列，不覆盖历史验证结论。完整边界见 [原生架构](../docs/native_architecture.md) 和 [范围记录](../docs/scope_freeze.md)。新增 T36 早期选型、T37 原生手机/其他平台移植、T38 可选配对控制；T01～T35 编号保留。
 
 ## 如何使用
 
@@ -49,10 +49,10 @@ T15 完成分类校准与合成事件评估；T23 使用 draft 参数联调。T2
 | --- | --- | --- | --- | --- | --- |
 | [T01](01_scope_and_platform.md) | 冻结课程范围、平台与验收口径 | P0 | A+B（用户待填） | 无 | 待验证：记录已完成，课程/设备待确认 |
 | [T02](02_scaffold_and_contracts.md) | 建立工程骨架、配置与公共数据契约 | P0 | A+B（用户待填） | [T01](01_scope_and_platform.md) | 待验证：工程已验证，真实相机加载待后续 |
-| [T03](03_camera_and_clock.md) | 实现摄像头采集、时间戳与最新帧输入 | P0 | B | [T02](02_scaffold_and_contracts.md) | 待实施 |
-| [T04](04_perception_tracking_quality.md) | 实现关键点感知、轨迹关联与质量门控 | P0 | B | [T03](03_camera_and_clock.md) | 待实施 |
+| [T03](03_camera_and_clock.md) | 实现摄像头采集、时间戳与最新帧输入 | P0 | B | [T02](02_scaffold_and_contracts.md) | 待验证：软件/短相机探针通过，完整实机待验 |
+| [T04](04_perception_tracking_quality.md) | 实现关键点感知、轨迹关联与质量门控 | P0 | B | [T03](03_camera_and_clock.md) | 待验证：软件通过，真实SDK初始化exit137 |
 | [T05](05_gesture_and_annotation_protocol.md) | 冻结手势词表、动作边界与标签规则 | P0 | A+B（用户待填） | [T01](01_scope_and_platform.md), [T02](02_scaffold_and_contracts.md) | 待验证：草案/合成通过，真实双人试标待T07 |
-| [T06](06_collection_tool.md) | 实现授权采集、会话落盘与标注辅助工具 | P0 | B 主责，A 复核数据格式 | [T04](04_perception_tracking_quality.md), [T05](05_gesture_and_annotation_protocol.md) | 待实施 |
+| [T06](06_collection_tool.md) | 实现授权采集、会话落盘与标注辅助工具 | P0 | B 主责，A 复核数据格式 | [T04](04_perception_tracking_quality.md), [T05](05_gesture_and_annotation_protocol.md) | 待验证：合成软件通过，GUI/真实会话待验 |
 | [T07](07_pilot_collection.md) | 完成试采集并冻结数据与交互协议 | P0 | A+B | [T06](06_collection_tool.md) | 待实施 |
 | [T08](08_main_dataset_collection.md) | 组织主数据采集与连续自然动作测试资料 | P0；研究规模按资源扩展 | A+B | [T07](07_pilot_collection.md) | 待实施 |
 | [T09](09_annotation_and_quality_audit.md) | 标注动作时间轴并完成数据质量审核 | P0 | A+B 交叉复核 | [T05](05_gesture_and_annotation_protocol.md), [T08](08_main_dataset_collection.md) | 待实施 |
@@ -112,7 +112,7 @@ T15 完成分类校准与合成事件评估；T23 使用 draft 参数联调。T2
 
 - 根目录职责及旧路径迁移以 [根 README](../README.md) 为准：界面归 `frontend/`，相机/感知/控制/平台归 `backend/`，训练/模型/推理归 `algorithm/`，契约/共享特征/记录格式归 `shared/`。原 `src/handshake/...` 和任务中的省略前缀路径按此映射落盘，不另建重复源码树。
 - `configs/`、`data/`、`artifacts/`、`docs/`、`scripts/`、`tests/` 保留根目录职责。根 data 是数据集，源码中的数据加载/采集/读写模块按职责分别落 algorithm/backend/shared；源码 models 不存权重。
-- T02 已实现包配置、依赖导入、公共契约与合成测试；本轮没有打开实际相机或加载感知模型，不能以 mock 冒烟宣称真实相机或模型已验收。
+- T02核心已验证；T03/T04/T06又完成软件/合成测试和短相机探针，但真实感知模型加载失败，不能称全链实机验收。记录格式实际为recording-v1分块NPZ＋逐录制manifest，详见 [采集指南](../docs/collection_workflow.md)。
 - 内部时间统一单调ns，录制采用同一 recording 的相对ns并记录 timebase；平台API要求ms时只在适配边界转换。实际曝光时间不可得时注明软件采集近似，回放不混入墙钟时间。跨语言编码须无损；跨设备时钟不可直接相减，T38 另定带不确定度的新鲜度协议。
 - Python 特征保持单一参考实现；移动移植必须通过版本化规范/golden fixtures 的特征、窗口、logits、事件与停止一致性检查，不将 Python 包跨平台等同于手机可执行。
 - 当前已在用户授权的 T02 范围安装并锁定依赖、执行合成测试；不运行live、不上传报告，不创建虚构真实数据/实验结果。具体环境及限制见 [依赖记录](../docs/dependencies.md)。

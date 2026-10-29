@@ -2,7 +2,7 @@
 
 基于 MediaPipe 手部关键点与自主训练时序神经网络的手势终端控制项目。
 
-> 已按 T01 → T02 → T05 建立范围记录、可安装 Python 核心、配置/契约、合成 dry-run 和手势标注协议草案。尚无真实数据、训练模型、相机采集、真实翻页或原生界面。当前目标为原生多端：桌面先交付，随后实现 Android/iOS 本地运行；本次仅修改规划，不新增业务实现。
+> 已有 T01/T02/T05 核心与协议；本轮增加 T03/T04/T06 的相机/视频输入、感知适配、授权分块采集和骨架标注工具。131项自动测试及短时真实相机探针通过；真实 MediaPipe 模型初始化被宿主终止（exit137），完整实机验收仍待完成。尚无自训模型或真实应用控制；原生产品 UI 与移动移植仍按 T20/T37 推进。
 
 ## 先看这些文档
 
@@ -14,6 +14,8 @@
 - [本轮范围与待确认项](docs/scope_freeze.md)
 - [手势协议](docs/gesture_protocol.md)与[标注指南](docs/annotation_guide.md)
 - [T01/T02/T05 验证记录](docs/verification_t01_t02_t05.md)
+- [采集/感知/骨架标注操作指南](docs/collection_workflow.md)
+- [T03/T04/T06 验证与当前阻塞](docs/verification_t03_t04_t06.md)
 
 课程版先完成 **手势翻页、原生桌面基础界面、自训 TCN、MLP 对照、安全控制与实验报告**。产品目标覆盖 Windows/macOS/Linux、Android/iOS/iPadOS；手机本地运行列为 T37 后续交付，其他 OS 按能力评估。可安装、本机识别、应用内控制、外部应用控制分别验收，不承诺任意系统控制任意 App。
 
@@ -119,21 +121,21 @@ frontend / backend / algorithm --> shared
 
 ## 当前下一步
 
-补充课程与演示设备信息 → T03/T04 相机/感知、T36 原生路线选型 → T06/T07 采集与试标、T20 桌面 mock → 数据、模型与安全闭环。随后 T37 按平台实现手机本地运行及其他桌面适配，T38 按需增加手机控制电脑。A/B 分工由用户之后填写；当前未实施原生 UI 或平台移植。
+先解决真实 MediaPipe 初始化 exit137 → 补5分钟相机与人工工具验收 → 真实授权短采集/T07 双人试标。算法主线、T36 原生选型和 T20 mock 可按依赖并行；T37 手机/T38 配对后续推进。不能把合成资料当训练数据，A/B 分工与真实参与者授权仍需补齐。
 
 ## 安装与合成验证
 
-以下在 Linux x86_64 / Python 3.10.12 验证。推荐用 uv 按锁文件创建/更新本项目 `.venv`；其他 Python/宿主须重新验证，不以锁文件推断兼容性。
+以下基础安装原在 Linux/Python 3.10 验证；本轮 T03/T04/T06 另在 Linux/Python 3.12.14 按同一锁文件验证，见本轮记录。用 uv 创建项目 `.venv`；不以锁文件推断所有宿主兼容。
 
 ```bash
-cd /home/soaring/programs/HandShake
+# 在 HandShake 仓库根目录运行
 uv sync --locked --extra dev
 .venv/bin/handshake dry_run
 .venv/bin/handshake dry_run --config-dir configs --log artifacts/t02-smoke.jsonl
 env -u PYTHONPATH PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/python -m pytest
 ```
 
-`dry_run` 只运行一段有限的纯合成脚本并输出版本化 JSONL；不访问相机、不训练、不注入设备、不启动 Web。日志路径父目录须已存在，拒绝覆盖同名文件。没有参数时也默认 dry_run。`collect/train/evaluate/replay/live` 已保留 CLI 名称，当前均返回退出码2及对应未实现任务说明。
+`dry_run` 仍只运行有限合成脚本，不访问相机、不训练、不注入事件；无参数默认 dry_run。`train/evaluate/replay/live` 仍不可用。新增显式 `preview/camera_probe/collect/inspect/recover/annotate` 工具；采集授权、格式和失败边界见操作指南，`inspect` 不等于 T23 事件回放。
 
 当前环境的 ROS `PYTHONPATH` 和全局 pytest 插件会干扰测试，因此命令显式隔离；普通环境也可使用同一命令。基础链路不导入 MediaPipe/OpenCV/PyTorch。
 
@@ -146,4 +148,21 @@ env -u PYTHONPATH .venv/bin/python scripts/check_environment.py
 
 uv 配置将 Linux/Windows 的可选 torch 指向官方 CPU 索引；感知依赖只使用 `opencv-contrib-python` 一个 cv2 提供包。`shared/defaults/` 是打包默认配置，`configs/` 中的链接指向同一来源；若系统不支持符号链接，可直接使用包内默认值，或复制 YAML 为独立目录传给 `--config-dir`。
 
-完整边界见 [架构与契约说明](docs/architecture.md)和[平台支持矩阵](docs/platform_support.md)。T01 设备/课程确认、T02 真实相机加载和 T05 真实双人标注仍待验证，不能以合成测试替代。
+## 新增工具快速开始
+
+```bash
+uv sync --locked --python 3.12 --extra dev --extra perception
+# 仅短时预检，不保存摄像头画面
+.venv/bin/handshake camera_probe --headless --duration 5
+# 不访问相机的合成采集闭环
+.venv/bin/handshake collect --source synthetic --headless --frames 90 \
+  --subject synthetic-p1 --session synthetic-s1 \
+  --consent-keypoints --consent-reference synthetic-only --output artifacts/collection-demo
+# 验证/骨架标注刚才输出的录制目录
+.venv/bin/handshake inspect --recording <录制目录>
+.venv/bin/handshake annotate --recording <录制目录> --annotator A
+```
+
+真实感知先解决当前 SDK 初始化问题并提供本地 `.task`；真实采集必须另行取得授权，不能照抄合成授权引用。OpenCV工具窗口不是T20产品UI。完整命令和当前限制见 [操作指南](docs/collection_workflow.md)。
+
+完整边界见 [架构与契约说明](docs/architecture.md)和[平台支持矩阵](docs/platform_support.md)。T01课程/设备签认、T03/T04/T06完整实机验收和T05真实双人标注仍待完成。

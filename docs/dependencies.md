@@ -1,5 +1,7 @@
 # T02 依赖与安装验证
 
+> 历史T02环境记录保留。T03/T04/T06已在另一Linux/Python3.12.14环境按同一锁文件安装dev/perception：NumPy2.5.4，MediaPipe1.2.0，OpenCV5.0.0.93；131项自动测试通过。但真实MediaPipe初始化exit137，导入不等于感知可运行。详见 [本轮验证](verification_t03_t04_t06.md)，未改uv.lock或系统Python。
+
 验证日期2026-10-29；Linux x86_64 / CPython 3.10.12 / GNOME Wayland。下表为**实际安装及导入结果**，不是仅依据在线文档填写的兼容版本。锁文件 `uv.lock` 包含精确版本与分发哈希；只对当前组合做了验证。
 
 | 依赖 | 实测发行版本 | 实际检查 |

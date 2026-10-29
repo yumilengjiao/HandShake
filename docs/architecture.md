@@ -1,8 +1,16 @@
-# T02 当前工程与原生多端边界
+# 当前工程、采集链路与原生多端边界
 
-当前实现是单仓库 Python 项目，`handshake-core` 是发行名，`shared/backend/algorithm/frontend` 是职责包。安装、命令见根 README。没有原生 UI、移动应用、HTTP/WebSocket 服务或真实系统输入实现。目标架构现已改为 [原生多端](native_architecture.md)，现有源码中的旧 Web 占位说明不代表已有 Web 实现，也不覆盖最新需求；本次仅改文档。
+当前实现是单仓库 Python 项目，`handshake-core` 是发行名，`shared/backend/algorithm/frontend` 是职责包。安装、命令见根 README。没有原生 UI、移动应用、HTTP/WebSocket 服务或真实系统输入实现。目标架构为 [原生多端](native_architecture.md)；T03/T04/T06 的 OpenCV 工具窗口不等于 T20 产品 UI，旧源码占位说明不覆盖最新需求。
 
-## 当前可运行链路
+## 新增 T03/T04/T06 链路
+
+`CameraSource → CapturedFrame（只读RGB数组）/FrameInfo → 有界最新帧与未处理账本 → VIDEO感知/质量/两手关联 → ObservationFrame → 授权后异步分块NPZ/manifest/events → 骨架标注/严格JSON导出`。
+
+相机实时输入丢旧帧并保留状态；离线视频背压保留所有解码帧。未授权预览不保存资料，采集路径不构造动作后端。原FramePacket作为JSON边界保留，显式转换，不改旧schema。完整字段见 [感知协议](perception_contract.md) 和 [采集指南](collection_workflow.md)。
+
+131项软件测试和短相机探针通过；真实MediaPipe初始化exit137、人工GUI/真实会话仍待验证。`inspect/recover`不等于T23完整事件回放。
+
+## T02 既有合成链路
 
 `FramePacket（1×1 合成 RGB） → FrameStatus（脚本） → FeatureWindow（32×94 零值 fixture） → MockPredictor → MockGestureEngine → ActionCommand → MockDispatcher → MockBackend → JSONL`
 
@@ -34,9 +42,9 @@ Python 内部时间是非负 int64 ns，拒绝 float、bool、字符串、负值
 
 六类 YAML：runtime / interaction / gestures / actions / training / privacy，另有 platforms/mock。`shared/config.py` 拒绝未知字段/动作、映射缺失、重复 YAML 键、负时长、错误版本、平台能力和目标冲突。默认文件作为包资源提供，仓库 `configs/` 是同一来源的链接，外部可复制成独立配置目录并通过 `--config-dir` 指定。所有阈值是 draft。
 
-入口预留 collect/train/evaluate/replay/dry_run/live。只有 dry_run 合成冒烟可用；其他返回退出码2和缺失任务说明，未导入真实操作后端。没有隐藏的 live 开关。
+`dry_run` 合成冒烟保留；新增显式 `preview/camera_probe/collect/inspect/recover/annotate` 工具。`train/evaluate/replay/live` 仍返回未实现/不可用，不存在隐藏live开关。
 
-JSONL 包含运行 ID、配置 SHA256、发行版/Git 版本、dirty 标志、schema、timebase 和 synthetic 标记。文件以独占创建方式写入，拒绝覆盖既有证据；读回校验 payload 类型、schema 与 timebase。默认不写图片、身份或真值。日志读回不是 T23 的完整确定性回放。NPZ/真实会话写入属于 T06。
+JSONL 包含运行 ID、配置 SHA256、发行版/Git 版本、dirty 标志、schema、timebase 和 synthetic 标记。文件以独占创建方式写入，拒绝覆盖既有证据；读回校验 payload 类型、schema 与 timebase。默认不写图片、身份或真值。日志读回不是 T23 的完整确定性回放。NPZ/会话读写现由T06的 `shared/recordings.py` 和 `backend/collection/` 实现；完整事件回放仍归T23。
 
 ## 后续原生桌面/手机交接
 

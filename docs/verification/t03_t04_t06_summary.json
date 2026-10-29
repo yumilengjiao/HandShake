@@ -1,0 +1,39 @@
+{
+  "record_kind": "verification_summary_not_dataset",
+  "date": "2026-10-29",
+  "baseline_commit": "8121d0d",
+  "code_state": "T03/T04/T06 working tree; see subsequent implementation commit",
+  "tested_source": {
+    "method": "sorted git-visible *.py paths: SHA256(path UTF8 + NUL + file bytes + NUL)",
+    "python_files": 45,
+    "sha256": "d4ddff46bb18314ab53e3d31e9adfd875d5ba3a7e5e0beca2b18c332b9b90a30"
+  },
+  "platform": {"os": "Linux", "machine": "x86_64", "python": "3.12.14", "session": "wayland"},
+  "versions": {"numpy": "2.5.4", "pydantic": "2.14.1", "PyYAML": "6.0.3", "pytest": "9.2.0", "mediapipe": "1.2.0", "opencv-contrib-python": "5.0.0.93"},
+  "base_config_sha256": "a782059f0dae035aed5d56088b56d75546cd0aa2f8b972e7538b7f77c9598321",
+  "tests": {"passed": 131, "failures": 0, "errors": 0, "skipped": 0, "junit": "pytest_t03_t04_t06.xml"},
+  "pip_check": {"compatible": true, "packages_checked": 31},
+  "camera_probe_summary": {
+    "backend": "V4L2", "camera_index": 0, "image_size": [640, 480],
+    "requested_fps": 30.0, "reported_fps": 30.0, "actual_capture_hz": 10.014894629782823,
+    "acquired_frames": 46, "consumed_frames": 45, "elapsed_ns": 5047157201,
+    "max_pending_frames": 1, "status_overflow": 0,
+    "frame_statuses": {"processed_hands": 0, "processed_no_hand": 0, "not_processed": 46, "error": 0},
+    "frame_age": {"meaning": "software_read_complete_to_consumer_not_exposure", "samples": 45, "p50_ns": 1256509, "p95_ns": 4650428, "max_ns": 6282604},
+    "driver_drops": null, "exposure_age_known": false,
+    "shutdown_confirmed": true, "pixels_saved": false, "landmarks_saved": false,
+    "five_minute_test_completed": false
+  },
+  "mediapipe_probe": {
+    "import_passed": true, "real_model_load_passed": false,
+    "exit_code": 137, "failure_phase": "HandLandmarker.create_from_options",
+    "cause": "undetermined; process was killed, no successful model output",
+    "model_asset_sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+    "model_asset_source": "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task"
+  },
+  "packaging": {"sdist_build_passed": true, "wheel_build_passed": true, "independent_wheel_synthetic_collect_passed": true, "offline_dependency_install_passed": false, "explicit_pypi_dependency_install_passed": true, "wheel_sha256": "4be197eaf6b10246990dabce00aa1da0cb1e5f4863dfb85891a1d7d600470430", "sdist_sha256": "fbe6d2389121d0d16e0728526f666e39091b73316cf1fae70ab971525a34d95b"},
+  "live_actions_executed": false,
+  "real_participant_dataset_collected": false,
+  "manual_gui_validation_completed": false,
+  "task_status": {"T03": "software implemented; hardware acceptance pending", "T04": "software implemented; real SDK initialization blocked", "T06": "synthetic tools validated; real session and manual GUI acceptance pending"}
+}
