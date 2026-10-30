@@ -8,7 +8,7 @@ from collections.abc import Sequence
 import torch
 from torch import Tensor, nn
 
-from shared.classes import ClassVocabulary, load_classes
+from shared.classes import ClassVocabulary, load_classes, vocabulary_for
 
 
 def _positive_int(name: str, value: int) -> int:
@@ -32,8 +32,8 @@ def _resolve_vocabulary(
     resolved = canonical if vocabulary is None else vocabulary
     if not isinstance(resolved, ClassVocabulary):
         raise ValueError("vocabulary must be a validated ClassVocabulary")
-    if resolved.tokens != canonical.tokens:
-        raise ValueError("vocabulary must match the current shared class IDs")
+    if resolved != vocabulary_for(resolved.vocabulary_version):
+        raise ValueError("vocabulary must match its registered class IDs")
     if num_classes is not None:
         _positive_int("num_classes", num_classes)
         if num_classes != resolved.class_count:

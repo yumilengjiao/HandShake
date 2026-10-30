@@ -7,7 +7,7 @@
 | 建议主责 | A（A/B 实名以总方案为准） |
 | 前置任务 | T12, T13 |
 | 总方案依据 | 第 14、15.9、16.5 节 |
-| 状态 | 模块完成；CPU合成训练、独立进程恢复与健康检查通过；正式训练待T10 |
+| 状态 | 模块完成；5/15类CPU合成训练、梯度与恢复通过；正式数据训练待T07/T10 |
 
 实施日期：2026-10-29。实际源码位于 `algorithm/training/`、`backend/interaction/`、`backend/actions/`（按本任务职责），使用与限制见 [说明](../docs/training_and_interaction.md)，证据见 [验证报告](../docs/verification_t14_t17_t18.md)。以下未验收项仍保留；规划路径以已实现职责目录为准。
 
@@ -57,5 +57,7 @@ checkpoint_metric: val_macro_f1
 - [ ] T15 获得冻结候选及验证流预测；不在本任务生成“最终测试最优模型”。
 
 ## 前置任务文件
+
+公开数据增量：训练器从版本化缓存解析词表，15类计数/指标/权重与恢复身份均受校验；来源分类不能进入旧交互。见 [实现指南](../docs/public_data_implementation.md) 和 [深度学习实验计划](../docs/deep_learning_experiment_plan.md)。
 
 [T12 建立规则与单帧 MLP 对照基线](12_rules_and_mlp_baselines.md)；[T13 搭建可验证的单分支因果 TCN 神经网络](13_causal_tcn_network.md)

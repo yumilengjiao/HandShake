@@ -8,6 +8,7 @@ from pydantic import Field
 import yaml
 
 from shared import FEATURE_SCHEMA_VERSION, PROTOCOL_VERSION
+from shared.classes import ClassVocabulary, vocabulary_for
 from shared.config import ConfigModel, UniqueKeyLoader
 
 
@@ -46,11 +47,12 @@ def load_model_config(model_type: str, path: str | Path | None = None) -> MLPCon
     return config
 
 
-def build_model(model_type: str, path: str | Path | None = None):
+def build_model(model_type: str, path: str | Path | None = None, *, vocabulary: ClassVocabulary | None = None):
     config = load_model_config(model_type, path)
+    vocabulary = vocabulary or vocabulary_for()
     if isinstance(config, MLPConfig):
         from algorithm.models.mlp import GestureMLP
-        return GestureMLP(input_dim=config.input_dim, hidden_dims=config.hidden_dims, dropout=config.dropout)
+        return GestureMLP(input_dim=config.input_dim, hidden_dims=config.hidden_dims, dropout=config.dropout, vocabulary=vocabulary)
     from algorithm.models.tcn import GestureTCN
     return GestureTCN(input_dim=config.input_dim, channels=config.channels, kernel_size=config.kernel_size,
-                      dilations=config.dilations, dropout=config.dropout, window_size=config.window_size)
+                      dilations=config.dilations, dropout=config.dropout, window_size=config.window_size, vocabulary=vocabulary)

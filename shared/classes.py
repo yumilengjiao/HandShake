@@ -1,6 +1,7 @@
 """Single, packaged T05 vocabulary consumed by every model and dataset."""
 
 from dataclasses import dataclass
+from functools import lru_cache
 from hashlib import sha256
 from importlib.resources import files
 import json
@@ -8,6 +9,13 @@ from pathlib import Path
 
 from shared import PROTOCOL_VERSION
 from shared.contracts import GESTURE_IDS, Gesture
+
+IPN_HANDS_VERSION = "ipn-hands-v1"
+IPN_HANDS_TOKENS = ("NOG", "P1F", "P2F", "C1F", "C2F", "TUP", "TDN", "TLT", "TRT", "OP2", "2C1", "2C2", "ZIN", "ZOT", "GRB")
+_VOCABULARIES = {
+    PROTOCOL_VERSION: tuple(gesture.value for gesture in GESTURE_IDS),
+    IPN_HANDS_VERSION: IPN_HANDS_TOKENS,
+}
 
 
 @dataclass(frozen=True)
@@ -17,11 +25,11 @@ class ClassVocabulary:
     schema_version: str = "classes-v1"
 
     def __post_init__(self):
-        expected = tuple(gesture.value for gesture in GESTURE_IDS)
-        if self.schema_version != "classes-v1" or self.vocabulary_version != PROTOCOL_VERSION:
+        expected = _VOCABULARIES.get(self.vocabulary_version)
+        if self.schema_version != "classes-v1" or expected is None:
             raise ValueError("unsupported class/vocabulary version")
         if type(self.tokens) is not tuple or self.tokens != expected:
-            raise ValueError("v1 classes must retain all five T05 tokens in their fixed id order")
+            raise ValueError("classes must retain the registered vocabulary's exact token/id order")
 
     @property
     def class_count(self) -> int:
@@ -44,6 +52,14 @@ class ClassVocabulary:
 
     def digest(self) -> str:
         return sha256(json.dumps(self.to_dict(), sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
+@lru_cache(maxsize=8)
+def vocabulary_for(version: str = PROTOCOL_VERSION) -> ClassVocabulary:
+    """Immutable registered source vocabulary; never a mapping to device actions."""
+    if version not in _VOCABULARIES:
+        raise ValueError(f"unsupported vocabulary: {version}")
+    return ClassVocabulary(_VOCABULARIES[version], vocabulary_version=version)
 
 
 def load_classes(path: str | Path | None = None) -> ClassVocabulary:

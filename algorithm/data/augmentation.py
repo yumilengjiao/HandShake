@@ -7,7 +7,8 @@ are validated. This function never mutates the source recording.
 import numpy as np
 
 from algorithm.data.dataset import ObservationRecord, records_digest
-from shared.classes import load_classes
+from shared.classes import vocabulary_for
+from shared import PROTOCOL_VERSION
 
 
 def augment_training_records(records: list[ObservationRecord], *, source_split: str,
@@ -23,10 +24,17 @@ def augment_training_records(records: list[ObservationRecord], *, source_split: 
     if (type(noise_std) not in (int, float) or not np.isfinite(noise_std) or noise_std < 0
             or type(perception_dropout) not in (int, float) or not np.isfinite(perception_dropout) or not 0 <= perception_dropout <= 1):
         raise ValueError("invalid augmentation magnitudes")
-    rng, vocabulary = np.random.default_rng(seed), load_classes()
+    versions = {r.vocabulary_version for r in records}
+    if len(versions) > 1:
+        raise ValueError("cannot augment mixed vocabularies")
+    vocabulary = vocabulary_for(next(iter(versions), PROTOCOL_VERSION))
+    if horizontal_flip and vocabulary.vocabulary_version != PROTOCOL_VERSION:
+        raise ValueError("public gesture flip semantics are not verified; horizontal_flip is disabled")
+    rng = np.random.default_rng(seed)
     parent_hash = records_digest(records)
-    swapped = {vocabulary.id_for("swipe_left"): vocabulary.id_for("swipe_right"),
-               vocabulary.id_for("swipe_right"): vocabulary.id_for("swipe_left")}
+    swapped = ({vocabulary.id_for("swipe_left"): vocabulary.id_for("swipe_right"),
+                vocabulary.id_for("swipe_right"): vocabulary.id_for("swipe_left")}
+               if horizontal_flip else {})
     result = []
     for record in records:
         data = record.model_dump(mode="json")

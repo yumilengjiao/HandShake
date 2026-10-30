@@ -1,12 +1,13 @@
 {
   "schema_version": "public-dataset-sources-v1",
   "checked_on": "2026-10-29",
+  "ipn_annotations_rechecked_on": "2026-10-30",
   "policy": {
     "route": "public-data-v1",
     "self_recorded_training_data_required": false,
     "commit_raw_data": false,
     "local_download_root": "data/external",
-    "status": "sources_reviewed_importer_and_training_not_implemented",
+    "status": "source_integrity_pending_importer_and_15class_training_software_verified",
     "integrity_rule": "A published checksum mismatch blocks import. Never replace expected SHA256 with the observed value to mark a download valid."
   },
   "datasets": [

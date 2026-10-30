@@ -1,19 +1,18 @@
 """Ordered VIDEO perception, quality and association; publishes an entire frame."""
 from time import monotonic_ns
-import math
 
-import numpy as np
-
-from backend.perception.quality import QualitySettings, geometry
-from backend.tracking.association import Association, TrackingSettings
-from shared.contracts import HandObservation, PerceptionStatus
+from backend.perception.assembler import ObservationAssembler
+from backend.perception.quality import QualitySettings
+from backend.tracking.association import TrackingSettings
+from shared.contracts import PerceptionStatus
 from shared.observations import ObservationFrame
 
 
 class PerceptionPipeline:
     def __init__(self, detector, *, quality=QualitySettings(), tracking=TrackingSettings(), now=monotonic_ns):
         self.detector, self.quality, self.now = detector, quality, now
-        self.association = Association(tracking, quality)
+        self.assembler = ObservationAssembler(quality=quality, tracking=tracking)
+        self.association = self.assembler.association
         self.stream = None
         self.last_ns = None
         self.last_ms = None
@@ -36,28 +35,8 @@ class PerceptionPipeline:
         self.last_ms = ms
         try:
             raw = self.detector.detect(frame.rgb, ms)
-            if len(raw) > 2:
-                raise ValueError("detector returned more than two hands")
-            shapes = [geometry(h.landmarks, info.width, info.height, self.quality) for h in raw]
-            handedness = [h.handedness if h.handedness in {"left", "right"} else "unknown" for h in raw]
-            matches = self.association.associate(info, shapes, handedness)
-            observations, worlds = [], []
-            for h, g, hand, (track, flags) in zip(raw, shapes, handedness, matches):
-                score = h.score
-                if score is not None and (not math.isfinite(score) or not 0 <= score <= 1):
-                    score = None
-                observations.append(HandObservation(
-                    stream_id=info.stream_id, source_frame_id=info.frame_id, source_timestamp_ns=info.timestamp_ns,
-                    timebase=info.timebase, track_id=track, landmarks_image=g.landmarks.tolist(),
-                    validity_mask=g.mask.tolist(), observation_valid=not flags,
-                    handedness=hand, handedness_score=score, quality=0. if flags else 1.,
-                    quality_flags=flags, transform_metadata=info.transform))
-                world = np.asarray(h.world) if h.world is not None else None
-                worlds.append(tuple(tuple(float(v) for v in p) for p in world)
-                              if world is not None and world.shape == (21,3) and np.isfinite(world).all() else None)
-            status = info.status(PerceptionStatus.HANDS if raw else PerceptionStatus.NO_HAND,
-                                 processed_at_ns=self._completed(frame))
-            return ObservationFrame(info, status, tuple(observations), tuple(worlds))
+            return self.assembler.assemble(info, raw, completion_clock=lambda: self._completed(frame),
+                                           processing_time_origin="local_runtime")
         except Exception as error:
             return ObservationFrame(info, info.status(PerceptionStatus.ERROR, processed_at_ns=self._completed(frame),
                                                      reason=f"{type(error).__name__}: {error}"))

@@ -11,7 +11,8 @@ from typing import Annotated, Literal
 import numpy as np
 from pydantic import Field, StrictBool, model_validator
 
-from shared.classes import load_classes
+from shared import PROTOCOL_VERSION
+from shared.classes import vocabulary_for
 from shared.config import ConfigModel
 from shared.contracts import Contract, FrameStatus, HandObservation, Identifier, Index, PerceptionStatus
 from shared.features import FeatureConfig, FeatureExtractor, FeatureNormalizer, FeatureWindowBuilder
@@ -38,13 +39,14 @@ class ObservationRecord(Contract):
     observation: HandObservation | None
     class_id: Annotated[int, Field(strict=True, ge=-1)]
     class_valid: StrictBool
+    vocabulary_version: str = PROTOCOL_VERSION
     source_split: Split | None = None
     parent_records_sha256: Digest | None = None
     augmentation: list[Identifier] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def check_record(self):
-        if self.class_valid != (0 <= self.class_id < load_classes().class_count):
+        if self.class_valid != (0 <= self.class_id < vocabulary_for(self.vocabulary_version).class_count):
             raise ValueError("valid class must be a vocabulary id; masked class must be -1")
         if not self.class_valid and self.class_id != -1:
             raise ValueError("masked class_id must be -1")
@@ -68,7 +70,16 @@ class ObservationRecord(Contract):
 
 
 def records_digest(records: list[ObservationRecord]) -> str:
-    ordered = sorted((record.model_dump(mode="json") for record in records), key=lambda item: json.dumps(item, sort_keys=True))
+    payloads = []
+    for record in records:
+        payload = record.model_dump(mode="json")
+        # Preserve historical v1 digests when the new fields have legacy defaults.
+        if record.vocabulary_version == PROTOCOL_VERSION:
+            payload.pop("vocabulary_version")
+        if record.frame_status.processing_time_origin == "local_runtime":
+            payload["frame_status"].pop("processing_time_origin")
+        payloads.append(payload)
+    ordered = sorted(payloads, key=lambda item: json.dumps(item, sort_keys=True))
     return canonical_digest(ordered)
 
 
@@ -80,9 +91,15 @@ class SplitManifest(ConfigModel):
     synthetic: StrictBool
     preregistration_reference: Identifier
     subject_splits: dict[Identifier, Split]
+    vocabulary_version: str = PROTOCOL_VERSION
+
+    @property
+    def vocabulary(self):
+        return vocabulary_for(self.vocabulary_version)
 
     @model_validator(mode="after")
     def check_manifest(self):
+        vocabulary_for(self.vocabulary_version)
         if not self.subject_splits:
             raise ValueError("a preassigned subject split map is required")
         if not self.synthetic and self.status != "frozen":
@@ -99,6 +116,8 @@ class SplitManifest(ConfigModel):
         roles = {}
         recording_metadata = {}
         for record in records:
+            if record.vocabulary_version != self.vocabulary_version:
+                raise ValueError("record and split manifest vocabulary mismatch")
             participants = set(record.visible_subjects)
             if not participants.issubset(self.subject_splits):
                 raise ValueError("record contains a subject absent from the preassigned split")
@@ -158,7 +177,7 @@ def fit_training_normalizer(records: list[ObservationRecord], manifest: SplitMan
             if sample is not None:
                 samples.append(sample)
     return FeatureNormalizer.fit(samples, dataset_hash=manifest.dataset_sha256,
-                                 split_hash=manifest.digest(), split="train", config=config)
+                                 split_hash=manifest.digest(), split="train", config=config, vocabulary=manifest.vocabulary)
 
 
 class WindowDataset:
@@ -176,6 +195,8 @@ class WindowDataset:
         if (normalizer.stats.dataset_hash != manifest.dataset_sha256 or normalizer.stats.split_hash != manifest.digest()
                 or normalizer.config.config_hash != self.config.config_hash):
             raise ValueError("normalizer dataset/split/config provenance mismatch")
+        if normalizer.vocabulary != manifest.vocabulary:
+            raise ValueError("normalizer and dataset vocabulary mismatch")
         self.manifest, self.split, self.stride = manifest, split, stride
         self.normalizer = normalizer
         self.records = tuple(records)  # Full timeline survives for later event evaluation.

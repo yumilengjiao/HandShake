@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
+  <title id="title">HandShake：时序交互舞台概念稿</title>
+  <desc id="desc">非运行界面。中央骨架舞台、右侧决策轨迹、底部32步时序透镜和常驻停止入口。所有线条和数值为设计示意，不是模型实测。</desc>
+  <defs>
+    <radialGradient id="glow"><stop stop-color="#143a42"/><stop offset="1" stop-color="#0a111a"/></radialGradient>
+    <linearGradient id="trace"><stop stop-color="#7be7d0" stop-opacity="0"/><stop offset="1" stop-color="#7be7d0"/></linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#283442"/></pattern>
+    <style>text{font-family:Inter,'Noto Sans CJK SC','Microsoft YaHei',sans-serif}.muted{fill:#9cabbc}.white{fill:#e9f0f8}.mono{font-family:'JetBrains Mono',monospace;letter-spacing:1px}</style>
+  </defs>
+  <rect width="1440" height="900" fill="#0a111a"/>
+  <rect x="72" y="120" width="992" height="520" fill="url(#glow)"/>
+  <rect x="72" y="120" width="992" height="520" fill="url(#grid)" opacity=".7"/>
+  <path d="M72 90H1368M1064 132V626M72 660H1368M72 816H1368" stroke="#2c3946"/>
+  <text x="72" y="55" class="white mono" font-size="25" font-weight="700">HAND/SHAKE</text>
+  <text x="290" y="53" class="muted" font-size="15">时序交互实验室</text>
+  <circle cx="1120" cy="48" r="5" fill="#e9c98a"/>
+  <text x="1136" y="54" fill="#e9c98a" font-size="14">CONCEPT · 无设备控制</text>
+  <text x="92" y="150" class="muted mono" font-size="12">01 / INTERACTION STAGE</text>
+  <text x="92" y="199" class="white" font-size="34" font-weight="600">看见动作，也看见决定。</text>
+  <text x="92" y="232" class="muted" font-size="15">轨迹显示在发生的位置，判断显示在发生的时刻。</text>
+  <path d="M184 479 C282 516 348 508 422 479 S520 443 568 426" stroke="url(#trace)" stroke-width="4" fill="none"/>
+  <path d="M223 496 C352 560 432 523 507 473" stroke="#7be7d0" stroke-opacity=".15" stroke-width="16" fill="none"/>
+  <ellipse cx="613" cy="410" rx="147" ry="176" stroke="#5c8a87" stroke-opacity=".4" fill="none" stroke-dasharray="3 10"/>
+  <path d="M756 380 A147 176 0 0 1 682 570" stroke="#7be7d0" stroke-width="3" fill="none"/>
+  <text x="785" y="406" fill="#7be7d0" font-size="14">时序证据范围</text>
+  <text x="785" y="431" class="muted mono" font-size="12">32 STEPS / 示意</text>
+  <g stroke="#b3ffed" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M595 547 L535 475 L512 434 L490 409 L475 389"/>
+    <path d="M595 547 L566 420 L555 359 L550 317 L546 281"/>
+    <path d="M595 547 L608 405 L615 343 L621 292 L626 253"/>
+    <path d="M595 547 L650 416 L672 366 L688 327 L698 296"/>
+    <path d="M595 547 L690 449 L723 413 L744 387 L761 365"/>
+    <path d="M566 420 L608 405 L650 416 L690 449" stroke="#688f92"/>
+  </g>
+  <g fill="#7be7d0">
+    <circle cx="595" cy="547" r="7"/><circle cx="535" cy="475" r="5"/><circle cx="512" cy="434" r="4"/><circle cx="490" cy="409" r="4"/><circle cx="475" cy="389" r="5"/>
+    <circle cx="566" cy="420" r="5"/><circle cx="555" cy="359" r="4"/><circle cx="550" cy="317" r="4"/><circle cx="546" cy="281" r="5"/>
+    <circle cx="608" cy="405" r="5"/><circle cx="615" cy="343" r="4"/><circle cx="621" cy="292" r="4"/><circle cx="626" cy="253" r="5"/>
+    <circle cx="650" cy="416" r="5"/><circle cx="672" cy="366" r="4"/><circle cx="688" cy="327" r="4"/><circle cx="698" cy="296" r="5"/>
+    <circle cx="690" cy="449" r="5"/><circle cx="723" cy="413" r="4"/><circle cx="744" cy="387" r="4"/><circle cx="761" cy="365" r="5"/>
+  </g>
+  <text x="92" y="607" class="muted mono" font-size="12">SYNTHETIC ILLUSTRATION · NO CAMERA · NO MODEL LOADED</text>
+  <text x="1100" y="150" class="muted mono" font-size="12">02 / DECISION TRACE</text>
+  <text x="1100" y="197" class="white" font-size="22">不只显示一个标签</text>
+  <path d="M1110 245V481" stroke="#334551" stroke-width="2"/>
+  <g fill="#7be7d0"><circle cx="1110" cy="250" r="5"/><circle cx="1110" cy="326" r="5"/></g>
+  <circle cx="1110" cy="402" r="5" fill="#e9c98a"/>
+  <circle cx="1110" cy="478" r="5" fill="#718296"/>
+  <text x="1130" y="247" class="white" font-size="16">观测到什么</text><text x="1130" y="273" class="muted" font-size="13">骨架 / 缺失 / 来源时间</text>
+  <text x="1130" y="323" class="white" font-size="16">网络判断什么</text><text x="1130" y="349" class="muted" font-size="13">来源类别 · 原始分数</text>
+  <text x="1130" y="399" fill="#e9c98a" font-size="16">为何暂不执行</text><text x="1130" y="425" class="muted" font-size="13">模型未加载 / 策略未就绪</text>
+  <text x="1130" y="475" class="white" font-size="16">应用实际发生什么</text><text x="1130" y="501" class="muted" font-size="13">尚无命令 / 尚无回执</text>
+  <text x="1100" y="576" class="muted" font-size="13">来源分类 ≠ 操作意图</text>
+  <text x="1100" y="600" class="muted" font-size="13">模型预测 ≠ 已完成翻页</text>
+  <text x="92" y="697" class="white" font-size="16">时间透镜</text>
+  <text x="205" y="697" class="muted" font-size="13">回看证据，不重放设备命令</text>
+  <text x="1134" y="697" class="muted mono" font-size="12">CAUSAL / 32 STEPS</text>
+  <path d="M93 766H1346" stroke="#334551"/>
+  <path d="M96 751L136 747L176 753L216 740L256 744L296 728L336 735L376 724L416 711L456 728L496 730L536 715L576 720L616 737L656 733L696 722L736 736L776 714L816 705L856 710L896 723L936 714L976 718L1016 736L1056 727L1096 715L1136 734L1176 724L1216 742L1256 748L1296 740L1336 734" fill="none" stroke="#7be7d0" stroke-width="2"/>
+  <path d="M936 713V794" stroke="#e9c98a" stroke-dasharray="3 4"/>
+  <text x="95" y="792" class="muted mono" font-size="11">历史观测（示意，不是实测分数）</text><text x="957" y="792" fill="#e9c98a" font-size="12">选中时刻的证据</text>
+  <text x="92" y="856" class="muted" font-size="14">来源：演示图形</text><text x="330" y="856" class="muted" font-size="14">模型：未加载</text>
+  <text x="565" y="856" class="muted" font-size="14">仅预览 · 不录制</text>
+  <rect x="1150" y="832" width="198" height="44" rx="6" fill="#331d28" stroke="#ef9aab"/>
+  <rect x="1172" y="848" width="12" height="12" rx="2" fill="#ef9aab"/>
+  <text x="1198" y="860" fill="#ffd5df" font-size="15" font-weight="600">停止入口 / ESC</text>
+</svg>

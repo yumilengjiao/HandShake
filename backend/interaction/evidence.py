@@ -4,9 +4,12 @@ import numpy as np
 
 from backend.interaction.engine import Evidence
 from shared.config import load_config
+from shared.contracts import ModelPrediction
 
 
 def evidence_from_frame(prediction, frame, *, ready):
+    if not isinstance(prediction, ModelPrediction):
+        raise ValueError("source classification is not a legacy application gesture prediction")
     info = frame.info
     if (prediction.stream_id, prediction.source_frame_id, prediction.source_timestamp_ns, prediction.timebase) != (
         info.stream_id, info.frame_id, info.timestamp_ns, info.timebase

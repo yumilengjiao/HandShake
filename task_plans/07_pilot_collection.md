@@ -7,9 +7,11 @@
 | 建议主责 | A+B |
 | 前置任务 | T04, T05 |
 | 总方案依据 | public-data-v1补充及第13节 |
-| 状态 | 进行中：来源/许可已核对；标注包SHA不一致，尚未通过导入预检 |
+| 状态 | 进行中：严格归档/类别/时轴审查和导入已实现；真实标注SHA仍阻塞 |
 
 ## 当前目标
+
+已实现 `handshake-data audit-ipn/import-ipn/build-cache`、来源15类链路与合成回归；真实数据完整性和分组仍未完成，见 [本轮实现](../docs/public_data_implementation.md)。
 
 用户不希望自录训练集。按 [公开数据方案](../docs/public_data_plan.md) 先验证官方公开数据与本项目能正确连接，不再把T06真实录制或招募参与者作为前置。来源见 [data/SOURCES.md](../data/SOURCES.md)，可读元数据见 [data/sources.json](../data/sources.json)。
 

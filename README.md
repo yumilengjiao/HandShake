@@ -2,12 +2,15 @@
 
 基于 MediaPipe 手部关键点与自主训练时序神经网络的手势终端控制项目。
 
-> 已实现T01/T02/T05核心、T03/T04/T06采集工具、T11～T13特征/模型，以及T14训练器、T17交互状态机、T18映射与安全调度模块。感知依赖采用master固定的MediaPipe 0.10.21/OpenCV 4.11.0.86，统一探针见[感知修复](docs/perception_diagnostics.md)。公开数据为主，当前代码仍是旧5类契约；15类导入/协议迁移、正式训练、产品UI和真实翻页待完成。
+> 已实现T01/T02/T05核心、T03/T04/T06采集工具、T11～T13特征/模型，以及T14训练器、T17交互状态机、T18映射与安全调度模块。感知依赖采用master固定的MediaPipe 0.10.21/OpenCV 4.11.0.86，统一探针见[感知修复](docs/perception_diagnostics.md)。公开数据为主，已新增严格导入、版本化15类特征/缓存/MLP/TCN训练与恢复；461项回归通过。官方标注SHA、全量流式训练、公开类别应用策略、正式实验和原生产品UI仍待完成，见[本轮实现](docs/public_data_implementation.md)。
 
 ## 先看这些文档
 
-> **最新数据约定 public-data-v1**：公开数据为主，不要求自录训练集。已整理 [官方下载入口](data/SOURCES.md) 和 [公开数据路线](docs/public_data_plan.md)；首选IPN HandS关键点候选，标注包SHA不一致仍待核验，不能直接开始训练。现有5类代码契约尚未迁移。
+> **最新数据约定 public-data-v1**：公开数据为主，不要求自录训练集。已整理 [官方下载入口](data/SOURCES.md) 和 [公开数据路线](docs/public_data_plan.md)；首选IPN HandS关键点候选，标注包SHA不一致仍待核验，不能直接开始训练。来源15类训练/分类已支持，旧5类交互保持兼容；新类别不会自动进入旧控制器。
 
+- [公开数据导入与15类训练管线](docs/public_data_implementation.md)
+- [深度学习实验与答辩主线](docs/deep_learning_experiment_plan.md)
+- [时序交互舞台设计稿与Flutter预检](docs/interaction_stage_design.md)
 - [项目总目标与技术方案](PROJECT_MASTER_PLAN.md)
 - [38 个实施任务与依赖](task_plans/README.md)
 - [原生多端架构与平台边界](docs/native_architecture.md)
@@ -140,7 +143,7 @@ uv sync --locked --extra dev
 env -u PYTHONPATH PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/python -m pytest
 ```
 
-`dry_run` 仍只运行有限合成脚本，不访问相机、不训练、不注入事件；无参数默认 dry_run。`train --train-cache ... --val-cache ... --output ...` 已可运行旧5类版本缓存训练；`evaluate/replay/live` 仍不可用。新增显式 `preview/camera_probe/collect/inspect/recover/annotate` 工具；采集授权、格式和失败边界见操作指南，`inspect` 不等于 T23 事件回放。
+`dry_run` 仍只运行有限合成脚本，不访问相机、不训练、不注入事件；无参数默认 dry_run。`train --train-cache ... --val-cache ... --output ...` 已可运行经校验的旧5类或`ipn-hands-v1`15类缓存训练；`evaluate/replay/live` 仍不可用。新增显式 `preview/camera_probe/collect/inspect/recover/annotate` 工具；采集授权、格式和失败边界见操作指南，`inspect` 不等于 T23 事件回放。
 
 当前环境的 ROS `PYTHONPATH` 和全局 pytest 插件会干扰测试，因此命令显式隔离；普通环境也可使用同一命令。基础链路不导入 MediaPipe/OpenCV/PyTorch。
 
@@ -160,7 +163,7 @@ uv sync --locked --extra dev --extra training
 env -u PYTHONPATH .venv/bin/python -m algorithm.smoke --output artifacts/model-smoke.json
 ```
 
-该命令只做人造张量可过拟合/CPU前向检查和规则fixture诊断，不保存正式模型，报告文件拒绝覆盖。MLP为94→128→64→5；TCN为单卷积残差块d=1/2/4/8、56,325参数、31帧感受野。这里仍是旧5类草案，公开数据15类方案须迁移类表/契约并重训，不能直接复用为已完成的新类别模型。三种模型共用32帧输入就绪与新鲜度门控；MLP只取末帧但特征含速度。训练统计仅由train拟合，验证/测试构建必须复用同一统计。缓存构建命令与草案输入格式见 [模块说明](docs/features_and_models.md)，正式实验等待T07公开数据完整性/类别核验、协议迁移、T10划分后再使用T14；不要求自采。
+该命令只做人造张量可过拟合/CPU前向检查和规则fixture诊断，不保存正式模型，报告文件拒绝覆盖。MLP为94→128→64→5；TCN为单卷积残差块d=1/2/4/8、56,325参数、31帧感受野。该smoke仍默认旧5类；训练器现可从版本化缓存解析15类，参数量随类表变化。来源分类与应用命令分离，公开应用策略和正式训练仍待验证。三种模型共用32帧输入就绪与新鲜度门控；MLP只取末帧但特征含速度。训练统计仅由train拟合，验证/测试构建必须复用同一统计。缓存构建命令与草案输入格式见 [模块说明](docs/features_and_models.md)，正式实验等待T07公开数据完整性/类别核验、协议迁移、T10划分后再使用T14；不要求自采。
 
 ## 新增工具快速开始
 
