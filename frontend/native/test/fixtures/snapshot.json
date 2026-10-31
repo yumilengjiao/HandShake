@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "session_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "sequence": "1",
+  "epoch": "0",
+  "last_command_id": "0",
+  "timestamp_ns": "9007199254740999",
+  "state": "stopped",
+  "reason": "initial",
+  "source": "synthetic",
+  "mode": "dry_run",
+  "model_status": "unavailable",
+  "control_available": false,
+  "frame_id": "0",
+  "frame_timestamp_ns": null,
+  "landmarks": []
+}

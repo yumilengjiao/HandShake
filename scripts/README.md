@@ -1,5 +1,7 @@
 # scripts：采集、训练与运维命令入口
 
+> 原生原型入口：`.venv/bin/python scripts/run_native.py`，可指定`--flutter`或已构建的`--bundle`；显式传入当前Python解释器和仓库目录，不使用shell、不访问相机。见[启动与验证](../frontend/native/README.md)。
+
 > 新增已安装入口`handshake-data`（`backend.importing.commands`）：`audit-ipn`、`import-ipn`、`build-cache`共用严格来源校验与显式审查流程，不访问相机或自动联网。使用方法与内存边界见 [公开数据实现](../docs/public_data_implementation.md)。
 
 > 现有 `check_environment.py`；T03/T06新增 `camera_probe.py`、`collect.py`、`annotate.py` 薄入口，转发已安装包的 `backend.cli`。`perception_probe.py` 转发 `backend.perception.probe`，与 `handshake-perception-probe` 共用不访问相机的真实模型诊断，见 [感知修复](../docs/perception_diagnostics.md)。训练/评估/事件回放仍未实现。完整命令和授权要求见 [采集指南](../docs/collection_workflow.md)。

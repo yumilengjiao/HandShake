@@ -1,5 +1,7 @@
 # tests：公共测试与回归验证
 
+> 2026-10-31：**484项Python回归通过，无跳过**；另有23项Flutter单元/widget与1项真实Linux原生集成通过。新增`test_desktop_bridge.py`及`frontend/native/test/`、`integration_test/`，覆盖协议/有界管道/心跳/退出、只读回看/镜像/确认与布局；不控制真实应用。见[原生验证与命令](../docs/native_stack_decision.md)。
+
 > 最新公开数据增量：**461项通过，无失败/跳过**，含归档/时间轴/分组、15类缓存、MLP/TCN真实梯度与恢复、旧交互隔离；[JUnit](../docs/verification/pytest_public_data_pipeline.xml)。全部新增数据是合成格式样例，不是官方数据上的识别效果。
 
 > 累计154项自动测试通过（原有131项＋23项模型探针回归），见 [修复记录](../docs/perception_diagnostics.md)。覆盖核心、采集、质量/关联、分块存储与CLI，以及探针超时/SIGKILL/日志/内存监控/资产失败报告。真实模型加载和黑图推理另行实测通过；真手效果、人工GUI和完整实机安全验收尚未通过。

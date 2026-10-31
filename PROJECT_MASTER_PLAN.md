@@ -1,5 +1,7 @@
 # HandShake：基于手部关键点与深度时序学习的意图感知终端交互系统
 
+> **2026-10-31界面增量**：Flutter 3.47.9 Linux合成原型及本机Python桥接已构建、启动和测试，阶段成果见[技术决策与验证](docs/native_stack_decision.md)。未接真实相机/模型/动作，不是已完成手机或产品闭环。
+
 > **2026-10-30增量**：公开数据校验/导入、小规模缓存、15类MLP/因果TCN训练与恢复已实现，旧交互不会误消费来源分类；正式数据、全量流式训练和公开应用策略仍待验。深度学习主线与非卡片式原生界面方案见 [本轮实现](docs/public_data_implementation.md)、[实验设计](docs/deep_learning_experiment_plan.md)、[交互设计稿](docs/interaction_stage_design.md)。Flutter原型尚未构建，不冒充跨平台交付。
 
 > **文档定位**：项目总目标、产品边界、研究路线、技术架构、实现细节、实验方案与答辩验收依据。

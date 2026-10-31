@@ -1,0 +1,74 @@
+{
+  "scope": "T36/T20 Linux synthetic native prototype; not live control",
+  "verified_on": "2026-10-31",
+  "environment": {
+    "os": "Linux 7.2.11-arch1-1",
+    "arch": "x86_64",
+    "desktop_session": "Wayland",
+    "python": "3.12.14",
+    "flutter": "3.47.9",
+    "flutter_revision": "c197ca5199e9ee5661e865596c9c07294dfab51c",
+    "dart": "3.13.7",
+    "gtk": "3.24.52",
+    "clang": "23.1.3",
+    "cmake": "4.4.4"
+  },
+  "python": {
+    "tests": "484",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "56.022"
+  },
+  "flutter": {
+    "unit_widget_passed": 23,
+    "native_integration_passed": 1,
+    "analysis": "no issues",
+    "format": "unchanged",
+    "linux_debug_build": true,
+    "linux_release_build": true
+  },
+  "release_probe": {
+    "release_startup_seconds": 3,
+    "gdk_backend": "wayland",
+    "python_children": 1,
+    "ui_termination_child_cleanup": true,
+    "camera_opened": false,
+    "application_commands": false
+  },
+  "wheel": {
+    "independent_install": true,
+    "stdio_eof": true,
+    "schema_included": true,
+    "frontend_excluded": true
+  },
+  "privacy": {
+    "real_camera_opened": false,
+    "real_frames_saved": false,
+    "application_commands_sent": false,
+    "screenshot": "own synthetic render surface, 1280x900 logical test viewport"
+  },
+  "not_verified": [
+    "real camera/texture path",
+    "trained model inference in UI",
+    "public gesture action policy",
+    "global emergency stop / real action release",
+    "clean-system installer",
+    "Windows/macOS/X11",
+    "Android/iOS"
+  ],
+  "source_sha256": {
+    "backend/desktop.py": "c6b889d620c554f9370f26965417593a2fdd9e313f111de0c3d475aa166d3b8e",
+    "shared/desktop_protocol.py": "c73b9afdaac207ccc0026bbe371df96f56d33caf947f15f8f94139d59760f469",
+    "shared/desktop_protocol.schema.json": "19d583f42d7bd9c056fc0182375bcf5fa7521266cde3df566702ff957f6d18bb",
+    "scripts/run_native.py": "c6ca727ae7c2f64cdafe824362a148efd38dd58855096d3aebea35e04ab92eeb",
+    "frontend/native/lib/core/core_repository.dart": "1baffd693430abbd186ea1c62ea4b90176fb4a2dfb3a27d5887fce1e5d63fbd1",
+    "frontend/native/lib/core/core_snapshot.dart": "3c928554bcddb2255317c8835cdedb619e46a79fa11fdc3f5dd90de55243f79a",
+    "frontend/native/lib/main.dart": "f3dc8c39ec8fe39a1788c6bc248af3860b88c8e8b8a5c28ce829f372fa8c755c",
+    "frontend/native/lib/stage/skeleton_painter.dart": "4194b9d57dad7e65372649813e3285b64ca7062503de170bf36f2b3676ccb891",
+    "frontend/native/lib/stage/stage_screen.dart": "6c1c01f0ae5a74bd48e6e7ceff597f80fa7661b1a3533416e14b81f0c2d04505",
+    "frontend/native/lib/stage/stage_view_model.dart": "378bc1676ae78f94d0cb368cf84799e70bca06a88f14b3ab31d63a33cc1e7d66",
+    "frontend/native/pubspec.lock": "790c35f84399ecd71ec846cfd48137d956a573a9329904be72fd980e4d7374c0",
+    "docs/assets/native-stage-prototype.png": "d619c4adc70b5da929e4cda7540f9da9e5f5f43b62da2bb4ce743a65ea52b101"
+  }
+}

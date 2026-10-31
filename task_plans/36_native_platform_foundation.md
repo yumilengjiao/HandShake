@@ -7,13 +7,13 @@
 | 建议主责 | A+B；B 界面/平台，A 推理/一致性 |
 | 前置任务 | T02 |
 | 总方案依据 | 文首 native-v2；第 5、12、16 节；原生多端架构 |
-| 状态 | 进行中：Flutter优先候选、架构/交互稿已记录；SDK获取超时，原型未验 |
+| 状态 | 进行中：Flutter Linux合成原型、私有管道、Debug/Release与原生集成通过；真实输入/安全/多端待验 |
 
 总约束见 [任务导航](README.md)，产品与平台边界见 [原生架构](../docs/native_architecture.md)。编号靠后不代表排在 T35 之后，本任务应在 T20 正式 UI 开发前完成。
 
 ## 目标
 
-当前预检与自行绘制的交互稿见 [时序交互舞台设计](../docs/interaction_stage_design.md)。已经查阅Flutter官方架构与Effective Dart，但本机SDK浅克隆未完成，尚不能勾选可构建/原生启动/跨平台验证。
+2026-10-31已选定Flutter桌面路线，交付[技术决策、协议和验证](../docs/native_stack_decision.md)与[可运行合成原型](../frontend/native/README.md)。最初SDK获取超时已解除；首Linux构建、原生启动、启停/断连通过。相机纹理、真实调度器、完整安装和手机依然未验。
 
 不推翻现有 Python 核心，以有时间上限的技术验证选择原生 UI、桥接方式和可移植边界。原生为可安装、本地相机/生命周期、不依赖浏览器；不承诺一套二进制运行所有 OS，也不把手机限定成遥控器。
 
@@ -28,7 +28,10 @@
 
 ## 交付与验收
 
-产物为 `docs/native_stack_decision.md`、平台矩阵、接口/桥接草案、最小原型与实测记录；这些均为后续待实现产物。
+已交付`docs/native_stack_decision.md`、Linux合成原型、版本化私有管道契约、平台矩阵增量和实测记录；完整平台相机/模型/动作接口继续待验。
+
+- [x] Flutter Linux合成原型构建、原生启动、真实Python管道启停与重连有证据。
+- [x] Dart/Widget/原生集成与Python回归通过，Python wheel不包含Flutter子工程。
 
 - [ ] 有明确选型、范围、投入上限及失败回退，首桌面原型有安装/启动证据。
 - [ ] Android 与 iOS/iPadOS 的本地运行路径、资产/算子/分发条件逐项记录；无设备项标待验证。
