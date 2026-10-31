@@ -1,0 +1,196 @@
+{
+  "command": {
+    "additionalProperties": false,
+    "properties": {
+      "version": {
+        "const": 1,
+        "title": "Version",
+        "type": "integer"
+      },
+      "session_id": {
+        "pattern": "^[a-f0-9]{32}$",
+        "title": "Session Id",
+        "type": "string"
+      },
+      "command_id": {
+        "pattern": "^(0|[1-9][0-9]{0,18})$",
+        "title": "Command Id",
+        "type": "string"
+      },
+      "epoch": {
+        "pattern": "^(0|[1-9][0-9]{0,18})$",
+        "title": "Epoch",
+        "type": "string"
+      },
+      "kind": {
+        "enum": [
+          "start",
+          "stop",
+          "heartbeat",
+          "shutdown"
+        ],
+        "title": "Kind",
+        "type": "string"
+      }
+    },
+    "required": [
+      "version",
+      "session_id",
+      "command_id",
+      "epoch",
+      "kind"
+    ],
+    "title": "DesktopCommand",
+    "type": "object"
+  },
+  "snapshot": {
+    "$defs": {
+      "StagePoint": {
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "maximum": 1,
+            "minimum": 0,
+            "title": "X",
+            "type": "number"
+          },
+          "y": {
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Y",
+            "type": "number"
+          },
+          "z": {
+            "title": "Z",
+            "type": "number"
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "z"
+        ],
+        "title": "StagePoint",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "version": {
+        "const": 1,
+        "default": 1,
+        "title": "Version",
+        "type": "integer"
+      },
+      "session_id": {
+        "pattern": "^[a-f0-9]{32}$",
+        "title": "Session Id",
+        "type": "string"
+      },
+      "sequence": {
+        "pattern": "^(0|[1-9][0-9]{0,18})$",
+        "title": "Sequence",
+        "type": "string"
+      },
+      "epoch": {
+        "pattern": "^(0|[1-9][0-9]{0,18})$",
+        "title": "Epoch",
+        "type": "string"
+      },
+      "last_command_id": {
+        "pattern": "^(0|[1-9][0-9]{0,18})$",
+        "title": "Last Command Id",
+        "type": "string"
+      },
+      "timestamp_ns": {
+        "pattern": "^(0|[1-9][0-9]{0,18})$",
+        "title": "Timestamp Ns",
+        "type": "string"
+      },
+      "state": {
+        "enum": [
+          "stopped",
+          "preview"
+        ],
+        "title": "State",
+        "type": "string"
+      },
+      "reason": {
+        "enum": [
+          "initial",
+          "synthetic_preview",
+          "user_stop",
+          "heartbeat_timeout",
+          "stale_epoch",
+          "protocol_error",
+          "input_closed",
+          "shutdown"
+        ],
+        "title": "Reason",
+        "type": "string"
+      },
+      "source": {
+        "const": "synthetic",
+        "default": "synthetic",
+        "title": "Source",
+        "type": "string"
+      },
+      "mode": {
+        "const": "dry_run",
+        "default": "dry_run",
+        "title": "Mode",
+        "type": "string"
+      },
+      "model_status": {
+        "const": "unavailable",
+        "default": "unavailable",
+        "title": "Model Status",
+        "type": "string"
+      },
+      "control_available": {
+        "const": false,
+        "default": false,
+        "title": "Control Available",
+        "type": "boolean"
+      },
+      "frame_id": {
+        "pattern": "^(0|[1-9][0-9]{0,18})$",
+        "title": "Frame Id",
+        "type": "string"
+      },
+      "frame_timestamp_ns": {
+        "anyOf": [
+          {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Frame Timestamp Ns"
+      },
+      "landmarks": {
+        "items": {
+          "$ref": "#/$defs/StagePoint"
+        },
+        "title": "Landmarks",
+        "type": "array"
+      }
+    },
+    "required": [
+      "session_id",
+      "sequence",
+      "epoch",
+      "last_command_id",
+      "timestamp_ns",
+      "state",
+      "reason",
+      "frame_id",
+      "frame_timestamp_ns",
+      "landmarks"
+    ],
+    "title": "DesktopSnapshot",
+    "type": "object"
+  }
+}

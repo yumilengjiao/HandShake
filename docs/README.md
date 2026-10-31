@@ -2,6 +2,8 @@
 
 ## 当前已有内容
 
+- [Flutter原生舞台：选型、协议与实测](native_stack_decision.md)、[启动原型](../frontend/native/README.md)
+
 - [公开数据导入与15类深度训练实现](public_data_implementation.md)、[深度学习实验与答辩](deep_learning_experiment_plan.md)
 - [时序交互舞台概念稿与Flutter技术预检](interaction_stage_design.md)
 

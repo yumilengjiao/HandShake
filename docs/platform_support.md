@@ -1,5 +1,11 @@
 # 平台支持与实测矩阵
 
+## T36/T20原生合成原型（2026-10-31）
+
+本轮机器为Linux 7.2.11-arch1-1 x86_64、Wayland、Python3.12.14、GTK3 3.24.52；Flutter3.47.9/Dart3.13.7、Clang23.1.3、CMake4.4.4。Linux Debug/Release bundle构建、真实原生窗口与Python私有管道的启停/回看/重连通过。Release显式`GDK_BACKEND=wayland`启动保持3秒、UI进程终止后子进程退出通过；有一条cursor theme加载提示，不影响本轮测试。484项Python、23项Flutter单元/widget、1项原生集成通过，见[决策与边界](native_stack_decision.md)及[机器记录](verification/native_stage_summary.json)。
+
+这不是相机、模型、外部控制、全局停止或干净系统安装验收；X11、Windows、macOS、Android/iOS均未在本轮验证。下文历史机器信息保持原样，不代表本轮环境。
+
 ## T03/T04/T06 新增证据（2026-10-29）
 
 当前 Linux x86_64/Python3.12.14：154项自动测试通过。兼容依赖MediaPipe0.10.21/OpenCV4.11/NumPy1.26.4下真实模型加载、黑图VIDEO推理和关闭通过。另一次300.280秒headless V4L2探针取得3003帧，640×480、实测10.0146Hz、槽峰值1，正常释放后重开通过；未保存画面/关键点。不能把设备报告的30FPS当实测速率，不能把headless采集/黑图推理当真手、人工GUI或外部应用控制验收。详细证据见 [修复与补验](perception_diagnostics.md)；131项测试、旧SDK失败和两次短探针的 [初次交付记录](verification_t03_t04_t06.md)保留为历史。
@@ -32,7 +38,7 @@
 | 历史 Linux / 合成 mock target | 合成 next/previous_slide | 无相机、网络或桌面权限；命令行有限执行后退出 | 软件验证结果见 [T01/T02/T05 验证记录](verification_t01_t02_t05.md) |
 | 历史 Wayland / 真实幻灯片应用 | 翻页 | 焦点查询、全局停止、按键方法均待验证 | **不支持 live** |
 
-## 原生目标矩阵（全部待实现/待实测）
+## 原生目标矩阵（除上述Linux合成原型外，完整能力待实现/待实测）
 
 | 平台族 | 本机安装/相机/识别/应用内控制目标 | 外部控制与分发边界 | 责任任务 |
 | --- | --- | --- | --- |

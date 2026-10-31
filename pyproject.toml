@@ -34,11 +34,11 @@ handshake-data = "backend.importing.commands:main"
 include-package-data = true
 
 [tool.setuptools.packages.find]
-include = ["shared*", "backend*", "algorithm*", "frontend*"]
+include = ["shared*", "backend*", "algorithm*"]
 exclude = ["tests*", "configs*", "data*", "artifacts*"]
 
 [tool.setuptools.package-data]
-shared = ["defaults/*.yaml", "defaults/*.json", "defaults/platforms/*.yaml", "features/*.json"]
+shared = ["defaults/*.yaml", "defaults/*.json", "defaults/platforms/*.yaml", "features/*.json", "desktop_protocol.schema.json"]
 algorithm = ["defaults/*.yaml"]
 
 [tool.pytest.ini_options]
