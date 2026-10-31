@@ -4,6 +4,8 @@
 
 > 已实现T01/T02/T05核心、T03/T04/T06采集工具、T11～T13特征/模型，以及T14训练器、T17交互状态机、T18映射与安全调度模块。感知依赖采用master固定的MediaPipe 0.10.21/OpenCV 4.11.0.86，统一探针见[感知修复](docs/perception_diagnostics.md)。公开数据为主，已新增严格导入、版本化15类特征/缓存/MLP/TCN训练与恢复；461项回归通过。官方标注SHA、全量流式训练、公开类别应用策略、正式实验和原生产品UI仍待完成，见[本轮实现](docs/public_data_implementation.md)。
 
+> **T16阶段一增量**：校验模型包、共享在线分类、v3界面原始logit/拒绝原因已接入；566项Python、51项Flutter通过。仅合成诊断训练证据，正式数据/校准/应用控制仍未完成。见[使用与验证](docs/model_bundle_and_inference.md)。
+
 > **2026-10-31相机增量**：[原生相机与同帧骨架](docs/native_camera_preview.md)已接入，显式打开、不保存真实画面；两轮原生相机开关/重开通过。505项Python、38项Flutter回归通过，尚无手势分类或翻页控制。
 
 > **2026-10-31界面增量**：Flutter Linux原生合成舞台已可运行，支持本机Python桥接、32步回看、镜像、启停确认与断连；484项Python、23项Flutter单元/widget及1项原生集成测试通过。真实相机/模型/应用尚未接入，手机和安装器未交付。见[启动入口](frontend/native/README.md)与[技术决策/实测](docs/native_stack_decision.md)。
@@ -12,6 +14,7 @@
 
 > **最新数据约定 public-data-v1**：公开数据为主，不要求自录训练集。已整理 [官方下载入口](data/SOURCES.md) 和 [公开数据路线](docs/public_data_plan.md)；首选IPN HandS关键点候选，标注包SHA不一致仍待核验，不能直接开始训练。来源15类训练/分类已支持，旧5类交互保持兼容；新类别不会自动进入旧控制器。
 
+- [模型包导出、在线分类与原生UI接入](docs/model_bundle_and_inference.md)
 - [公开数据导入与15类训练管线](docs/public_data_implementation.md)
 - [深度学习实验与答辩主线](docs/deep_learning_experiment_plan.md)
 - [原生相机预览：运行、v2协议与验证](docs/native_camera_preview.md)

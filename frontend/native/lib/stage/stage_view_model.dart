@@ -39,7 +39,8 @@ class StageViewModel extends ChangeNotifier {
       !stopPending &&
       _pendingStart == null &&
       latest?.state == 'stopped';
-  bool get canStartCamera => canStart && latest?.version == 2;
+  bool get canStartCamera =>
+      canStart && (latest?.version == 2 || latest?.version == 3);
 
   Future<void> connect() async {
     if (_disposed || link != LinkState.disconnected) return;
@@ -132,6 +133,9 @@ class StageViewModel extends ChangeNotifier {
       'stale_epoch' => '已拒绝旧会话请求；请重新开始',
       _ => '核心停止或协议异常；请检查连接',
     };
+    if (value.modelStatus == 'error') {
+      message = '手势模型包校验或加载失败；检查外部SHA、资产与依赖，未执行任何动作。';
+    }
     if (value.state == 'stopping') message = '等待相机/感知线程释放，尚未确认停止…';
     if (stopPending) message = '已请求停止，等待核心确认…';
     notifyListeners();

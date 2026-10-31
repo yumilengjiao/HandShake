@@ -1,5 +1,9 @@
 # 平台支持与实测矩阵
 
+## T16阶段一（2026-10-31）
+
+本轮Linux x86_64、Python3.12.15、PyTorch2.15.0+cpu、Flutter3.47.9：566项Python/51项Flutter通过；原生v2回归和v3坏模型拒绝通过，未访问真实相机。1线程batch=1合成前向CPU探针、Release构建和wheel模型一致性见[模型包记录](model_bundle_and_inference.md)。这是未校准只读分类的软件证据，不覆盖正式识别效果、全链时延、动作权限或其他平台。
+
 ## 原生相机阶段（2026-10-31）
 
 本机Linux/Wayland原生UI＋v2私有管道＋OpenCV/MediaPipe通过两轮短时相机打开、JPEG解码显示、停止确认及重开。均为640×480；短时采集均值约30.17/29.99Hz，SDK返回无手/有手状态。未保存真实图像或坐标。505项Python、38项Flutter通过；详细[记录与边界](native_camera_preview.md)。不将短时帧率外推为稳定性或推理FPS，也不视为全局停止/手势分类/翻页/多端验收。

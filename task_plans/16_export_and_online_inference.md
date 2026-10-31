@@ -7,9 +7,9 @@
 | 建议主责 | A 主责，B 集成（A/B 实名以总方案为准） |
 | 前置任务 | T14, T15 |
 | 总方案依据 | 第 7.8、14.7～14.8、16.2、18 节 |
-| 状态 | 待实施；本文是规划，不代表已有代码、数据或结果 |
+| 状态 | 阶段一完成：校验包/共享在线分类/v3只读UI已验证；正式模型、T15校准、热切换及全链仍待验 |
 
-总约束和路径解释见 [任务导航](README.md)。下列代码、配置、命令和产物路径均为待实现约定，不代表目前已存在。新增细节属于总方案的实施起点；只有通过试采集和验证后才冻结，不得用最终测试结果反向挑选配置。
+总约束见[任务导航](README.md)。本轮实际代码、命令、验证和信任边界见[模型包与在线分类](../docs/model_bundle_and_inference.md)。下列完整发布/动作/移动目标仍需后续验收；T15未完成时只允许明确未校准的只读预览。
 
 ## 目标与包格式
 
@@ -17,19 +17,21 @@
 
 ```text
 artifacts/models/<model_version>/
-  weights.pt
+  weights.npz             # 推理部署无pickle，可信本地checkpoint只在导出端读取
   architecture.json
   classes.json
   feature_schema.json
   normalization.json
   calibration.json
-  event_thresholds.yaml
+  event_thresholds.json   # 当前 unavailable / actions_enabled=false
+  runtime_contract.json
+  golden.npz
   training_manifest.json
   model_card.md
   checksums.json
 ```
 
-`event_thresholds.yaml` 必须标记 draft/frozen 及选择来源；集成期可使用明确标注的示例起点。模型包不可原位改写：T28 验证选择后的 frozen 参数生成新的 release candidate、清单和哈希，重跑受影响安全/回放检查后才测最终测试集；测试报告作为外部关联产物，不反过来修改已测包。
+当前`event_thresholds.json`与`calibration.json`明确为unavailable，不用示例参数冒充校准完成。模型包不可原位改写：T15/T28验证后生成新版本release candidate，再跑安全/回放与最终测试；外部报告不反过来修改已测包。加载要求来自可信导出回执的外部SHA256，不能自己重算陌生包哈希当作来源证明。
 
 若无意图/阶段头，架构配置明确 heads=[class]；预测对象对应字段为 None，不伪造恒为 1 的“意图概率”。加载自有、可信来源的权重，不以任意 pickle 为公共模型分发格式。
 
@@ -51,11 +53,11 @@ artifacts/models/<model_version>/
 
 ## 交付与验收
 
-`inference/predictor.py`、`inference/model_loader.py`、`scripts/export_model.py`、一致性报告与模型卡草案。
+已交付`algorithm/bundle.py`、`algorithm/online.py`、`algorithm/deployment.py`，复用原有`algorithm/inference.py`；新增模型卡、golden、v3只读通知、Flutter展示和验证记录。没有另建重复`inference/`源码树。
 
-- [ ] 正确包可加载并预测；错类表/错 schema/损坏校验/缺文件拒绝。
-- [ ] 同样历史得到相同末帧输出；乱序/过期预测无普通事件。
-- [ ] 目标 CPU、batch=1 实测 p50/p95、线程数及内存；“推理 5ms”不冒充全链延迟。
+- [x] 未校准预览包可加载并分类；错类表、schema/实现、哈希、文件或tensor拒绝。
+- [x] 同样历史得到相同ready/末帧logits；乱序/过期/取消无可发布旧分数，动作层保持未接。
+- [x] 本机CPU、batch=1/1线程合成前向p50/p95与整进程峰值RSS已测；不是全链延迟或公平效果实验。
 - [ ] 清理和停止无需等待模型返回；交接 T17/T20/T23。
 
 ## 前置任务文件

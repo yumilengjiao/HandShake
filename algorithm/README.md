@@ -1,8 +1,10 @@
 # algorithm：模型、训练、评估与推理
 
+> T16阶段一新增`bundle.py`、`online.py`、`deployment.py`：可信本地best导出、有外部SHA锚点的无pickle推理包、共享在线窗口/原始logits以及模型探针。见[运行与验证](../docs/model_bundle_and_inference.md)。只读未校准，不接动作。
+
 > T11/T12/T13 已实现 `data/`、`models/`、`inference.py`、`model_config.py` 与合成 `smoke.py`，另保留T02显式MockPredictor。T14现已增加 `training/` 与 `scripts/train.py`，支持缓存校验、验证选择、checkpoint/恢复与健康诊断，见[训练与交互](../docs/training_and_interaction.md)。规则/MLP/TCN模块和接口可运行；没有真实数据训练结果或可发布权重。使用与边界见 [特征与模型](../docs/features_and_models.md)。
 
-当前数据路线为[公开数据优先](../docs/public_data_plan.md)，T14现有训练器仅适配旧5类特征缓存；15类来源/类别/契约迁移及正式训练尚未完成，不以自采为硬前置。
+当前采用[公开数据优先](../docs/public_data_plan.md)；训练器已支持注册的旧5类与来源15类，格式与训练软件验证见[公开数据实现](../docs/public_data_implementation.md)。真实数据审核、全量缓存、正式训练与校准仍未完成，不以自采为硬前置。
 
 ## 主责与任务
 

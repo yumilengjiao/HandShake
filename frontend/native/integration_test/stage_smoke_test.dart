@@ -32,6 +32,8 @@ void main() {
           python: python!,
           workingDirectory: root,
           perceptionModel: Platform.environment['HANDSHAKE_PERCEPTION_MODEL'],
+          modelPackage: Platform.environment['HANDSHAKE_MODEL_PACKAGE'],
+          modelSha256: Platform.environment['HANDSHAKE_MODEL_SHA256'],
         );
         return repository;
       });
@@ -136,6 +138,17 @@ void main() {
             expect(model.history, isEmpty);
             expect(model.latest!.jpeg, isNull);
           }
+        }
+        if (Platform.environment['HANDSHAKE_INVALID_MODEL_TEST'] == '1') {
+          // Deliberately invalid package must fail before any camera/SDK open.
+          await tester.tap(find.byKey(const Key('start_camera')));
+          await until(
+            () =>
+                model.latest?.modelStatus == 'error' &&
+                model.latest?.state == 'stopped',
+          );
+          expect(model.latest!.classification, isNull);
+          expect(model.latest!.jpeg, isNull);
         }
         await repository.close();
         await until(() => model.link == LinkState.disconnected);

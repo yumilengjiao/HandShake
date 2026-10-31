@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'core_snapshot.dart';
 
-/// Framed HSP2 / uint32 metadata length / uint32 JPEG length / JSON / JPEG.
+/// Framed HSP2/HSP3 / uint32 metadata length / uint32 JPEG length / JSON / JPEG.
 /// Every allocation is bounded before reading a body; no resynchronization on errors.
 Stream<CoreSnapshot> decodePreviewPackets(Stream<List<int>> input) async* {
   var builder = BytesBuilder(copy: false);
@@ -11,6 +11,7 @@ Stream<CoreSnapshot> decodePreviewPackets(Stream<List<int>> input) async* {
   var metadataSize = 0;
   var imageSize = 0;
   var prefix = true;
+  int? expectedVersion;
   await for (final chunk in input) {
     var offset = 0;
     while (offset < chunk.length) {
@@ -20,9 +21,17 @@ Stream<CoreSnapshot> decodePreviewPackets(Stream<List<int>> input) async* {
       if (builder.length != required) continue;
       final bytes = builder.takeBytes();
       if (prefix) {
-        if (ascii.decode(bytes.sublist(0, 4), allowInvalid: true) != 'HSP2') {
+        final magic = ascii.decode(bytes.sublist(0, 4), allowInvalid: true);
+        if (magic != 'HSP2' && magic != 'HSP3') {
           throw const FormatException('Unsupported binary protocol');
         }
+        final version = magic == 'HSP3' ? 3 : 2;
+        if (expectedVersion != null && version != expectedVersion) {
+          throw const FormatException(
+            'Protocol version changed within session',
+          );
+        }
+        expectedVersion = version;
         final header = ByteData.sublistView(bytes);
         metadataSize = header.getUint32(4);
         imageSize = header.getUint32(8);
@@ -38,8 +47,8 @@ Stream<CoreSnapshot> decodePreviewPackets(Stream<List<int>> input) async* {
               ? null
               : Uint8List.sublistView(bytes, metadataSize),
         );
-        if (snapshot.version != 2) {
-          throw const FormatException('Expected v2 payload');
+        if (snapshot.version != expectedVersion) {
+          throw const FormatException('Header/payload version mismatch');
         }
         yield snapshot;
         prefix = true;

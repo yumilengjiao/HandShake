@@ -6,6 +6,7 @@ import threading
 import time
 from dataclasses import dataclass
 
+from shared.inference_protocol import ClassificationNotice
 from shared.preview_protocol import MAX_JPEG_BYTES, PreviewHand, PreviewPoint
 
 
@@ -19,9 +20,18 @@ class CameraFrame:
     hands: tuple[PreviewHand, ...]
     perception_status: str
     capture_hz: float | None
+    classification: ClassificationNotice | None = None
 
 
-def encode_frame(frame, observation, capture_hz, *, cv=None):
+def encode_frame(frame, observation, capture_hz, *, cv=None, classification=None):
+    if observation is not None and observation.info != frame.info:
+        raise ValueError("image/observation frame identity mismatch")
+    if classification is not None and (
+        classification.stream_id != frame.info.stream_id
+        or classification.source_frame_id != str(frame.info.frame_id)
+        or classification.source_timestamp_ns != str(frame.info.timestamp_ns)
+    ):
+        raise ValueError("image/classification frame identity mismatch")
     # Lazy optional dependency: the synthetic UI works without OpenCV/MediaPipe.
     if cv is None:
         import cv2 as cv
@@ -66,6 +76,7 @@ def encode_frame(frame, observation, capture_hz, *, cv=None):
         hands,
         status,
         capture_hz,
+        classification,
     )
 
 
@@ -77,10 +88,22 @@ class CameraPreviewWorker:
     """
 
     def __init__(
-        self, *, device=0, model_path=None, source_factory=None, detector_factory=None
+        self,
+        *,
+        device=0,
+        model_path=None,
+        source_factory=None,
+        detector_factory=None,
+        model_package=None,
+        model_sha256=None,
+        context_epoch=0,
     ):
         self.device, self.model_path = device, model_path
         self.source_factory, self.detector_factory = source_factory, detector_factory
+        self.model_package, self.model_sha256 = model_package, model_sha256
+        self.context_epoch = context_epoch
+        self.model_failed = False
+        self.classification_max_age_ns = 150_000_000
         self.stop_requested = threading.Event()
         self.done = threading.Event()
         self.lock = threading.Lock()
@@ -102,13 +125,39 @@ class CameraPreviewWorker:
             return result
 
     def _run(self):
-        capture = pipeline = None
+        capture = pipeline = classifier = None
         release_ok = True
         try:
             from backend.capture.camera import OpenCVSource
             from backend.capture.worker import CaptureWorker
             from backend.perception.mediapipe_adapter import MediaPipeDetector
             from backend.perception.pipeline import PerceptionPipeline
+
+            if self.model_package is not None:
+                try:
+                    import torch
+
+                    from algorithm.bundle import load_bundle
+                    from algorithm.online import OnlineClassifier
+
+                    if self.model_path is None and self.detector_factory is None:
+                        raise ValueError(
+                            "a gesture classifier requires actual perception"
+                        )
+                    torch.set_num_threads(1)
+                    bundle = load_bundle(
+                        self.model_package, expected_manifest_sha256=self.model_sha256
+                    )
+                    self.classification_max_age_ns = bundle.normalizer.config.max_age_ns
+                    classifier = OnlineClassifier(
+                        bundle,
+                        context_epoch=self.context_epoch,
+                        cancelled=self.stop_requested.is_set,
+                    )
+                except Exception:  # noqa: BLE001 - optional model must fail closed before camera access
+                    self.model_failed = True
+                    self.error = "preview_error"
+                    return
 
             # A supplied-but-broken asset is an error, never silent fallback.
             if self.model_path is not None or self.detector_factory is not None:
@@ -139,17 +188,32 @@ class CameraPreviewWorker:
                 return
             next_frame_at = 0.0
             while not self.stop_requested.is_set():
-                if self.stop_requested.wait(max(0, next_frame_at - time.monotonic())):
+                if classifier is None and self.stop_requested.wait(
+                    max(0, next_frame_at - time.monotonic())
+                ):
                     break
-                _, frame = capture.take(timeout=0.1)
+                skipped, frame = capture.take(timeout=0.1)
+                if classifier is not None:
+                    for dropped in skipped:
+                        classifier.update(dropped)
                 if frame is None:
                     if capture.done:
                         self.error = "camera_unavailable"
                         break
                     continue
                 observation = pipeline.process(frame) if pipeline is not None else None
+                notice = (
+                    classifier.update(observation) if classifier is not None else None
+                )
+                # Process evidence at capture cadence; cap only JPEG/UI output. A 10Hz
+                # sleep here would break the trained 100ms sampling-gap contract.
+                if classifier is not None and time.monotonic() < next_frame_at:
+                    continue
                 packet = encode_frame(
-                    frame, observation, capture.stats.as_dict()["actual_capture_hz"]
+                    frame,
+                    observation,
+                    capture.stats.as_dict()["actual_capture_hz"],
+                    classification=notice,
                 )
                 if self.stop_requested.is_set():
                     break

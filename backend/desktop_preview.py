@@ -29,6 +29,9 @@ class CameraPreviewSession(PreviewSession):
         self.started_ns = 0
         self.release_started_ns = None
 
+    def _make_worker(self):
+        return self.worker_factory()
+
     def _stop(self, reason):
         super()._stop(reason)
         self.camera_frame = None
@@ -77,7 +80,7 @@ class CameraPreviewSession(PreviewSession):
                 if self.source == "camera":
                     self.reason = "camera_starting"
                     try:
-                        self.worker = self.worker_factory()
+                        self.worker = self._make_worker()
                         self.worker.start()
                     except (RuntimeError, OSError, ValueError):
                         self._stop("camera_unavailable")
@@ -179,14 +182,36 @@ def main():
     parser.add_argument(
         "--perception-model", help="optional local MediaPipe asset; not a gesture model"
     )
+    parser.add_argument("--model-package", help="optional verified gesture package")
+    parser.add_argument("--model-sha256", help="trusted external checksums.json SHA256")
     args = parser.parse_args()
+    if bool(args.model_package) != bool(args.model_sha256):
+        parser.error("--model-package and --model-sha256 must be provided together")
+    if args.model_package and not args.perception_model:
+        parser.error("gesture inference requires --perception-model")
     if args.camera < 0:
         parser.error("camera index must be nonnegative")
-    session = CameraPreviewSession(
-        worker_factory=lambda: CameraPreviewWorker(
-            device=args.camera, model_path=args.perception_model
+    command_type = PreviewCommand
+    if args.model_package:
+        from backend.classified_preview import ClassifiedCameraSession
+        from shared.model_preview_protocol import ModelPreviewCommand
+
+        command_type = ModelPreviewCommand
+        session = ClassifiedCameraSession(
+            worker_factory=lambda context_epoch: CameraPreviewWorker(
+                device=args.camera,
+                model_path=args.perception_model,
+                model_package=args.model_package,
+                model_sha256=args.model_sha256,
+                context_epoch=context_epoch,
+            )
         )
-    )
+    else:
+        session = CameraPreviewSession(
+            worker_factory=lambda: CameraPreviewWorker(
+                device=args.camera, model_path=args.perception_model
+            )
+        )
     # Keep native SDK stdout logging away from the binary protocol descriptor.
     with os.fdopen(os.dup(sys.stdout.fileno()), "wb", buffering=0) as output:
         os.dup2(sys.stderr.fileno(), sys.stdout.fileno())
@@ -195,7 +220,7 @@ def main():
                 input_stream,
                 output,
                 session=session,
-                decoder=lambda line: decode_command(line, PreviewCommand),
+                decoder=lambda line: decode_command(line, command_type),
                 encoder=lambda packet: packet.encode(),
             )
     # This isolated preview process owns no persistence or action backend. A native

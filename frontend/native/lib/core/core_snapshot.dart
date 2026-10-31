@@ -1,6 +1,11 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'model_classification.dart';
+import 'wire_values.dart';
+
+export 'wire_values.dart' show wireCounter;
+
 /// Immutable protocol objects; nanoseconds/counters never pass through double.
 class StagePoint {
   const StagePoint(this.x, this.y, this.z);
@@ -16,13 +21,6 @@ class StageHand {
   final List<StagePoint> points;
   final List<bool> validity;
   final bool usable;
-}
-
-BigInt wireCounter(Object? value) {
-  if (value is! String || !RegExp(r'^(0|[1-9][0-9]{0,18})$').hasMatch(value)) {
-    throw const FormatException('Invalid decimal counter');
-  }
-  return BigInt.parse(value);
 }
 
 class CoreSnapshot {
@@ -43,6 +41,8 @@ class CoreSnapshot {
     required this.height,
     required this.perceptionStatus,
     required this.captureHz,
+    required this.modelStatus,
+    this.classification,
     Uint8List? jpeg,
   }) : hands = List.unmodifiable(hands),
        jpeg = jpeg == null
@@ -68,6 +68,8 @@ class CoreSnapshot {
   final String perceptionStatus;
   final double? captureHz;
   final Uint8List? jpeg;
+  final String modelStatus;
+  final ModelClassification? classification;
   bool get isPreview => state == 'preview';
   bool get isCamera => source == 'camera';
 
@@ -120,7 +122,7 @@ class CoreSnapshot {
       throw const FormatException('Unknown snapshot shape');
     }
     final version = value['version'];
-    final v2 = version == 2;
+    final v2 = version == 2 || version == 3;
     final expected = v2
         ? ({...fields}
             ..remove('landmarks')
@@ -131,17 +133,24 @@ class CoreSnapshot {
               'capture_hz',
               'perception_status',
               'hands',
+              if (version == 3) 'classification',
             }))
         : fields;
     if (value.length != expected.length || !expected.containsAll(value.keys)) {
       throw const FormatException('Unknown snapshot fields');
     }
     if (version is! int ||
-        (version != 1 && version != 2) ||
+        (version != 1 && version != 2 && version != 3) ||
         (value['source'] != 'synthetic' &&
             !(v2 && value['source'] == 'camera')) ||
         value['mode'] != 'dry_run' ||
-        value['model_status'] != 'unavailable' ||
+        !(version == 3
+            ? {
+                'unavailable',
+                'loaded_uncalibrated',
+                'error',
+              }.contains(value['model_status'])
+            : value['model_status'] == 'unavailable') ||
         value['control_available'] != false) {
       throw const FormatException('Unsupported protocol or capability');
     }
@@ -242,6 +251,32 @@ class CoreSnapshot {
         'Invalid JPEG payload or image/state mismatch',
       );
     }
+    final classification = version == 3 && value['classification'] != null
+        ? ModelClassification.parse(value['classification'])
+        : null;
+    if (classification != null) {
+      if (!camera ||
+          state != 'preview' ||
+          value['model_status'] != 'loaded_uncalibrated' ||
+          classification.epoch != wireCounter(value['epoch']) ||
+          classification.frameId != wireCounter(value['frame_id']) ||
+          classification.sourceNs != frameTime) {
+        throw const FormatException(
+          'Classification does not belong to this frame/epoch',
+        );
+      }
+      if (classification.state == 'predicted' &&
+          (status != 'processed_hands' ||
+              hands.length != 1 ||
+              !hands.single.usable ||
+              hands.single.validity.any((v) => !v))) {
+        throw const FormatException(
+          'Prediction requires one valid observed hand',
+        );
+      }
+    } else if (value['model_status'] == 'loaded_uncalibrated') {
+      throw const FormatException('Missing model status for current frame');
+    }
     return CoreSnapshot._(
       version: version,
       sessionId: session,
@@ -259,6 +294,8 @@ class CoreSnapshot {
       height: height,
       perceptionStatus: status as String,
       captureHz: (hz as num?)?.toDouble(),
+      modelStatus: value['model_status'] as String,
+      classification: classification,
       jpeg: jpeg,
     );
   }

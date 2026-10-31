@@ -81,7 +81,11 @@ class StageScreen extends StatelessWidget {
                               _timeline(context),
                               if (!wide)
                                 ExpansionTile(
-                                  title: const Text('展开决策轨迹 · 模型未加载'),
+                                  title: Text(
+                                    model.displayed?.classification == null
+                                        ? '展开决策轨迹 · 模型未加载'
+                                        : '展开决策轨迹 · 未校准分类',
+                                  ),
                                   children: [_decisions(context)],
                                 ),
                               if (model.explain)
@@ -89,7 +93,7 @@ class StageScreen extends StatelessWidget {
                                   padding: const EdgeInsets.only(top: 20),
                                   child: Text(
                                     '讲解模式 / 骨架 → 共享特征与缺失掩码 → 因果TCN → 校准拒识 → 安全策略。'
-                                    '\n当前只接感知/预览；未运行手势特征、分类网络或决策器。'
+                                    '\n仅展示原始分类logits；未校准、未建立操作意图或动作授权。'
                                     '32步是UI历史容量，不代表当前网络的感受野；帧数也不等于固定时长。',
                                     style: TextStyle(
                                       color: stageMint,
@@ -188,6 +192,16 @@ class StageScreen extends StatelessWidget {
 
   Widget _decisions(BuildContext context) {
     final snapshot = model.displayed;
+    final classification = snapshot?.classification;
+    final modelEvidence = classification == null
+        ? (snapshot?.modelStatus == 'error'
+              ? '模型包校验/加载失败\n没有可用预测'
+              : '未加载手势分类模型\nMediaPipe骨架不等于手势识别')
+        : '${classification.modelType.toUpperCase()} / ${classification.vocabularyVersion}\n'
+              '包 ${classification.modelVersion.length > 20 ? '${classification.modelVersion.substring(0, 20)}…' : classification.modelVersion}\n'
+              '${classification.syntheticTraining ? '合成训练 · 仅管线诊断' : '训练数据非合成 · 效果仍待实测'}\n'
+              '${classification.state == 'predicted' ? '来源类 ${classification.topToken} / logit ${classification.topLogit!.toStringAsFixed(3)}' : '${classification.reason} · 历史${classification.windowLength}/32步'}\n'
+              '源帧 #${classification.frameId} · 未校准，不是操作意图';
     final steps = [
       (
         '观测 / OBSERVE',
@@ -196,7 +210,7 @@ class StageScreen extends StatelessWidget {
                   '${snapshot.isCamera ? (snapshot.perceptionStatus == 'unavailable' ? '未配置感知资产，仅视频' : '感知: ${snapshot.perceptionStatus}') : '程序生成的合成骨架'}'
             : '当前没有输入帧',
       ),
-      ('模型 / INFER', '未加载手势分类模型\nMediaPipe骨架不等于手势识别'),
+      ('模型 / INFER', modelEvidence),
       ('策略 / DECIDE', '仅预览 · 不具备控制能力\n15个来源类别不直接等于操作意图'),
       ('结果 / ACT', '没有发送应用命令\n翻页、音乐、光标暂不可用'),
     ];
@@ -372,7 +386,7 @@ class StageScreen extends StatelessWidget {
               child: Row(
                 spacing: 10,
                 children: [
-                  if (model.latest?.version == 2)
+                  if (model.latest?.version == 2 || model.latest?.version == 3)
                     OutlinedButton.icon(
                       key: const Key('start_camera'),
                       onPressed: model.canStartCamera
