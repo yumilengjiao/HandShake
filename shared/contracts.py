@@ -120,11 +120,15 @@ class PerceptionStatus(str, Enum):
 class FrameStatus(SourceRecord):
     perception_status: PerceptionStatus
     processed_at_ns: Ns | None = None
+    processing_time_origin: Literal["local_runtime", "unavailable_external"] = "local_runtime"
     drop_or_error_reason: Identifier | None = None
 
     @model_validator(mode="after")
     def check_processing(self):
-        if self.perception_status != PerceptionStatus.NOT_PROCESSED and self.processed_at_ns is None:
+        if self.processing_time_origin == "unavailable_external":
+            if self.processed_at_ns is not None:
+                raise ValueError("external SDK completion time is unavailable; do not invent it")
+        elif self.perception_status != PerceptionStatus.NOT_PROCESSED and self.processed_at_ns is None:
             raise ValueError("processed frames require processed_at_ns")
         if self.processed_at_ns is not None and self.processed_at_ns < self.source_timestamp_ns:
             raise ValueError("processed_at_ns precedes the source timestamp")

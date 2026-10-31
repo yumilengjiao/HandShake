@@ -17,7 +17,7 @@ from algorithm.models.losses import masked_cross_entropy
 from algorithm.training.config import TrainConfig
 from algorithm.training.inputs import load_training_inputs
 from algorithm.training.metrics import classification_metrics
-from shared.classes import load_classes
+from shared.classes import vocabulary_for
 from shared.features import feature_schema_hash
 
 
@@ -81,7 +81,8 @@ def _evaluate(model, data, kind, batch_size):
                 count += valid
                 labels.extend(y[mask].tolist())
                 guesses.extend(logits.argmax(-1)[mask].tolist())
-    return classification_metrics(np.asarray(labels, dtype=np.int64), np.asarray(guesses, dtype=np.int64)) | {"loss": total_loss / count}
+    return classification_metrics(np.asarray(labels, dtype=np.int64), np.asarray(guesses, dtype=np.int64),
+                                  class_count=model.num_classes) | {"loss": total_loss / count}
 
 
 def train(train_cache, val_cache, output, *, config=None, resume=None, stop_after_epoch=None):
@@ -98,11 +99,13 @@ def train(train_cache, val_cache, output, *, config=None, resume=None, stop_afte
     if config.shuffle_labels_diagnostic:
         mask = training["class_valid"]
         training["y"][mask] = np.random.default_rng(config.seed).permutation(training["y"][mask])
-    model = build_model(config.model_type)
+    vocabulary = vocabulary_for(provenance["vocabulary_version"])
+    model = build_model(config.model_type, vocabulary=vocabulary)
     optimizer = torch.optim.AdamW(model.parameters(), lr=config.learning_rate, weight_decay=config.weight_decay)
     identity = dict(config=config.model_dump(mode="json"), data=provenance, code_sha256=implementation_hash(),
-                    schema_sha256=feature_schema_hash(), classes_sha256=load_classes().digest(),
-                    architecture=load_model_config(config.model_type).model_dump(mode="json"),
+                    schema_sha256=feature_schema_hash(), classes_sha256=vocabulary.digest(), classes=vocabulary.to_dict(),
+                    architecture=load_model_config(config.model_type).model_dump(mode="json") | {
+                        "vocabulary_version": vocabulary.vocabulary_version, "num_classes": vocabulary.class_count},
                     environment=dict(python=platform.python_version(), torch=str(torch.__version__), numpy=np.__version__,
                                      system=platform.system(), kernel=platform.release(), machine=platform.machine(), cpu_model=_cpu_model(),
                                      logical_cpus=os.cpu_count(), python_build=list(platform.python_build()), device="cpu", threads=config.threads))
@@ -137,7 +140,7 @@ def train(train_cache, val_cache, output, *, config=None, resume=None, stop_afte
     manifest = dict(format_version="training-run-v1", run_id=run_id, identity_sha256=identity_hash, identity=identity,
                     synthetic=provenance["synthetic"], status="running", resume_boundary="completed_epoch",
                     determinism="CPU, one process, no DataLoader workers; identical code/software/hardware required",
-                    selection="validation macro-F1 over all 5 classes; strict improvement > min_delta; ties retain earlier epoch",
+                    selection=f"validation macro-F1 over all {vocabulary.class_count} classes; strict improvement > min_delta; ties retain earlier epoch",
                     scheduler="constant; no scheduler state", final_test_used=False)
     _atomic_json(root / "run_manifest.json", manifest)
     try:
@@ -159,7 +162,7 @@ def train(train_cache, val_cache, output, *, config=None, resume=None, stop_afte
                 valid = int(mask.sum())
                 if loss is None:
                     skipped += 1
-                    batch_metrics.append(dict(batch=batch_index, supervised=0, skipped=True, loss=None, gradient_norm=None, learning_rate=config.learning_rate, class_counts=[0] * 5))
+                    batch_metrics.append(dict(batch=batch_index, supervised=0, skipped=True, loss=None, gradient_norm=None, learning_rate=config.learning_rate, class_counts=[0] * vocabulary.class_count))
                     continue
                 loss.backward()
                 grad = torch.nn.utils.clip_grad_norm_(model.parameters(), config.grad_clip_norm, error_if_nonfinite=True)
@@ -172,7 +175,7 @@ def train(train_cache, val_cache, output, *, config=None, resume=None, stop_afte
                 grad_max = max(grad_max, float(grad))
                 batch_metrics.append(dict(batch=batch_index, supervised=valid, skipped=False, loss=float(loss.detach()),
                                           gradient_norm=float(grad), learning_rate=config.learning_rate,
-                                          class_counts=[int(((y == i) & mask).sum()) for i in range(5)]))
+                                          class_counts=[int(((y == i) & mask).sum()) for i in range(vocabulary.class_count)]))
             metrics = _evaluate(model, validation, config.model_type, config.batch_size)
             score = metrics["macro_f1"]
             if best_state is None or score > best_score + config.min_delta:

@@ -2,6 +2,9 @@
 
 ## 当前已有内容
 
+- [公开数据导入与15类深度训练实现](public_data_implementation.md)、[深度学习实验与答辩](deep_learning_experiment_plan.md)
+- [时序交互舞台概念稿与Flutter技术预检](interaction_stage_design.md)
+
 - [T14/T17/T18 训练与交互说明](training_and_interaction.md)、[最新master适配验证](verification_master_sync.md)
 
 - [公开数据路线 public-data-v1](public_data_plan.md)、[官方下载入口](../data/SOURCES.md)、[版本/许可/校验清单](../data/sources.json)

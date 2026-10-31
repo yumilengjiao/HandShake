@@ -28,6 +28,7 @@ explicit = true
 [project.scripts]
 handshake = "backend.cli:main"
 handshake-perception-probe = "backend.perception.probe:main"
+handshake-data = "backend.importing.commands:main"
 
 [tool.setuptools]
 include-package-data = true

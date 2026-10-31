@@ -9,7 +9,7 @@ import warnings
 import numpy as np
 
 from shared import FEATURE_SCHEMA_VERSION, PROTOCOL_VERSION
-from shared.contracts import GESTURE_IDS
+from shared.classes import ClassVocabulary, vocabulary_for
 from shared.features.geometry import FeatureSample
 from shared.features.schema import (DT, FIELD_NAMES, MISSING, FeatureConfig, canonical_hash, feature_schema_hash)
 
@@ -59,7 +59,8 @@ class FeatureStats:
 
 
 class FeatureNormalizer:
-    def __init__(self, stats: FeatureStats, config: FeatureConfig | None = None):
+    def __init__(self, stats: FeatureStats, config: FeatureConfig | None = None, *, vocabulary: ClassVocabulary | None = None):
+        self.vocabulary = vocabulary or vocabulary_for()
         self.config = config or FeatureConfig()
         if stats.config_hash != self.config.config_hash or stats.schema_hash != feature_schema_hash():
             raise ValueError("statistics do not match the feature config/schema")
@@ -67,7 +68,8 @@ class FeatureNormalizer:
 
     @classmethod
     def fit(cls, samples: Iterable[FeatureSample], *, dataset_hash: str, split_hash: str,
-            split: str = "train", config: FeatureConfig | None = None) -> "FeatureNormalizer":
+            split: str = "train", config: FeatureConfig | None = None,
+            vocabulary: ClassVocabulary | None = None) -> "FeatureNormalizer":
         if split != "train":
             raise ValueError("statistics may only be fitted on train; validation/test fitting is forbidden")
         config = config or FeatureConfig()
@@ -100,7 +102,7 @@ class FeatureNormalizer:
         if fallback:
             warnings.warn("Training statistics fallback (empty mean=0/std=1; near-constant std=1): " + ", ".join(fallback), FeatureStatisticsWarning, stacklevel=2)
         stats = FeatureStats(mean, std, count, dataset_hash, split_hash, feature_schema_hash(), config.config_hash, fallback)
-        return cls(stats, config)
+        return cls(stats, config, vocabulary=vocabulary)
 
     def transform(self, sample: FeatureSample | np.ndarray, geometric_valid_mask: np.ndarray | None = None) -> np.ndarray:
         if isinstance(sample, FeatureSample):
@@ -139,9 +141,10 @@ class FeatureNormalizer:
 
     def to_dict(self) -> dict:
         body = {
-            "format_version": 1, "status": "draft", "feature_schema_version": FEATURE_SCHEMA_VERSION,
-            "vocabulary_version": PROTOCOL_VERSION,
-            "class_ids": {gesture.value: index for gesture, index in GESTURE_IDS.items()},
+            "format_version": 1 if self.vocabulary.vocabulary_version == PROTOCOL_VERSION else 2,
+            "status": "draft", "feature_schema_version": FEATURE_SCHEMA_VERSION,
+            "vocabulary_version": self.vocabulary.vocabulary_version,
+            "class_ids": {token: index for index, token in enumerate(self.vocabulary.tokens)},
             "config": self.config.to_dict(), "stats": self.stats.to_dict(),
         }
         return body | {"content_hash": canonical_hash(body)}
@@ -166,9 +169,11 @@ class FeatureNormalizer:
         body = {key: value for key, value in data.items() if key != "content_hash"}
         if data["content_hash"] != canonical_hash(body):
             raise ValueError("normalizer content hash mismatch")
-        expected_classes = {gesture.value: index for gesture, index in GESTURE_IDS.items()}
-        if (type(data["format_version"]) is not int or data["format_version"] != 1 or data["status"] != "draft"
-                or data["feature_schema_version"] != FEATURE_SCHEMA_VERSION or data["vocabulary_version"] != PROTOCOL_VERSION
+        vocabulary = vocabulary_for(data["vocabulary_version"])
+        expected_classes = {token: index for index, token in enumerate(vocabulary.tokens)}
+        format_version = 1 if vocabulary.vocabulary_version == PROTOCOL_VERSION else 2
+        if (type(data["format_version"]) is not int or data["format_version"] != format_version or data["status"] != "draft"
+                or data["feature_schema_version"] != FEATURE_SCHEMA_VERSION
                 or data["class_ids"] != expected_classes):
             raise ValueError("unsupported normalizer schema or class table")
         try:
@@ -185,4 +190,4 @@ class FeatureNormalizer:
             raise ValueError("normalizer dataset hash mismatch")
         if expected_split_hash is not None and stats.split_hash != expected_split_hash:
             raise ValueError("normalizer split hash mismatch")
-        return cls(stats, saved_config)
+        return cls(stats, saved_config, vocabulary=vocabulary)

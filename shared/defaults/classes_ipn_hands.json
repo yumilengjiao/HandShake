@@ -1,0 +1,22 @@
+{
+  "schema_version": "classes-v1",
+  "vocabulary_version": "ipn-hands-v1",
+  "class_count": 15,
+  "classes": [
+    {"id": 0, "token": "NOG"},
+    {"id": 1, "token": "P1F"},
+    {"id": 2, "token": "P2F"},
+    {"id": 3, "token": "C1F"},
+    {"id": 4, "token": "C2F"},
+    {"id": 5, "token": "TUP"},
+    {"id": 6, "token": "TDN"},
+    {"id": 7, "token": "TLT"},
+    {"id": 8, "token": "TRT"},
+    {"id": 9, "token": "OP2"},
+    {"id": 10, "token": "2C1"},
+    {"id": 11, "token": "2C2"},
+    {"id": 12, "token": "ZIN"},
+    {"id": 13, "token": "ZOT"},
+    {"id": 14, "token": "GRB"}
+  ]
+}

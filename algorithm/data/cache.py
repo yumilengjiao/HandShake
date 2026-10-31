@@ -8,7 +8,7 @@ import numpy as np
 
 from algorithm.data.dataset import WindowDataset, canonical_digest
 from shared import FEATURE_SCHEMA_VERSION, PROTOCOL_VERSION
-from shared.classes import load_classes
+from shared.classes import ClassVocabulary, load_classes, vocabulary_for
 from shared.features import feature_schema_hash
 
 
@@ -27,15 +27,18 @@ def write_cache(dataset: WindowDataset, directory: str | Path) -> dict:
     np.savez_compressed(npz, **arrays)
     dataset.normalizer.save(target / "stats.json")
     index = dict(
-        format_version="t11-cache-v1", feature_schema_version=FEATURE_SCHEMA_VERSION,
-        schema_sha256=feature_schema_hash(), vocabulary_version=PROTOCOL_VERSION,
-        classes_sha256=load_classes().digest(), config_sha256=dataset.config.config_hash,
+        format_version="t11-cache-v1" if dataset.manifest.vocabulary_version == PROTOCOL_VERSION else "t11-cache-v2",
+        feature_schema_version=FEATURE_SCHEMA_VERSION,
+        schema_sha256=feature_schema_hash(), vocabulary_version=dataset.manifest.vocabulary_version,
+        classes_sha256=dataset.manifest.vocabulary.digest(), config_sha256=dataset.config.config_hash,
         dataset_sha256=dataset.manifest.dataset_sha256, split_sha256=dataset.manifest.digest(),
         stats_sha256=dataset.normalizer.stats_hash, split=dataset.split, stride=dataset.stride,
         synthetic=dataset.manifest.synthetic, npz_sha256=sha256(npz.read_bytes()).hexdigest(),
         source_ids=[item["source"] for item in dataset.items],
         endpoint_inventory=dataset.endpoint_inventory, coverage=dataset.coverage(),
     )
+    if index["format_version"] == "t11-cache-v2":
+        (target / "classes.json").write_text(json.dumps(dataset.manifest.vocabulary.to_dict(), indent=2) + "\n")
     index["index_sha256"] = canonical_digest(index)
     (target / "index.json").write_text(json.dumps(index, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return index
@@ -43,15 +46,20 @@ def write_cache(dataset: WindowDataset, directory: str | Path) -> dict:
 
 def load_cache(directory: str | Path, *, expected_dataset_sha256: str,
                expected_split_sha256: str, expected_stats_sha256: str,
-               expected_config_sha256: str, expected_split: str) -> tuple[dict, dict]:
+               expected_config_sha256: str, expected_split: str,
+               expected_vocabulary: ClassVocabulary | None = None) -> tuple[dict, dict]:
     root = Path(directory)
     index = json.loads((root / "index.json").read_text(encoding="utf-8"))
     claimed_hash = index.get("index_sha256")
     if claimed_hash != canonical_digest({key: value for key, value in index.items() if key != "index_sha256"}):
         raise ValueError("cache index hash mismatch")
-    expected = dict(format_version="t11-cache-v1", feature_schema_version=FEATURE_SCHEMA_VERSION,
-                    schema_sha256=feature_schema_hash(), vocabulary_version=PROTOCOL_VERSION,
-                    classes_sha256=load_classes().digest(), dataset_sha256=expected_dataset_sha256,
+    vocabulary = expected_vocabulary or vocabulary_for(index.get("vocabulary_version"))
+    format_version = "t11-cache-v1" if vocabulary.vocabulary_version == PROTOCOL_VERSION else "t11-cache-v2"
+    if format_version == "t11-cache-v2" and load_classes(root / "classes.json") != vocabulary:
+        raise ValueError("cache class table version mismatch")
+    expected = dict(format_version=format_version, feature_schema_version=FEATURE_SCHEMA_VERSION,
+                    schema_sha256=feature_schema_hash(), vocabulary_version=vocabulary.vocabulary_version,
+                    classes_sha256=vocabulary.digest(), dataset_sha256=expected_dataset_sha256,
                     split_sha256=expected_split_sha256, stats_sha256=expected_stats_sha256,
                     config_sha256=expected_config_sha256, split=expected_split)
     if any(index.get(key) != value for key, value in expected.items()):
@@ -62,6 +70,8 @@ def load_cache(directory: str | Path, *, expected_dataset_sha256: str,
     from shared.features import FeatureNormalizer
     stats = FeatureNormalizer.load(root / "stats.json", expected_dataset_hash=expected_dataset_sha256,
                                    expected_split_hash=expected_split_sha256)
+    if stats.vocabulary != vocabulary:
+        raise ValueError("cache normalizer vocabulary version mismatch")
     if stats.stats_hash != expected_stats_sha256 or stats.config.config_hash != expected_config_sha256:
         raise ValueError("cache statistics provenance mismatch")
     with np.load(npz, allow_pickle=False) as data:
@@ -78,7 +88,7 @@ def load_cache(directory: str | Path, *, expected_dataset_sha256: str,
     if arrays["y"].dtype.kind not in "iu" or arrays["valid_length"].dtype.kind not in "iu":
         raise ValueError("cache labels/lengths must be integers")
     labels = arrays["y"]
-    if np.any((arrays["class_valid"] & ((labels < 0) | (labels >= load_classes().class_count))) | (~arrays["class_valid"] & (labels != -1))):
+    if np.any((arrays["class_valid"] & ((labels < 0) | (labels >= vocabulary.class_count))) | (~arrays["class_valid"] & (labels != -1))):
         raise ValueError("cache labels do not match vocabulary/masks")
     if np.any((arrays["valid_length"] < 1) | (arrays["valid_length"] > 32)):
         raise ValueError("cache valid_length must be in [1,32]")

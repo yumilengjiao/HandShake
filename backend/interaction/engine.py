@@ -64,6 +64,8 @@ class Evidence:
     aspect_ratio: float = 0.75
 
     def __post_init__(self):
+        if not isinstance(self.prediction, ModelPrediction):
+            raise ValueError("legacy interaction requires ModelPrediction; source classifications need an explicit application policy")
         for name in ("ready", "quality_valid", "association_ambiguous", "static_pose_valid", "neutral_valid"):
             if type(getattr(self, name)) is not bool:
                 raise ValueError(f"{name} must be boolean")

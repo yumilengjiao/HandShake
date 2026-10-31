@@ -1,0 +1,124 @@
+{
+  "format_version": "public-data-pipeline-verification-v1",
+  "recorded_at": "2026-10-30T14:51:13.187990+00:00",
+  "git_base_head": "f91c9fd6a3e35fceb4f541e7c9d0e6035b7dfb43",
+  "branch": "feat/public-data-training",
+  "source_sha256": {
+    "algorithm/data/augmentation.py": "558912625c2d7d896076fad82e9b09bcd1ce4baec00b23ea8d8ba4587665fcd8",
+    "algorithm/data/cache.py": "a70402c14960fd37750c6a9c1579614db83b64fb02e319bed6230eda80b8578e",
+    "algorithm/data/dataset.py": "d45fb60556143ead6598d3ccf230b8c0b398302876c3d040c558fd69708a21c5",
+    "algorithm/data/ipn_hands.py": "f62d0993134ad459f6df7248331336d5b6e72cdf699edf4348e35361476359f5",
+    "algorithm/data/source_archive.py": "487d7366a121798c5e9802c18e108c129c75ba1b6bf48bf2219a39449276728f",
+    "algorithm/inference.py": "256a364335c93b6a8a2556bdfe2380b136c3c375cd51e6ade1d52df45d9c54cd",
+    "algorithm/model_config.py": "bd86e7fed7cb7e223d5f3cb4dc41bfac07d708862ab96c691162f0a8f5837c3f",
+    "algorithm/models/mlp.py": "eba19fd0aa7855a87400086fe5b10602ead106ffa79be88f556bdde5782423dc",
+    "algorithm/training/inputs.py": "5dcaf79dcf7a047da1bb1b78035d981497f2bce3015f4c711af033b570902852",
+    "algorithm/training/trainer.py": "accd02afd8793c9b74d2224804568d6306093482f81562c663da7ed23e2fb827",
+    "backend/importing/__init__.py": "bb035d4419fb7c6984ec2369afa5eeb7d812a5cee4f0741d6aa1b802313e5057",
+    "backend/importing/commands.py": "fc75928e4e173e587b594a0a24a489ec6d4680cdead5f0d4e52eb9d0aed86c4b",
+    "backend/importing/features.py": "da7ecef04588e6cca9ab3af0e722f466b0b70e00a5820bdb91d6888334f3219b",
+    "backend/importing/ipn_hands.py": "8efefd96d4bb165cac621edf46ad10e3633ea210c6c2d83f087bd1a388197c29",
+    "backend/interaction/engine.py": "bff4daa0a15414eecf11c99bcf6fd895c942b3f7bbca7f27fed3dff6d4aaf0fe",
+    "backend/interaction/evidence.py": "e18248c8e11bd504e471f4940c8a7c5332f86927617797efb4339913020d3740",
+    "backend/perception/assembler.py": "630958e986eb7692109214aefbbca5ae0c7753aa0bbe07183eca80fc4ff3fafe",
+    "backend/perception/pipeline.py": "cd1427e9240d444305b0211131b38cb3fc59640a7e066857b11687e8219f26dc",
+    "pyproject.toml": "81e8a1608de209448a14071f8401f9b825872f0b63edb7600586fd48be7f9491",
+    "shared/classes.py": "a6e51f7a7c01a04ea87d6a2009cc17ec4a6c0055f2823b7ba0252b1aeb1e20be",
+    "shared/classification.py": "fe99457136380beec0c56c9e4eabfae63de279ce1e6962c5a5918e9ea6e2d91d",
+    "shared/contracts.py": "30dded730c5616e58df2d31242f9c34e8ae26a9740068d315c86368b5d13720b",
+    "shared/defaults/classes_ipn_hands.json": "97b87acc0fba48daa7187ba735b47cdab0a0405c8ce1d4d23f486bb7d1602237",
+    "shared/features/normalization.py": "ad38a6a4d2f8c2a900c00435165ca1f14d8404253fe7b2d16eff5b49b5c9efc3",
+    "tests/integration/test_public_data.py": "91cc8cfe0f8149ef52894c70302aee19a8a2bdc422dd240acbdfbd6a3e7aae7b",
+    "tests/unit/test_public_vocabulary.py": "a31044954d9522a48735a1ad8789fb3d58fe13989c1e8715d15d56ea75246396"
+  },
+  "environment": {
+    "python": "3.12.14",
+    "os": "Linux",
+    "architecture": "x86_64",
+    "packages": {
+      "numpy": "1.26.4",
+      "pydantic": "2.14.1",
+      "torch": "2.15.0+cpu",
+      "scikit-learn": "1.9.1",
+      "mediapipe": "0.10.21",
+      "pytest": "9.2.0"
+    }
+  },
+  "pytest": {
+    "tests": "461",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "34.411"
+  },
+  "new_fixture_scope": {
+    "synthetic": true,
+    "videos": 3,
+    "frames": 135,
+    "source_classes": 15,
+    "neural_models": [
+      "MLP",
+      "causal_TCN"
+    ],
+    "full_vs_resumed_training": "exact_weights_and_history_tested",
+    "real_dataset_accuracy_measured": false
+  },
+  "model_parameters": {
+    "mlp_15_classes": 21391,
+    "tcn_15_classes": 56975,
+    "tcn_receptive_field": 31
+  },
+  "official_annotation_probe": {
+    "status": "blocked",
+    "ready_for_training": false,
+    "error": "ValueError: SHA256 mismatch: expected 4686a2ebf70a6036166c261bc6992d050cfba08c3b18edcdd460b3fa9f30ec71, observed 520dfbf3d52ecab6535d8841bba55e94d6b512596ed1cff4505d2c1345bcbaec"
+  },
+  "large_dataset_archives_downloaded": false,
+  "checks": {
+    "ruff_changed_python_E9_F": "passed",
+    "compileall": "passed",
+    "locked_dependencies": "passed",
+    "sdist_wheel_build": "passed",
+    "wheel_outside_source_base_dependencies_only": "passed",
+    "svg_parse_and_rasterize": "passed"
+  },
+  "wheel_sha256": "81212901ae4407f96a6bc6880d400232c3e9fdf382d21714197f8ebe1a98a1d0",
+  "ui": {
+    "artifact": "docs/assets/interaction-stage-concept.svg",
+    "kind": "design_only_not_runtime_screenshot",
+    "flutter_sdk_checkout": "timed_out",
+    "flutter_build_and_widget_tests": "not_run"
+  },
+  "remaining": [
+    "official_annotation_checksum_discrepancy",
+    "real_subject_metadata_review",
+    "full_corpus_streaming_caches",
+    "explicit_public_class_application_policy",
+    "T15_calibration_and_event_evaluation",
+    "T16_model_release_bundle",
+    "native_UI_and_real_application_control"
+  ],
+  "real_sdk_synthetic_preview": {
+    "processed_frames": 3,
+    "status_counts": {
+      "processed_hands": 0,
+      "processed_no_hand": 3,
+      "not_processed": 0,
+      "error": 0
+    },
+    "perception": {
+      "kind": "mediapipe_hand_landmarker",
+      "sdk_version": "0.10.21",
+      "asset_sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+      "asset_source": "user-supplied-local-asset",
+      "asset_license": "verify license before redistribution",
+      "mode": "VIDEO",
+      "max_hands": 2,
+      "synthetic": false
+    },
+    "shutdown_confirmed": true,
+    "error": null,
+    "synthetic": true,
+    "control_backend": "none (collection cannot inject actions)"
+  }
+}

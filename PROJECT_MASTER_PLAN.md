@@ -1,5 +1,7 @@
 # HandShake：基于手部关键点与深度时序学习的意图感知终端交互系统
 
+> **2026-10-30增量**：公开数据校验/导入、小规模缓存、15类MLP/因果TCN训练与恢复已实现，旧交互不会误消费来源分类；正式数据、全量流式训练和公开应用策略仍待验。深度学习主线与非卡片式原生界面方案见 [本轮实现](docs/public_data_implementation.md)、[实验设计](docs/deep_learning_experiment_plan.md)、[交互设计稿](docs/interaction_stage_design.md)。Flutter原型尚未构建，不冒充跨平台交付。
+
 > **文档定位**：项目总目标、产品边界、研究路线、技术架构、实现细节、实验方案与答辩验收依据。
 >
 > **当前状态（2026-10-29）**：T01/T02/T05核心、T03/T04/T06采集/感知工具、T11～T13特征/模型，以及T14训练器、T17状态机、T18调度模块已实现。保留master的感知兼容依赖和[public-data-v1](docs/public_data_plan.md)路线；不要求自采。公开数据标注SHA及15类协议迁移、正式数据训练、完整实机验收、产品UI和真实翻页仍待完成。软件状态见[最新适配验证](docs/verification_master_sync.md)，研究指标不是实验结果。

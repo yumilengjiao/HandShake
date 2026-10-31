@@ -12,6 +12,8 @@ from typing import Callable, Literal
 import numpy as np
 
 from algorithm.models.rule_baseline import RuleBaseline
+from shared import PROTOCOL_VERSION
+from shared.classification import SourceClassification
 from shared.classes import load_classes
 from shared.contracts import FeatureWindow, ModelPrediction, Timebase
 from shared.features.schema import FeatureConfig
@@ -78,11 +80,18 @@ class _GuardedPredictor:
             raise ValueError("current_quality_invalid: latest observation must be valid")
         return self._clock(window)
 
-    def _prediction(self, window: FeatureWindow, scores, started_at_ns: int) -> ModelPrediction:
+    def _prediction(self, window: FeatureWindow, scores, started_at_ns: int) -> ModelPrediction | SourceClassification:
         finished_at_ns = self._clock(window)
         if finished_at_ns < started_at_ns:
             raise ValueError("clock_regressed: inference clock moved backwards")
-        return ModelPrediction(
+        vocabulary = getattr(self, "vocabulary", None)
+        result_type = ModelPrediction
+        extra = {}
+        if vocabulary is not None and vocabulary.vocabulary_version != PROTOCOL_VERSION:
+            result_type = SourceClassification
+            extra["vocabulary_version"] = vocabulary.vocabulary_version
+        return result_type(
+            **extra,
             stream_id=window.stream_id,
             track_id=window.track_id,
             context_epoch=window.context_epoch,
@@ -154,7 +163,7 @@ class TorchPredictor(_GuardedPredictor):
         self.input_kind = input_kind
         self.model.eval()
 
-    def predict(self, window: FeatureWindow) -> ModelPrediction:
+    def predict(self, window: FeatureWindow) -> ModelPrediction | SourceClassification:
         import torch
 
         started = self._validate(window)
