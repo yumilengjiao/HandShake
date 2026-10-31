@@ -2,6 +2,8 @@
 
 ## 当前已有内容
 
+- [T16阶段一：校验模型包、在线分类与v3原生通知](model_bundle_and_inference.md)
+
 - [原生相机与同帧骨架：v2协议、运行及实机验证](native_camera_preview.md)
 
 - [Flutter原生舞台：选型、协议与实测](native_stack_decision.md)、[启动原型](../frontend/native/README.md)

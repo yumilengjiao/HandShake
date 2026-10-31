@@ -1,5 +1,7 @@
 # shared：公共契约与共享基础模块
 
+> T16新增`inference_protocol.py`、`model_preview_protocol.py`及schema：同帧/epoch/model身份绑定的只读未校准分类通知。v3可选，v1/v2兼容；不改变旧T17/T18命令契约。见[模型阶段](../docs/model_bundle_and_inference.md)。
+
 > 后续新增`preview_protocol.py`和`preview_protocol.schema.json`，为相机预览提供独立v2有界二进制包；v1端点保留兼容。图像与双手骨架共用帧身份，手势分类/动作能力仍不可用，见[相机阶段](../docs/native_camera_preview.md)。
 
 > 新增`desktop_protocol.py`及`desktop_protocol.schema.json`，为Flutter合成原型提供独立v1线协议；计数/纳秒使用规范十进制字符串，严格拒绝未知版本/字段/能力。不改变既有训练/交互契约，也不代表真实控制协议已迁移。见[原生桥接](../docs/native_stack_decision.md)。

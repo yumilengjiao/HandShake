@@ -1,5 +1,7 @@
 # tests：公共测试与回归验证
 
+> T16阶段一：566项Python、51项Flutter通过；另有原生v2回归/v3坏包拒绝验证。新增模型包语义/完整性、无pickle加载、离线在线logits、取消/新鲜度/同帧绑定与原生展示测试。训练与感知注入均为合成样例，本轮不打开真实相机。见[验证说明](../docs/model_bundle_and_inference.md)。
+
 > 相机阶段：**505项Python、38项Flutter通过**；另有常规原生集成及显式真机相机开关/重开验证。默认测试仍不访问相机；真机需`HANDSHAKE_CAMERA_TEST=1`，只记录元数据。见[运行与证据](../docs/native_camera_preview.md)。
 
 > 2026-10-31：**484项Python回归通过，无跳过**；另有23项Flutter单元/widget与1项真实Linux原生集成通过。新增`test_desktop_bridge.py`及`frontend/native/test/`、`integration_test/`，覆盖协议/有界管道/心跳/退出、只读回看/镜像/确认与布局；不控制真实应用。见[原生验证与命令](../docs/native_stack_decision.md)。

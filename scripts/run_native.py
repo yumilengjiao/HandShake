@@ -33,7 +33,17 @@ def main(argv=None):
         type=Path,
         help="local MediaPipe hand_landmarker.task (optional; not a gesture classifier)",
     )
+    parser.add_argument(
+        "--model-package", type=Path, help="verified inference bundle (optional)"
+    )
+    parser.add_argument(
+        "--model-sha256", help="trusted checksums.json SHA256 from export receipt"
+    )
     args = parser.parse_args(argv)
+    if bool(args.model_package) != bool(args.model_sha256):
+        parser.error("provide both --model-package and --model-sha256")
+    if args.model_package is not None and args.perception_model is None:
+        parser.error("model inference requires --perception-model")
     if args.camera < 0:
         parser.error("camera index must be nonnegative")
     root = Path(__file__).resolve().parents[1]
@@ -56,6 +66,9 @@ def main(argv=None):
     }
     if args.perception_model is not None:
         environment["HANDSHAKE_PERCEPTION_MODEL"] = str(args.perception_model.resolve())
+    if args.model_package is not None:
+        environment["HANDSHAKE_MODEL_PACKAGE"] = str(args.model_package.resolve())
+        environment["HANDSHAKE_MODEL_SHA256"] = args.model_sha256
     try:
         return subprocess.call(command, cwd=root / "frontend/native", env=environment)
     except KeyboardInterrupt:

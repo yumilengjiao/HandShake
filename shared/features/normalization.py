@@ -162,7 +162,15 @@ class FeatureNormalizer:
     @classmethod
     def load(cls, path: str | Path, *, expected_dataset_hash: str | None = None,
              expected_split_hash: str | None = None, config: FeatureConfig | None = None) -> "FeatureNormalizer":
-        data = json.loads(Path(path).read_text(encoding="utf-8"))
+        return cls.from_dict(json.loads(Path(path).read_text(encoding="utf-8")),
+                             expected_dataset_hash=expected_dataset_hash,
+                             expected_split_hash=expected_split_hash, config=config)
+
+    @classmethod
+    def from_dict(cls, data: dict, *, expected_dataset_hash: str | None = None,
+                  expected_split_hash: str | None = None,
+                  config: FeatureConfig | None = None) -> "FeatureNormalizer":
+        """Validate an already-read document (e.g. hash-verified model package bytes)."""
         required = {"format_version", "status", "feature_schema_version", "vocabulary_version", "class_ids", "config", "stats", "content_hash"}
         if not isinstance(data, dict) or set(data) != required:
             raise ValueError("invalid normalizer document fields")

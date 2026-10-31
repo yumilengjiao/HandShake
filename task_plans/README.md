@@ -1,5 +1,7 @@
 # HandShake 分阶段任务规划
 
+> **T16阶段一增量**：校验模型包、共享在线分类及v3只读UI已实现；566项Python、51项Flutter通过。正式数据/T15未完成，模型均只允许未校准预览，不执行应用命令。见[模型包与推理](../docs/model_bundle_and_inference.md)。
+
 > **相机阶段增量**：Linux原生相机/骨架同帧显示、v2有界传输和短时重开已验证；505项Python/38项Flutter通过。自训分类、应用策略/翻页和完整安全仍未完成，见[相机阶段记录](../docs/native_camera_preview.md)。
 
 > **2026-10-31界面增量**：Flutter Linux合成舞台、Python私有管道、只读回看和启停确认已实现；484项Python、23项Flutter及1项原生集成通过。T36/T20整体仍待真实输入、调度安全及打包，见[原生阶段记录](../docs/native_stack_decision.md)。
@@ -74,11 +76,11 @@ T15 完成分类校准与合成事件评估；T23 使用 draft 参数联调。T2
 | [T13](13_causal_tcn_network.md) | 搭建可验证的单分支因果 TCN 神经网络 | P0 | A（用户待填） | [T11](11_features_and_windows.md) | 已完成：结构/因果/梯度验收 |
 | [T14](14_training_and_experiment_tracking.md) | 实现可复现训练、采样与模型选择 | P0 | A | [T12](12_rules_and_mlp_baselines.md), [T13](13_causal_tcn_network.md) | 模块完成：5/15类合成训练/恢复通过；正式训练待T07/T10 |
 | [T15](15_validation_and_calibration.md) | 建立分类与事件评估、验证集校准和门限选择 | P0 | A | [T14](14_training_and_experiment_tracking.md) | 待实施 |
-| [T16](16_export_and_online_inference.md) | 打包模型并实现带新鲜度校验的在线推理 | P0 桌面参考；移动导出归 T37 | A 主责，B 集成 | [T14](14_training_and_experiment_tracking.md), [T15](15_validation_and_calibration.md) | 待实施 |
+| [T16](16_export_and_online_inference.md) | 打包模型并实现带新鲜度校验的在线推理 | P0 桌面参考；移动导出归 T37 | A 主责，B 集成 | [T14](14_training_and_experiment_tracking.md), [T15](15_validation_and_calibration.md) | 阶段一：校验包/在线分类通过；正式训练/校准/热切换/全链待验 |
 | [T17](17_interaction_state_machine.md) | 实现唤醒、控制权、释放去重与独立停止状态机 | P0 | B | [T02](02_scaffold_and_contracts.md), [T04](04_perception_tracking_quality.md), [T05](05_gesture_and_annotation_protocol.md) | 模块完成：旧5类合成/停止通过；公开版启停迁移及实机待验 |
 | [T18](18_generic_action_dispatch.md) | 实现通用命令映射、调度器与 mock 适配器 | P0 | B | [T02](02_scaffold_and_contracts.md), [T05](05_gesture_and_annotation_protocol.md), [T17](17_interaction_state_machine.md) | 模块完成：dry-run/mock调度通过；真实后端待T19/T24 |
 | [T19](19_presentation_application.md) | 实现演示文稿上层应用与实机翻页 | P0 | B | [T01](01_scope_and_platform.md), [T18](18_generic_action_dispatch.md) | 待实施 |
-| [T20](20_desktop_ui.md) | 实现原生桌面界面与多端交互契约 | P0 桌面；手机归 T37 | B | [T02](02_scaffold_and_contracts.md), [T36](36_native_platform_foundation.md) | Linux合成/相机预览已验；模型/动作/安装待完成 |
+| [T20](20_desktop_ui.md) | 实现原生桌面界面与多端交互契约 | P0 桌面；手机归 T37 | B | [T02](02_scaffold_and_contracts.md), [T36](36_native_platform_foundation.md) | Linux相机/v3只读分类软件已验；正式模型/动作/安装待完成 |
 | [T21](21_music_and_volume_application.md) | 实现歌曲切换、播放暂停与音量上层应用 | P1 | B 主责，A 补数据/识别 | [T18](18_generic_action_dispatch.md), [T19](19_presentation_application.md), [T23](23_replay_and_integration.md) | 待实施 |
 | [T22](22_pointer_and_continuous_control.md) | 实现光标移动、点击与可选拖拽滚动 | P1；拖拽滚动后置 | B 主责，A 补数据/识别 | [T18](18_generic_action_dispatch.md), [T19](19_presentation_application.md), [T23](23_replay_and_integration.md) | 待实施 |
 | [T23](23_replay_and_integration.md) | 实现确定性回放并打通端到端应用闭环 | P0 | A+B | [T06](06_collection_tool.md), [T16](16_export_and_online_inference.md), [T17](17_interaction_state_machine.md), [T18](18_generic_action_dispatch.md), [T19](19_presentation_application.md), [T20](20_desktop_ui.md) | 待实施 |

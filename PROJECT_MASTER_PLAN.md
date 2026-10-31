@@ -1,5 +1,7 @@
 # HandShake：基于手部关键点与深度时序学习的意图感知终端交互系统
 
+> **T16阶段一增量**：[校验模型包、在线分类与v3只读UI](docs/model_bundle_and_inference.md)已实现，566项Python/51项Flutter通过。支持合成诊断验证，不代表正式数据训练、T15校准或应用控制完成。
+
 > **2026-10-31相机增量**：[原生相机与同帧骨架预览](docs/native_camera_preview.md)已接入并短时实机验证；505项Python/38项Flutter通过。尚未接手势分类、应用策略或真实翻页。
 
 > **2026-10-31界面增量**：Flutter 3.47.9 Linux合成原型及本机Python桥接已构建、启动和测试，阶段成果见[技术决策与验证](docs/native_stack_decision.md)。未接真实相机/模型/动作，不是已完成手机或产品闭环。

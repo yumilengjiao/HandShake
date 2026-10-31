@@ -1,0 +1,160 @@
+{
+  "scope": "T16 phase 1, integrity-pinned uncalibrated preview-only inference",
+  "verified_on": "2026-10-31",
+  "base_commit": "3f4c59f",
+  "branch": "feat/verified-model-inference",
+  "environment": {
+    "os": "Linux",
+    "kernel": "7.2.11-arch1-1",
+    "architecture": "x86_64",
+    "python": "3.12.15",
+    "torch": "2.15.0+cpu",
+    "numpy": "1.26.4",
+    "pydantic": "2.14.1",
+    "flutter": "3.47.9",
+    "dart": "3.13.7",
+    "ruff": "0.17.2"
+  },
+  "python": {
+    "tests": "566",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "56.311"
+  },
+  "flutter": {
+    "unit_widget_passed": 51,
+    "native_v2_regression_passed": 1,
+    "native_v3_bad_model_rejection_passed": 1,
+    "analysis": "no issues",
+    "debug_build": true,
+    "release_build": true
+  },
+  "benchmarks": [
+    {
+      "model_version": "sha256:18e114f33a75bc2eee3e12be0e51a1b52346bab333ff37fd62eb4c91b986f1b8",
+      "model_type": "mlp",
+      "vocabulary_version": "gesture-v1-draft",
+      "classes": [
+        "no_action",
+        "wake_open",
+        "swipe_left",
+        "swipe_right",
+        "exit_pose"
+      ],
+      "synthetic_training": true,
+      "calibrated": false,
+      "actions_enabled": false,
+      "feature_schema": "e0df738963ff2a706ed13c8efbd4da181a5922464c24d2da4bd3c98320927dea",
+      "threads": 1,
+      "benchmark": {
+        "input": "synthetic zeros, batch=1",
+        "device": "cpu",
+        "iterations": 100,
+        "p50_ms": 0.0797085,
+        "p95_ms": 0.16320449999999997,
+        "peak_process_rss_bytes": 253669376,
+        "memory_scope": "whole process peak since startup, includes runtime/loader",
+        "environment": {
+          "python": "3.12.15",
+          "torch": "2.15.0+cpu",
+          "machine": "x86_64",
+          "os": "Linux"
+        },
+        "scope": "model forward only, NOT camera-to-action latency"
+      }
+    },
+    {
+      "model_version": "sha256:5e05d2477ef2e0545ac9759c5274b1fb5da646cd50cb238fd19ba5b4b7b35bbd",
+      "model_type": "tcn",
+      "vocabulary_version": "ipn-hands-v1",
+      "classes": [
+        "NOG",
+        "P1F",
+        "P2F",
+        "C1F",
+        "C2F",
+        "TUP",
+        "TDN",
+        "TLT",
+        "TRT",
+        "OP2",
+        "2C1",
+        "2C2",
+        "ZIN",
+        "ZOT",
+        "GRB"
+      ],
+      "synthetic_training": true,
+      "calibrated": false,
+      "actions_enabled": false,
+      "feature_schema": "e0df738963ff2a706ed13c8efbd4da181a5922464c24d2da4bd3c98320927dea",
+      "threads": 1,
+      "benchmark": {
+        "input": "synthetic zeros, batch=1",
+        "device": "cpu",
+        "iterations": 100,
+        "p50_ms": 0.8878565,
+        "p95_ms": 1.3455392,
+        "peak_process_rss_bytes": 264450048,
+        "memory_scope": "whole process peak since startup, includes runtime/loader",
+        "environment": {
+          "python": "3.12.15",
+          "torch": "2.15.0+cpu",
+          "machine": "x86_64",
+          "os": "Linux"
+        },
+        "scope": "model forward only, NOT camera-to-action latency"
+      }
+    }
+  ],
+  "benchmark_limitations": "synthetic batch=1 CPU forward only; different class counts; not accuracy, fair model comparison or end-to-end latency",
+  "wheel": {
+    "independent_base_install_and_v3_eof": true,
+    "schema_included": true,
+    "mlp_tcn_golden_from_wheel_code_with_existing_cpu_dependencies": true,
+    "frontend_excluded": true
+  },
+  "data_and_privacy": {
+    "training_fixtures": "procedural synthetic only",
+    "formal_training_complete": false,
+    "calibration_complete": false,
+    "real_camera_opened_this_phase": false,
+    "real_images_or_landmarks_saved": false,
+    "application_actions_enabled": false,
+    "model_weights_committed": false
+  },
+  "not_complete": [
+    "official dataset version/hash and subject audit",
+    "full dataset cache",
+    "formal MLP/TCN training and T15 calibration",
+    "UI hot model switch",
+    "real-camera model accuracy",
+    "T19 application policy and slide control",
+    "T23/T24 end-to-end safety",
+    "mobile deployment and clean-system installer"
+  ],
+  "source_sha256": {
+    "algorithm/bundle.py": "4a5edbe8b554747ad4df1f287d0d3480db5954becc292524e610d0f9cf7221e4",
+    "algorithm/online.py": "1e7d0ac04caafde9411add96b799d28a958bae82ed85aaa981afafb9b6699224",
+    "algorithm/deployment.py": "f639561a91fd7cb30e5feb7297ddcb969f63c834a8ebb54609a7485b53158db0",
+    "backend/classified_preview.py": "94d5bd1f712d5c3992c5e44a56a16fbae37bce1afac94d675d8baeb52aa5351c",
+    "backend/desktop_preview.py": "d669afc7b01ddb484a32e5e09f838e7f32637a7f89e5d257990f8e0c24f42340",
+    "backend/perception/preview.py": "9983d67bf236ef46be9a7d6190b624aad68b3a9b576d6dc2549b8799b1400505",
+    "shared/features/normalization.py": "920cbd3f8f643eda486614c118860f5786a1fd33d54f57f1a44d09ffc4599f3c",
+    "shared/inference_protocol.py": "95e7d5b07f4f16873c7637cdf23e9e0af480482ea913ae085dac46f1ad073029",
+    "shared/model_preview_protocol.py": "1934d0ab7637f203c6204d1e2e84f15f006fbceec4f2e46fb28fd269200b29bb",
+    "shared/model_preview_protocol.schema.json": "fd0a68b87e3bff7ef14c1c1dba71f7e19e2befebeab587aa6c334a61c0f62db3",
+    "scripts/run_native.py": "7950861fe021f4b1340808625de80887a842f19885454835e808b83ba25df8b0",
+    "frontend/native/lib/core/core_repository.dart": "9af0ac94f949cd01fd16ae03d4d3ebe297c22900a953532c98175c395f8dd019",
+    "frontend/native/lib/core/core_snapshot.dart": "6b7414bf332314c7bea468418a22f5bd16f724235647f2c5c3c99a02585c3959",
+    "frontend/native/lib/core/model_classification.dart": "34399d24806077cbf2ae4f8b0793298d1ded49ca2dac5a4cbd0ca889913bfa5c",
+    "frontend/native/lib/core/preview_packets.dart": "e16d8c23e050a06d378e7cfd6435a1836fbecb154e828b49bb83744f1495e79f",
+    "frontend/native/lib/core/wire_values.dart": "66c0c46976d5099ac76ab84cfed65ddf5eb11f6f0468ef8dd61e05d6b4475eca",
+    "frontend/native/lib/main.dart": "cdfa6d815c6251c075ac08817b7b22da78e75bffe9243c866249f5a01c2ac3c6",
+    "frontend/native/lib/stage/preview_surface.dart": "bd7142b45590f52b339ee943a7d7cd157431ceb2c6605152d6e905c77c48e435",
+    "frontend/native/lib/stage/skeleton_painter.dart": "04a871472cdc1ce721e211ab9e8112e246d8d1a99738fdec3348b7ecda43eb72",
+    "frontend/native/lib/stage/stage_screen.dart": "35d14c51fabe99fe4e471a786de96ea825c55b27ade3c91bcf68dd73526cf3b7",
+    "frontend/native/lib/stage/stage_view_model.dart": "c936304e865920e9b29871b43660ab71a97804cc8b9220d2fd4a6740ab8c79ef"
+  }
+}

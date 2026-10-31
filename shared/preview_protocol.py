@@ -134,7 +134,13 @@ class PreviewPacket:
         return PREFIX.pack(MAGIC, len(metadata), len(self.jpeg)) + metadata + self.jpeg
 
 
-def read_packet(stream):
+def read_packet(
+    stream,
+    *,
+    expected_magic=MAGIC,
+    snapshot_type=PreviewSnapshot,
+    packet_type=PreviewPacket,
+):
     """Blocking reader for tests/tools; lengths are checked before allocation."""
 
     def exact(length):
@@ -148,10 +154,10 @@ def read_packet(stream):
 
     magic, metadata_size, image_size = PREFIX.unpack(exact(PREFIX.size))
     if (
-        magic != MAGIC
+        magic != expected_magic
         or not 0 < metadata_size <= MAX_METADATA_BYTES
         or image_size > MAX_JPEG_BYTES
     ):
         raise ValueError("unsupported/oversized preview framing")
-    snapshot = PreviewSnapshot.model_validate_json(exact(metadata_size))
-    return PreviewPacket(snapshot, exact(image_size))
+    snapshot = snapshot_type.model_validate_json(exact(metadata_size))
+    return packet_type(snapshot, exact(image_size))

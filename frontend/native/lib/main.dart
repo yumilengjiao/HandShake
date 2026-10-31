@@ -29,6 +29,8 @@ class _HandShakeAppState extends State<HandShakeApp> {
         cameraIndex:
             int.tryParse(Platform.environment['HANDSHAKE_CAMERA'] ?? '0') ?? 0,
         perceptionModel: Platform.environment['HANDSHAKE_PERCEPTION_MODEL'],
+        modelPackage: Platform.environment['HANDSHAKE_MODEL_PACKAGE'],
+        modelSha256: Platform.environment['HANDSHAKE_MODEL_SHA256'],
       ),
     );
     lifecycle = AppLifecycleListener(onPause: model.stop, onHide: model.stop);
