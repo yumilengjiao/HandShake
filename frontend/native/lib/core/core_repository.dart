@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'core_snapshot.dart';
+import 'preview_packets.dart';
 
 abstract class CoreRepository {
   Stream<CoreSnapshot> get snapshots;
@@ -36,12 +37,19 @@ Stream<String> boundedLines(
 }
 
 class ProcessCoreRepository implements CoreRepository {
-  ProcessCoreRepository({required this.python, this.workingDirectory});
+  ProcessCoreRepository({
+    required this.python,
+    this.workingDirectory,
+    this.cameraIndex = 0,
+    this.perceptionModel,
+  });
   final String python;
   final String? workingDirectory;
+  final int cameraIndex;
+  final String? perceptionModel;
   final _snapshots = StreamController<CoreSnapshot>();
   Process? _process;
-  StreamSubscription<String>? _output;
+  StreamSubscription<CoreSnapshot>? _output;
   StreamSubscription<List<int>>? _errors;
   bool _closed = false;
 
@@ -55,7 +63,16 @@ class ProcessCoreRepository implements CoreRepository {
     }
     final process = await Process.start(
       python,
-      ['-m', 'backend.desktop'],
+      [
+        '-m',
+        'backend.desktop_preview',
+        '--camera',
+        '$cameraIndex',
+        if (perceptionModel != null) ...[
+          '--perception-model',
+          perceptionModel!,
+        ],
+      ],
       workingDirectory: workingDirectory,
       runInShell: false,
     );
@@ -69,14 +86,8 @@ class ProcessCoreRepository implements CoreRepository {
     });
     // Drain without collecting logs or exposing local paths in UI.
     _errors = process.stderr.listen((_) {}, onError: _fail);
-    _output = boundedLines(process.stdout).listen(
-      (line) {
-        try {
-          _snapshots.add(CoreSnapshot.parse(line));
-        } on FormatException catch (error) {
-          _fail(error);
-        }
-      },
+    _output = decodePreviewPackets(process.stdout).listen(
+      (snapshot) => _snapshots.add(snapshot),
       onError: _fail,
       onDone: () => _fail(StateError('Core disconnected')),
     );
@@ -94,7 +105,7 @@ class ProcessCoreRepository implements CoreRepository {
     // ViewModel limits outstanding commands; never retry a state-changing intent.
     process.stdin.writeln(
       jsonEncode({
-        'version': 1,
+        'version': context.version,
         'session_id': context.sessionId,
         'command_id': commandId.toString(),
         'epoch': context.epoch.toString(),
@@ -117,6 +128,11 @@ class ProcessCoreRepository implements CoreRepository {
         await process.exitCode.timeout(const Duration(milliseconds: 400));
       } on Object {
         process.kill();
+        try {
+          await process.exitCode.timeout(const Duration(milliseconds: 300));
+        } on Object {
+          process.kill(ProcessSignal.sigkill);
+        }
       }
     }
     await _snapshots.close();

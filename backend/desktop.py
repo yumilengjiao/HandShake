@@ -21,7 +21,7 @@ HEARTBEAT_TIMEOUT_NS = 1_500_000_000
 PARENT_TIMEOUT_NS = 5_000_000_000
 
 
-def decode_command(line: bytes) -> DesktopCommand:
+def decode_command(line: bytes, model=DesktopCommand):
     if len(line) > MAX_COMMAND_BYTES or not line.endswith(b"\n"):
         raise ValueError("command exceeds framing limit")
 
@@ -34,9 +34,7 @@ def decode_command(line: bytes) -> DesktopCommand:
         return result
 
     # Python's JSON parser otherwise silently accepts duplicate object keys.
-    return DesktopCommand.model_validate(
-        json.loads(line, object_pairs_hook=unique_object)
-    )
+    return model.model_validate(json.loads(line, object_pairs_hook=unique_object))
 
 
 class PreviewSession:
@@ -155,8 +153,11 @@ class LatestSnapshot:
             self.condition.notify_all()
 
 
-def serve(input_stream, output_stream):
-    session = PreviewSession()
+def serve(
+    input_stream, output_stream, *, session=None, decoder=decode_command, encoder=None
+):
+    session = session or PreviewSession()
+    encoder = encoder or (lambda value: value.model_dump_json().encode() + b"\n")
     mailbox = LatestSnapshot()
 
     def read_commands():
@@ -166,14 +167,19 @@ def serve(input_stream, output_stream):
                 if not line:
                     session.fail("input_closed")
                     return
-                session.accept(decode_command(line))
-        except (ValueError, OSError):
+                session.accept(decoder(line))
+        except (ValueError, OSError, RecursionError):
             session.fail("protocol_error")
 
     def write_snapshots():
         try:
             while (snapshot := mailbox.take()) is not None:
-                output_stream.write(snapshot.model_dump_json().encode() + b"\n")
+                payload = memoryview(encoder(snapshot))
+                while payload:
+                    written = output_stream.write(payload)
+                    if not written:
+                        raise OSError("output made no progress")
+                    payload = payload[written:]
                 output_stream.flush()
         except (OSError, ValueError):
             session.fail("input_closed")

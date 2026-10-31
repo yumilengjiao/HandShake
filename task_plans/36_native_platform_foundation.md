@@ -7,7 +7,7 @@
 | 建议主责 | A+B；B 界面/平台，A 推理/一致性 |
 | 前置任务 | T02 |
 | 总方案依据 | 文首 native-v2；第 5、12、16 节；原生多端架构 |
-| 状态 | 进行中：Flutter Linux合成原型、私有管道、Debug/Release与原生集成通过；真实输入/安全/多端待验 |
+| 状态 | 进行中：Flutter Linux相机/骨架v2桥接、短时重开通过；完整安全/安装/多端待验 |
 
 总约束见 [任务导航](README.md)，产品与平台边界见 [原生架构](../docs/native_architecture.md)。编号靠后不代表排在 T35 之后，本任务应在 T20 正式 UI 开发前完成。
 
@@ -30,6 +30,7 @@
 
 已交付`docs/native_stack_decision.md`、Linux合成原型、版本化私有管道契约、平台矩阵增量和实测记录；完整平台相机/模型/动作接口继续待验。
 
+- [x] 相机输入采用有界二进制帧包，图像/骨架同帧对齐，短时原生相机重开通过；见[后续增量](../docs/native_camera_preview.md)。
 - [x] Flutter Linux合成原型构建、原生启动、真实Python管道启停与重连有证据。
 - [x] Dart/Widget/原生集成与Python回归通过，Python wheel不包含Flutter子工程。
 

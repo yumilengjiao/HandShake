@@ -1,0 +1,105 @@
+{
+  "scope": "T36/T20 native camera preview, not gesture classification or application control",
+  "verified_on": "2026-10-31",
+  "base_commit": "205a848",
+  "branch": "feat/native-camera-preview",
+  "environment": {
+    "os": "Linux 7.2.11-arch1-1",
+    "architecture": "x86_64",
+    "desktop_session": "Wayland",
+    "python": "3.12.14",
+    "flutter": "3.47.9",
+    "dart": "3.13.7",
+    "opencv": "4.11.0.86",
+    "mediapipe": "0.10.21"
+  },
+  "python": {
+    "tests": "505",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "69.408"
+  },
+  "flutter": {
+    "unit_widget_passed": 38,
+    "synthetic_native_integration_passed": 1,
+    "opt_in_camera_native_integration_passed": 1,
+    "analysis": "no issues",
+    "debug_build": true,
+    "release_build": true
+  },
+  "real_camera": {
+    "cycles": [
+      {
+        "camera_cycle": 1,
+        "decoded": true,
+        "width": 640,
+        "height": 480,
+        "capture_hz": 30.17106277105988,
+        "perception_status": "processed_no_hand"
+      },
+      {
+        "camera_cycle": 2,
+        "decoded": true,
+        "width": 640,
+        "height": 480,
+        "capture_hz": 29.991572068333078,
+        "perception_status": "processed_hands"
+      }
+    ],
+    "stop_ack_and_reopen": true,
+    "images_saved": false,
+    "landmarks_saved": false,
+    "camera_screenshots_saved": false,
+    "application_commands_sent": false,
+    "scope_limit": "short smoke only; not sustained FPS, recognition accuracy, latency or safety certification"
+  },
+  "wheel": {
+    "independent_install": true,
+    "v2_binary_eof": true,
+    "schema_included": true,
+    "frontend_excluded": true,
+    "camera_not_opened_on_start": true
+  },
+  "protocol": {
+    "version": 2,
+    "magic": "HSP2",
+    "metadata_limit_bytes": 16384,
+    "jpeg_limit_bytes": 131072,
+    "max_preview_size": [
+      640,
+      480
+    ],
+    "ui_history_frames": 32,
+    "image_decodes_in_flight": 1,
+    "pending_decode_targets": 1
+  },
+  "not_verified": [
+    "trained gesture model in UI",
+    "public-category action policy",
+    "real slide control",
+    "global stop/OS lifecycle/full T24",
+    "long-run perception",
+    "manual occlusion/mirror/handedness",
+    "clean-system installer",
+    "other desktop or mobile platforms"
+  ],
+  "source_sha256": {
+    "backend/desktop.py": "fabdf0a82bf93501538aa30f15a629263fe573b2ad66b8e786b69664ec5d6c89",
+    "backend/desktop_preview.py": "1e4db9ff710d592dfe5de8741dee542820004021ae06ef449e9d3d47334449e3",
+    "backend/perception/preview.py": "1859d14aeee902386fb22f5c755dd0aee3bdc3cdc5b2fde58d2d7596050c4b19",
+    "backend/capture/worker.py": "3ca0c03e5635f22886f748290ee99a58aec84296b8c72f9e9adc873988d881e5",
+    "shared/preview_protocol.py": "2f616730ce2f18c315374b90012c5d22ff7e3d7c4e9595ca7f65649b42b90e6e",
+    "shared/preview_protocol.schema.json": "f6eb447d7d9756a1559ca9ac278e2ea28fc945093c900b2d42cb4fbffdccee95",
+    "scripts/run_native.py": "c4ea3bfa36a06d8d4e2b0e8a91b971bb34bbeef89ef9887ab669a9161e43c972",
+    "frontend/native/lib/core/core_repository.dart": "90d241ced521c30a862fb25eb865dcfde38f36363b6ce1c7f68c2f963104c1c1",
+    "frontend/native/lib/core/core_snapshot.dart": "6b9cd95869197243427ac83e8598e8fcfa831702cd104c49f918d08867112499",
+    "frontend/native/lib/core/preview_packets.dart": "f07a407add88a92590f5319dd96b33b4ed4aa5dfe790a1860fd115b9f372134b",
+    "frontend/native/lib/main.dart": "d91f3dcc6363b72bf1251096ffe5fb5dc4d6d02435e414f913e4f084838a8001",
+    "frontend/native/lib/stage/preview_surface.dart": "bd7142b45590f52b339ee943a7d7cd157431ceb2c6605152d6e905c77c48e435",
+    "frontend/native/lib/stage/skeleton_painter.dart": "04a871472cdc1ce721e211ab9e8112e246d8d1a99738fdec3348b7ecda43eb72",
+    "frontend/native/lib/stage/stage_screen.dart": "6f142da5d418c3ccf2656f3aaf0dea6079e0644ef38b535e5e15253767498c0f",
+    "frontend/native/lib/stage/stage_view_model.dart": "fc7305b635a951d5c136ef30f08b32e2684463c0008908b75d1e50064fdc3043",
+    "frontend/native/test/fixtures/preview_v2.bin": "f69a0a76c588a0d6b59e9bb5b6e99cb5d94bf45d5d79b99880c02e91cdbbbe1d"
+  }
+}

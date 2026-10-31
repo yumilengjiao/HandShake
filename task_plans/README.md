@@ -1,5 +1,7 @@
 # HandShake 分阶段任务规划
 
+> **相机阶段增量**：Linux原生相机/骨架同帧显示、v2有界传输和短时重开已验证；505项Python/38项Flutter通过。自训分类、应用策略/翻页和完整安全仍未完成，见[相机阶段记录](../docs/native_camera_preview.md)。
+
 > **2026-10-31界面增量**：Flutter Linux合成舞台、Python私有管道、只读回看和启停确认已实现；484项Python、23项Flutter及1项原生集成通过。T36/T20整体仍待真实输入、调度安全及打包，见[原生阶段记录](../docs/native_stack_decision.md)。
 
 > **2026-10-30增量**：来源15类训练/分类、严格公共数据导入与有界缓存桥接已实现，461项测试通过；真实SHA/主体审查、全量流式训练和应用策略仍待验。T36/T20已有时序交互舞台概念稿，Flutter SDK获取尚未完成。见 [本轮实现](../docs/public_data_implementation.md)。
@@ -76,7 +78,7 @@ T15 完成分类校准与合成事件评估；T23 使用 draft 参数联调。T2
 | [T17](17_interaction_state_machine.md) | 实现唤醒、控制权、释放去重与独立停止状态机 | P0 | B | [T02](02_scaffold_and_contracts.md), [T04](04_perception_tracking_quality.md), [T05](05_gesture_and_annotation_protocol.md) | 模块完成：旧5类合成/停止通过；公开版启停迁移及实机待验 |
 | [T18](18_generic_action_dispatch.md) | 实现通用命令映射、调度器与 mock 适配器 | P0 | B | [T02](02_scaffold_and_contracts.md), [T05](05_gesture_and_annotation_protocol.md), [T17](17_interaction_state_machine.md) | 模块完成：dry-run/mock调度通过；真实后端待T19/T24 |
 | [T19](19_presentation_application.md) | 实现演示文稿上层应用与实机翻页 | P0 | B | [T01](01_scope_and_platform.md), [T18](18_generic_action_dispatch.md) | 待实施 |
-| [T20](20_desktop_ui.md) | 实现原生桌面界面与多端交互契约 | P0 桌面；手机归 T37 | B | [T02](02_scaffold_and_contracts.md), [T36](36_native_platform_foundation.md) | Linux合成原型已验；真实输入/动作/安装待完成 |
+| [T20](20_desktop_ui.md) | 实现原生桌面界面与多端交互契约 | P0 桌面；手机归 T37 | B | [T02](02_scaffold_and_contracts.md), [T36](36_native_platform_foundation.md) | Linux合成/相机预览已验；模型/动作/安装待完成 |
 | [T21](21_music_and_volume_application.md) | 实现歌曲切换、播放暂停与音量上层应用 | P1 | B 主责，A 补数据/识别 | [T18](18_generic_action_dispatch.md), [T19](19_presentation_application.md), [T23](23_replay_and_integration.md) | 待实施 |
 | [T22](22_pointer_and_continuous_control.md) | 实现光标移动、点击与可选拖拽滚动 | P1；拖拽滚动后置 | B 主责，A 补数据/识别 | [T18](18_generic_action_dispatch.md), [T19](19_presentation_application.md), [T23](23_replay_and_integration.md) | 待实施 |
 | [T23](23_replay_and_integration.md) | 实现确定性回放并打通端到端应用闭环 | P0 | A+B | [T06](06_collection_tool.md), [T16](16_export_and_online_inference.md), [T17](17_interaction_state_machine.md), [T18](18_generic_action_dispatch.md), [T19](19_presentation_application.md), [T20](20_desktop_ui.md) | 待实施 |
@@ -92,7 +94,7 @@ T15 完成分类校准与合成事件评估；T23 使用 draft 参数联调。T2
 | [T33](33_self_supervised_pretraining.md) | 探索训练侧关键点自监督预训练 | P2 | A | [T10](10_splits_and_dataset_version.md), [T11](11_features_and_windows.md), [T14](14_training_and_experiment_tracking.md), [T23](23_replay_and_integration.md) | 待实施 |
 | [T34](34_bimanual_interaction.md) | 探索双手角色绑定与协同交互 | P2 | B 主责，A 协同协议/数据 | [T04](04_perception_tracking_quality.md), [T17](17_interaction_state_machine.md), [T18](18_generic_action_dispatch.md), [T23](23_replay_and_integration.md) | 待实施 |
 | [T35](35_additional_application_backend.md) | 接入一个阅读器或其他终端应用后端 | P2 | B | [T18](18_generic_action_dispatch.md), [T19](19_presentation_application.md), [T23](23_replay_and_integration.md) | 待实施 |
-| [T36](36_native_platform_foundation.md) | 冻结原生多端技术路线与平台接口 | P0 选型/接口 | A+B | [T02](02_scaffold_and_contracts.md) | 进行中：Flutter Linux路线/管道已验，平台输入与完整安全待验 |
+| [T36](36_native_platform_foundation.md) | 冻结原生多端技术路线与平台接口 | P0 选型/接口 | A+B | [T02](02_scaffold_and_contracts.md) | 进行中：Flutter Linux路线/相机管道已验，完整安全/平台待验 |
 | [T37](37_native_mobile_and_portability.md) | 实现原生手机本地运行与多平台移植验收 | P1 产品交付 | A+B | [T03](03_camera_and_clock.md), [T04](04_perception_tracking_quality.md), [T11](11_features_and_windows.md), [T16](16_export_and_online_inference.md), [T17](17_interaction_state_machine.md), [T18](18_generic_action_dispatch.md), [T20](20_desktop_ui.md), [T23](23_replay_and_integration.md), [T36](36_native_platform_foundation.md) | 待实施 |
 | [T38](38_paired_remote_control.md) | 实现可选的原生手机与电脑配对控制 | P2 | B 主责，A 复核 | [T18](18_generic_action_dispatch.md), [T19](19_presentation_application.md), [T24](24_safety_faults_and_performance.md), [T37](37_native_mobile_and_portability.md) | 待实施 |
 

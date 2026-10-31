@@ -4,6 +4,8 @@
 
 > 已实现T01/T02/T05核心、T03/T04/T06采集工具、T11～T13特征/模型，以及T14训练器、T17交互状态机、T18映射与安全调度模块。感知依赖采用master固定的MediaPipe 0.10.21/OpenCV 4.11.0.86，统一探针见[感知修复](docs/perception_diagnostics.md)。公开数据为主，已新增严格导入、版本化15类特征/缓存/MLP/TCN训练与恢复；461项回归通过。官方标注SHA、全量流式训练、公开类别应用策略、正式实验和原生产品UI仍待完成，见[本轮实现](docs/public_data_implementation.md)。
 
+> **2026-10-31相机增量**：[原生相机与同帧骨架](docs/native_camera_preview.md)已接入，显式打开、不保存真实画面；两轮原生相机开关/重开通过。505项Python、38项Flutter回归通过，尚无手势分类或翻页控制。
+
 > **2026-10-31界面增量**：Flutter Linux原生合成舞台已可运行，支持本机Python桥接、32步回看、镜像、启停确认与断连；484项Python、23项Flutter单元/widget及1项原生集成测试通过。真实相机/模型/应用尚未接入，手机和安装器未交付。见[启动入口](frontend/native/README.md)与[技术决策/实测](docs/native_stack_decision.md)。
 
 ## 先看这些文档
@@ -12,6 +14,7 @@
 
 - [公开数据导入与15类训练管线](docs/public_data_implementation.md)
 - [深度学习实验与答辩主线](docs/deep_learning_experiment_plan.md)
+- [原生相机预览：运行、v2协议与验证](docs/native_camera_preview.md)
 - [原生桌面原型：运行、协议与验证](docs/native_stack_decision.md)
 - [时序交互舞台设计稿与Flutter预检](docs/interaction_stage_design.md)
 - [项目总目标与技术方案](PROJECT_MASTER_PLAN.md)
@@ -34,7 +37,7 @@
 
 ```text
 HandShake/
-├── frontend/              # Flutter Linux合成原型；真实输入与手机后续验收
+├── frontend/              # Flutter Linux合成/相机预览；自训模型与手机后续验收
 ├── backend/               # 运行后端：相机、感知、状态机、安全调度、终端适配
 ├── algorithm/             # 算法：数据加载、训练、评估、模型推理与导出
 ├── shared/                # 公共契约、共享特征、配置校验与数据格式

@@ -1,6 +1,6 @@
 # HandShake Native Stage
 
-Linux原生**合成原型**，Flutter 3.47.9 / Dart 3.13.7。没有相机、模型预测或应用控制；不依赖浏览器。不把本项目的Python子进程方案当作手机运行方案。
+Linux原生预览，Flutter 3.47.9 / Dart 3.13.7。支持合成舞台及显式启用的本机相机/MediaPipe骨架；没有手势分类或应用控制。不依赖浏览器，也不把Python子进程方案当作手机运行方案。
 
 ## 启动
 
@@ -14,10 +14,11 @@ Linux原生**合成原型**，Flutter 3.47.9 / Dart 3.13.7。没有相机、模�
 
 本轮机器SDK位于仓库外的`~/.local/share/handshake-tools/flutter`，可将上面的路径换成该目录下的`bin/flutter`。不要将SDK提交进Git。
 
-1. 启动只连接本机核心，保持停止；点击“开始合成预览”。
-2. 点击时间轴只读回看，“返回当前”恢复展示最新帧。回看不暂停核心，也不执行操作。
-3. 镜像按钮只改变显示；讲解按钮展示骨架到深度学习的链路说明。
-4. “停止 / Esc”发送请求，等待核心确认。Esc仅窗口内有效。关闭或失联后无自动重启。
+1. 启动只连接本机核心，保持停止；可选“开始合成预览”或“打开相机预览”，切换来源需先停止。
+2. 相机骨架需启动时传`--perception-model artifacts/perception/hand_landmarker.task`；不传则明确显示仅视频，指定了错误资产则失败，不伪造骨架。
+3. 点击时间轴只读回看，“返回当前”恢复展示最新帧。回看不暂停核心，也不执行操作。
+4. 镜像按钮只改变显示；讲解按钮展示感知到深度学习的链路说明，未加载手势网络时不输出假预测。
+5. “停止 / Esc”发送请求，等待相机/感知释放确认。Esc仅窗口内有效。关闭或失联后无自动重启。
 
 若显示核心失联，确认启动所用的是项目`.venv/bin/python`，不要解析该符号链接后改用系统解释器；确认已安装核心依赖。截图/日志不应混入真实采集内容。
 
@@ -56,15 +57,18 @@ HANDSHAKE_ROOT="$(cd ../.. && pwd)" \
 flutter --no-version-check test integration_test/stage_smoke_test.dart -d linux
 ```
 
-可另设`HANDSHAKE_SCREENSHOT=/absolute/path.png`导出集成测试自己的合成绘制面。测试逻辑画布固定1280×900，不抓取桌面或相机。仅`test/fixtures/snapshot.json`为跨语言合成golden，不是数据集。
+可另设`HANDSHAKE_SCREENSHOT=/absolute/path.png`导出集成测试的合成绘制面。测试逻辑画布固定1280×900，不抓取桌面或相机。`test/fixtures/snapshot.json`与`preview_v2.bin`均为程序生成的跨语言golden，不是数据集。
+
+上述测试默认不访问相机。真实相机测试需显式设置`HANDSHAKE_CAMERA_TEST=1`，感知资产另设`HANDSHAKE_PERCEPTION_MODEL`；测试会短时打开/停止/重开设备，只输出元数据、不保存真实帧或坐标。详见[相机阶段验证](../../docs/native_camera_preview.md)。
 
 ## 代码边界
 
 - `lib/core/`：严格只读协议、大小受限的解码、本机子进程repository。
 - `lib/stage/stage_view_model.dart`：连接/确认/回看/显示状态，历史有界，不实现手势或动作状态机。
 - `lib/stage/stage_screen.dart`：中央舞台、时间轴、决策轨迹、常驻停止区。
-- `lib/stage/skeleton_painter.dart`：统一镜像/letterbox变换、历史轨迹绘制。
+- `lib/stage/preview_surface.dart`：单解码/最新目标，成对保留和替换图像/骨架；不使用全局ImageCache积累相机帧。
+- `lib/stage/skeleton_painter.dart`：统一镜像/letterbox变换、有效点和双手绘制。
 - `linux/`：Flutter官方生成的Linux宿主；未生成其他平台壳来冒充支持。
-- `../../backend/desktop.py`：仅合成预览核心，stdin/stdout协议，不加载SDK或真实动作后端。
+- `../../backend/desktop_preview.py`：v2二进制预览核心，显式打开相机；v1合成NDJSON入口`backend/desktop.py`保留兼容。
 
-完整范围、协议、已验与未验项目见[技术决策](../../docs/native_stack_decision.md)。T36/T20整体尚未完成；下一步是真实相机帧通路、模型/应用策略、安全集成与独立打包。
+完整范围、协议和验证见[相机阶段说明](../../docs/native_camera_preview.md)；[初次技术决策](../../docs/native_stack_decision.md)保留为历史。T36/T20整体尚未完成；下一步是自训模型/应用策略、安全集成与独立打包。
