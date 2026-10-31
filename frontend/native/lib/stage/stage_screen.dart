@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'preview_surface.dart';
 import 'skeleton_painter.dart';
 import 'stage_view_model.dart';
 
@@ -36,7 +37,7 @@ class StageScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'SYNTHETIC  ·  DRY-RUN  ·  无应用控制',
+                        '${model.latest?.isCamera == true ? 'CAMERA' : 'SYNTHETIC'}  ·  DRY-RUN  ·  无应用控制',
                         style: TextStyle(color: stageGold, fontSize: 12),
                       ),
                     ],
@@ -88,7 +89,7 @@ class StageScreen extends StatelessWidget {
                                   padding: const EdgeInsets.only(top: 20),
                                   child: Text(
                                     '讲解模式 / 骨架 → 共享特征与缺失掩码 → 因果TCN → 校准拒识 → 安全策略。'
-                                    '\n本原型仅展示第一步的合成骨架；未运行特征、网络或决策器。'
+                                    '\n当前只接感知/预览；未运行手势特征、分类网络或决策器。'
                                     '32步是UI历史容量，不代表当前网络的感受野；帧数也不等于固定时长。',
                                     style: TextStyle(
                                       color: stageMint,
@@ -138,19 +139,19 @@ class StageScreen extends StatelessWidget {
           height: height,
           width: double.infinity,
           child: Semantics(
-            label: hasPoints ? '合成手部骨架，21个关键点' : '无当前骨架',
+            label: snapshot?.isCamera == true
+                ? '本机相机画面与同帧手部骨架'
+                : (hasPoints ? '合成手部骨架，21个关键点' : '无当前骨架'),
             child: Stack(
               fit: StackFit.expand,
               children: [
-                CustomPaint(
-                  painter: SkeletonPainter(
-                    snapshot: snapshot,
-                    history: model.history,
-                    mirror: model.mirror,
-                    reviewing: model.reviewing,
-                  ),
+                PreviewSurface(
+                  snapshot: snapshot,
+                  history: model.history,
+                  mirror: model.mirror,
+                  reviewing: model.reviewing,
                 ),
-                if (!hasPoints)
+                if (!hasPoints && snapshot?.isCamera != true)
                   Center(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
@@ -171,7 +172,9 @@ class StageScreen extends StatelessWidget {
                   bottom: 0,
                   right: 0,
                   child: Text(
-                    '程序生成的测试骨架 / 不是相机画面或识别结果',
+                    snapshot?.isCamera == true
+                        ? '相机只在内存预览 / ${snapshot!.perceptionStatus} / ${snapshot.captureHz?.toStringAsFixed(1) ?? '—'} Hz采集'
+                        : '程序生成的测试骨架 / 不是相机画面或识别结果',
                     style: TextStyle(color: stageGold, fontSize: 12),
                   ),
                 ),
@@ -189,10 +192,11 @@ class StageScreen extends StatelessWidget {
       (
         '观测 / OBSERVE',
         snapshot?.isPreview == true
-            ? '帧 ${snapshot!.frameId} · ${snapshot.landmarks.length} 个合成关键点'
+            ? '帧 ${snapshot!.frameId} · ${snapshot.hands.length}只手\n'
+                  '${snapshot.isCamera ? (snapshot.perceptionStatus == 'unavailable' ? '未配置感知资产，仅视频' : '感知: ${snapshot.perceptionStatus}') : '程序生成的合成骨架'}'
             : '当前没有输入帧',
       ),
-      ('模型 / INFER', '未加载模型\n不显示预测类别或虚构置信度'),
+      ('模型 / INFER', '未加载手势分类模型\nMediaPipe骨架不等于手势识别'),
       ('策略 / DECIDE', '仅预览 · 不具备控制能力\n15个来源类别不直接等于操作意图'),
       ('结果 / ACT', '没有发送应用命令\n翻页、音乐、光标暂不可用'),
     ];
@@ -276,7 +280,7 @@ class StageScreen extends StatelessWidget {
             ? const Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  '等待真实收到的合成帧，不预填时间轴。',
+                  '等待收到的新帧，不预填时间轴。',
                   style: TextStyle(color: Color(0xffa6b9bc)),
                 ),
               )
@@ -287,12 +291,19 @@ class StageScreen extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final frame = model.history[index];
                   return Semantics(
-                    label: '回看合成帧 ${frame.frameId}',
+                    label:
+                        '回看${frame.isCamera ? '相机' : '合成'}帧 ${frame.frameId}',
                     button: true,
                     selected: model.inspected == frame,
                     child: Tooltip(
                       message:
-                          '帧 ${frame.frameId} · ${frame.landmarks.isEmpty ? '无手' : '骨架'}',
+                          '帧 ${frame.frameId} · ${switch (frame.perceptionStatus) {
+                            'unavailable' => '未感知',
+                            'not_processed' => '未处理',
+                            'error' => '感知错误',
+                            'processed_no_hand' => '无手',
+                            _ => '骨架',
+                          }}',
                       child: SizedBox(
                         width: 40,
                         child: TextButton(
@@ -342,10 +353,8 @@ class StageScreen extends StatelessWidget {
           style: const TextStyle(color: Color(0xffbdccce), fontSize: 12),
         ),
         const SizedBox(height: 8),
-        Wrap(
-          spacing: 10,
-          runSpacing: 8,
-          crossAxisAlignment: WrapCrossAlignment.center,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             FilledButton.icon(
               key: const Key('stop'),
@@ -357,26 +366,44 @@ class StageScreen extends StatelessWidget {
               icon: const Icon(Icons.stop_rounded),
               label: Text(model.stopPending ? '等待停止确认' : '停止 · Esc'),
             ),
-            if (model.link == LinkState.disconnected)
-              OutlinedButton(
-                onPressed: model.connect,
-                child: const Text('连接核心'),
-              )
-            else
-              OutlinedButton(
-                key: const Key('start'),
-                onPressed: model.canStart ? model.start : null,
-                child: const Text('开始合成预览'),
+            const SizedBox(height: 8),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                spacing: 10,
+                children: [
+                  if (model.latest?.version == 2)
+                    OutlinedButton.icon(
+                      key: const Key('start_camera'),
+                      onPressed: model.canStartCamera
+                          ? model.startCamera
+                          : null,
+                      icon: const Icon(Icons.videocam_outlined),
+                      label: const Text('打开相机预览'),
+                    ),
+                  if (model.link == LinkState.disconnected)
+                    OutlinedButton(
+                      onPressed: model.connect,
+                      child: const Text('连接核心'),
+                    )
+                  else
+                    OutlinedButton(
+                      key: const Key('start'),
+                      onPressed: model.canStart ? model.start : null,
+                      child: const Text('开始合成预览'),
+                    ),
+                  IconButton(
+                    onPressed: model.toggleMirror,
+                    tooltip: '切换显示镜像',
+                    icon: Icon(model.mirror ? Icons.flip : Icons.flip_outlined),
+                  ),
+                  IconButton(
+                    onPressed: model.toggleExplain,
+                    tooltip: '切换讲解模式',
+                    icon: const Icon(Icons.account_tree_outlined),
+                  ),
+                ],
               ),
-            IconButton(
-              onPressed: model.toggleMirror,
-              tooltip: '切换显示镜像',
-              icon: Icon(model.mirror ? Icons.flip : Icons.flip_outlined),
-            ),
-            IconButton(
-              onPressed: model.toggleExplain,
-              tooltip: '切换讲解模式',
-              icon: const Icon(Icons.account_tree_outlined),
             ),
           ],
         ),

@@ -38,7 +38,7 @@ include = ["shared*", "backend*", "algorithm*"]
 exclude = ["tests*", "configs*", "data*", "artifacts*"]
 
 [tool.setuptools.package-data]
-shared = ["defaults/*.yaml", "defaults/*.json", "defaults/platforms/*.yaml", "features/*.json", "desktop_protocol.schema.json"]
+shared = ["defaults/*.yaml", "defaults/*.json", "defaults/platforms/*.yaml", "features/*.json", "desktop_protocol.schema.json", "preview_protocol.schema.json"]
 algorithm = ["defaults/*.yaml"]
 
 [tool.pytest.ini_options]

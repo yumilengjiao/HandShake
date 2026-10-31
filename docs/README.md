@@ -2,6 +2,8 @@
 
 ## 当前已有内容
 
+- [原生相机与同帧骨架：v2协议、运行及实机验证](native_camera_preview.md)
+
 - [Flutter原生舞台：选型、协议与实测](native_stack_decision.md)、[启动原型](../frontend/native/README.md)
 
 - [公开数据导入与15类深度训练实现](public_data_implementation.md)、[深度学习实验与答辩](deep_learning_experiment_plan.md)

@@ -26,6 +26,9 @@ class _HandShakeAppState extends State<HandShakeApp> {
       () => ProcessCoreRepository(
         python: Platform.environment['HANDSHAKE_PYTHON'] ?? 'python3',
         workingDirectory: Platform.environment['HANDSHAKE_ROOT'],
+        cameraIndex:
+            int.tryParse(Platform.environment['HANDSHAKE_CAMERA'] ?? '0') ?? 0,
+        perceptionModel: Platform.environment['HANDSHAKE_PERCEPTION_MODEL'],
       ),
     );
     lifecycle = AppLifecycleListener(onPause: model.stop, onHide: model.stop);

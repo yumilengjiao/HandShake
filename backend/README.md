@@ -1,5 +1,7 @@
 # backend：实时运行与安全终端控制
 
+> 相机预览入口`python -m backend.desktop_preview`提供v2二进制图像/骨架通路，复用既有CaptureWorker/PerceptionPipeline；需显式`start_camera`，不记录数据、不接手势分类或应用动作。见[相机阶段](../docs/native_camera_preview.md)。
+
 > 新增`python -m backend.desktop`：Flutter合成原型的本机私有管道核心，独立状态线程、容量1输出邮箱、心跳/EOF与有界退出。它不接相机、推理、T17/T18或真实应用操作；见[原生阶段决策](../docs/native_stack_decision.md)。
 
 > T02 核心之外，T03/T04/T06 已实现相机/视频/合成源、感知适配/质量/关联和授权采集/标注工具。T17/T18已实现旧5类交互状态机与有界安全调度；没有产品UI或真实系统操作；兼容依赖下真实模型加载/黑图推理已通过，真手/人工工具待验，见 [修复记录](../docs/perception_diagnostics.md)。

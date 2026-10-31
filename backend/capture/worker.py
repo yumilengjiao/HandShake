@@ -44,6 +44,7 @@ class CaptureWorker:
         self._thread = None
         self.done = False
         self.error = None
+        self.release_failed = False
 
     def start(self, timeout=5.):
         if self._thread is not None:
@@ -92,6 +93,7 @@ class CaptureWorker:
             try:
                 self.source.close()
             except Exception as error:
+                self.release_failed = True
                 self.error = self.error or f"close failed: {error}"
             with self._condition:
                 self.done = True

@@ -1,5 +1,7 @@
 # shared：公共契约与共享基础模块
 
+> 后续新增`preview_protocol.py`和`preview_protocol.schema.json`，为相机预览提供独立v2有界二进制包；v1端点保留兼容。图像与双手骨架共用帧身份，手势分类/动作能力仍不可用，见[相机阶段](../docs/native_camera_preview.md)。
+
 > 新增`desktop_protocol.py`及`desktop_protocol.schema.json`，为Flutter合成原型提供独立v1线协议；计数/纳秒使用规范十进制字符串，严格拒绝未知版本/字段/能力。不改变既有训练/交互契约，也不代表真实控制协议已迁移。见[原生桥接](../docs/native_stack_decision.md)。
 
 > T02/T05公共契约/配置/标注、T03/T06的`observations.py`数组帧适配与`recordings.py`分块NPZ/manifest/事件校验，以及T11的`classes.py`和`features/`均已实现。94维几何、字段级train统计、掩码和32帧窗口由离线/在线共用；正式统计待T10。recording-v1与T11草案Dataset适配的格式边界仍须后续集成，不改旧公共schema。见[感知协议](../docs/perception_contract.md)与[特征和模型](../docs/features_and_models.md)。

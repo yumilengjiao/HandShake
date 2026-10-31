@@ -1,5 +1,10 @@
 # 平台支持与实测矩阵
 
+## 原生相机阶段（2026-10-31）
+
+本机Linux/Wayland原生UI＋v2私有管道＋OpenCV/MediaPipe通过两轮短时相机打开、JPEG解码显示、停止确认及重开。均为640×480；短时采集均值约30.17/29.99Hz，SDK返回无手/有手状态。未保存真实图像或坐标。505项Python、38项Flutter通过；详细[记录与边界](native_camera_preview.md)。不将短时帧率外推为稳定性或推理FPS，也不视为全局停止/手势分类/翻页/多端验收。
+
+
 ## T36/T20原生合成原型（2026-10-31）
 
 本轮机器为Linux 7.2.11-arch1-1 x86_64、Wayland、Python3.12.14、GTK3 3.24.52；Flutter3.47.9/Dart3.13.7、Clang23.1.3、CMake4.4.4。Linux Debug/Release bundle构建、真实原生窗口与Python私有管道的启停/回看/重连通过。Release显式`GDK_BACKEND=wayland`启动保持3秒、UI进程终止后子进程退出通过；有一条cursor theme加载提示，不影响本轮测试。484项Python、23项Flutter单元/widget、1项原生集成通过，见[决策与边界](native_stack_decision.md)及[机器记录](verification/native_stage_summary.json)。

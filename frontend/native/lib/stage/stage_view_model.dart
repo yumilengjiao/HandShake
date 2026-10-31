@@ -38,7 +38,8 @@ class StageViewModel extends ChangeNotifier {
       !reviewing &&
       !stopPending &&
       _pendingStart == null &&
-      latest?.isPreview == false;
+      latest?.state == 'stopped';
+  bool get canStartCamera => canStart && latest?.version == 2;
 
   Future<void> connect() async {
     if (_disposed || link != LinkState.disconnected) return;
@@ -103,7 +104,7 @@ class StageViewModel extends ChangeNotifier {
     _armDeadline();
     if (_pendingStop != null &&
         value.lastCommandId >= _pendingStop! &&
-        !value.isPreview) {
+        value.state == 'stopped') {
       _pendingStop = null;
     }
     if (_pendingStart != null && value.lastCommandId >= _pendingStart!) {
@@ -120,11 +121,18 @@ class StageViewModel extends ChangeNotifier {
     message = switch (value.reason) {
       'initial' => '核心已连接 · 尚未启动',
       'synthetic_preview' => '合成骨架预览 · 无相机、无模型、无应用命令',
+      'camera_starting' => '正在打开相机 / 感知资产；不保存画面，不控制应用',
+      'camera_preview' => '本机相机预览 · 仅内存处理，不保存画面，不发送应用命令',
+      'camera_unavailable' => '相机不可用；检查设备编号、占用和权限后手动重试',
+      'perception_unavailable' => '感知资产或SDK不可用；检查模型路径与perception依赖',
+      'input_stalled' => '输入停滞或帧已过期；停止后可手动重试',
+      'preview_error' => '预览处理/释放失败；停止未确认时请断开核心',
       'user_stop' => '核心已确认停止 · 无应用控制能力',
       'heartbeat_timeout' => '心跳超时，核心已停止；需要手动重新开始',
       'stale_epoch' => '已拒绝旧会话请求；请重新开始',
       _ => '核心停止或协议异常；请检查连接',
     };
+    if (value.state == 'stopping') message = '等待相机/感知线程释放，尚未确认停止…';
     if (stopPending) message = '已请求停止，等待核心确认…';
     notifyListeners();
   }
@@ -156,6 +164,13 @@ class StageViewModel extends ChangeNotifier {
   void start() {
     if (!canStart) return;
     _pendingStart = _send('start');
+    if (_pendingStart != null) _armIntentDeadline();
+    notifyListeners();
+  }
+
+  void startCamera() {
+    if (!canStartCamera) return;
+    _pendingStart = _send('start_camera');
     if (_pendingStart != null) _armIntentDeadline();
     notifyListeners();
   }
@@ -206,7 +221,7 @@ class StageViewModel extends ChangeNotifier {
     latest = inspected = null;
     _history.clear();
     _pendingStart = _pendingStop = null;
-    message = '核心失联 · 停止未确认；仅合成原型，无应用控制。请重新连接。';
+    message = '核心失联 · 停止未确认，无应用控制。检查Python路径/依赖后重新连接。';
     unawaited(_subscription?.cancel());
     unawaited(_repository?.close());
     notifyListeners();
