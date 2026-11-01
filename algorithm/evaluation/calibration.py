@@ -186,6 +186,29 @@ def save_calibration(value, path):
     return digest(data)
 
 
+def load_for_bundle(path, *, expected_sha256, bundle):
+    """Load an offline sidecar against the verified bundle's exact validation inventory.
+
+    This supplies probabilities, not action authority or a frozen event policy.
+    The original preview bundle and its checksum inventory remain unchanged.
+    """
+    data = bundle.training_identity["data"]
+    target = ScoreProvenance(
+        model_sha256=bundle.manifest_sha256,
+        dataset_sha256=bundle.normalizer.stats.dataset_hash,
+        split_sha256=bundle.normalizer.stats.split_hash,
+        stats_sha256=bundle.normalizer.stats_hash,
+        config_sha256=bundle.normalizer.config.config_hash,
+        cache_index_sha256=data["val_index_sha256"],
+        endpoint_sha256=data["val"]["endpoint_sha256"],
+        vocabulary_version=bundle.vocabulary.vocabulary_version,
+        split="val",
+        data_synthetic=data["synthetic"],
+        model_synthetic=bundle.synthetic_training,
+    )
+    return load_calibration(path, expected_sha256=expected_sha256, target=target)
+
+
 def load_calibration(path, *, expected_sha256, target):
     data = read_bounded(Path(path), 1_048_576)
     if digest(data) != expected_sha256:

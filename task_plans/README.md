@@ -4,6 +4,8 @@
 
 > **T19内置应用增量**：人工双向翻页、调度/绘制确认和原生入口已实现，仅application-local；外部软件/手势闭环待验。本机神经网络训练继续暂停，见[演示阶段记录](../docs/local_presentation.md)。
 
+> **公开策略增量**：15类独立draft引擎与合成内置页码回放已实现；57项专项/607项非训练回归通过。显式owner、几何释放、停止/超时、T15事件报告可用；无真实相机或原生手势控制。见[策略与回放](../docs/public_gesture_policy.md)。
+
 > **T15阶段一增量**：离线分类、验证集有限校准、分层事件匹配及CLI已实现；模型/缓存SHA绑定，合成和零参数前向测试，不运行神经训练、不启用动作。正式数据/线上校准/T28事件搜索仍待验。见[评估工具](../docs/evaluation_and_calibration.md)。
 
 > **T16阶段一增量**：校验模型包、共享在线分类及v3只读UI已实现；566项Python、51项Flutter通过。正式数据/T15未完成，模型均只允许未校准预览，不执行应用命令。见[模型包与推理](../docs/model_bundle_and_inference.md)。
@@ -14,7 +16,7 @@
 
 > **2026-10-30增量**：来源15类训练/分类、严格公共数据导入与有界缓存桥接已实现，461项测试通过；真实SHA/主体审查、全量流式训练和应用策略仍待验。T36/T20已有时序交互舞台概念稿，Flutter SDK获取尚未完成。见 [本轮实现](../docs/public_data_implementation.md)。
 
-> **最新数据路线 public-data-v1**：公开数据为主，不要求自行录制训练集。T07改为公开数据适配预检，T08改为主数据下载/版本管理，T06真实采集仅为可选路径。来源与当前SHA阻塞见 [data/SOURCES.md](../data/SOURCES.md)，新类别/启停方案及证据边界见 [公开数据方案](../docs/public_data_plan.md)；旧自采人数与手势唤醒要求不再是首版硬门槛，来源15类训练已支持，应用策略迁移尚未实施。
+> **最新数据路线 public-data-v1**：公开数据为主，不要求自行录制训练集。T07改为公开数据适配预检，T08改为主数据下载/版本管理，T06真实采集仅为可选路径。来源与当前SHA阻塞见 [data/SOURCES.md](../data/SOURCES.md)，新类别/启停方案及证据边界见 [公开数据方案](../docs/public_data_plan.md)；旧自采人数与手势唤醒要求不再是首版硬门槛，来源15类训练及draft策略合成回放已支持，正式语义/原生启停/真实流迁移尚待验。
 
 本目录将 [PROJECT_MASTER_PLAN.md](../PROJECT_MASTER_PLAN.md) 拆分为 **38 个独立任务文件**。T01/T02/T05 已有核心与草案；T03/T04/T06 已新增采集/感知/标注软件，154项测试通过，兼容依赖下真实模型加载/黑图推理已通过；真手/人工工具等完整实机验收未完成，见 [修复记录](../docs/perception_diagnostics.md)。没有真实参与者训练数据、自训模型、产品UI或真实应用控制。未满足验收的任务继续待验证，历史修订见 [任务审查记录](REVIEW_NOTES.md)。
 
@@ -83,13 +85,13 @@ T15 完成分类校准与合成事件评估；T23 使用 draft 参数联调。T2
 | [T14](14_training_and_experiment_tracking.md) | 实现可复现训练、采样与模型选择 | P0 | A | [T12](12_rules_and_mlp_baselines.md), [T13](13_causal_tcn_network.md) | 模块及合成证据已有；v3读取已适配，本机训练暂停，正式训练待来源审核/新机器 |
 | [T15](15_validation_and_calibration.md) | 建立分类与事件评估、验证集校准和门限选择 | P0 | A | [T14](14_training_and_experiment_tracking.md) | 阶段一：离线工具/合成验收通过；正式数据、线上接入与事件冻结待验 |
 | [T16](16_export_and_online_inference.md) | 打包模型并实现带新鲜度校验的在线推理 | P0 桌面参考；移动导出归 T37 | A 主责，B 集成 | [T14](14_training_and_experiment_tracking.md), [T15](15_validation_and_calibration.md) | 阶段一：校验包/在线分类通过；正式训练/校准/热切换/全链待验 |
-| [T17](17_interaction_state_machine.md) | 实现唤醒、控制权、释放去重与独立停止状态机 | P0 | B | [T02](02_scaffold_and_contracts.md), [T04](04_perception_tracking_quality.md), [T05](05_gesture_and_annotation_protocol.md) | 模块完成：旧5类合成/停止通过；公开版启停迁移及实机待验 |
+| [T17](17_interaction_state_machine.md) | 实现唤醒、控制权、释放去重与独立停止状态机 | P0 | B | [T02](02_scaffold_and_contracts.md), [T04](04_perception_tracking_quality.md), [T05](05_gesture_and_annotation_protocol.md) | 模块完成：旧5类与独立15类合成/停止通过；公开原生启停及实机待验 |
 | [T18](18_generic_action_dispatch.md) | 实现通用命令映射、调度器与 mock 适配器 | P0 | B | [T02](02_scaffold_and_contracts.md), [T05](05_gesture_and_annotation_protocol.md), [T17](17_interaction_state_machine.md) | 模块完成：dry-run/mock调度通过；真实后端待T19/T24 |
 | [T19](19_presentation_application.md) | 实现演示文稿上层应用与实机翻页 | P0 | B | [T01](01_scope_and_platform.md), [T18](18_generic_action_dispatch.md) | 内置人工演示已验；外部应用和模型手势闭环待实施 |
 | [T20](20_desktop_ui.md) | 实现原生桌面界面与多端交互契约 | P0 桌面；手机归 T37 | B | [T02](02_scaffold_and_contracts.md), [T36](36_native_platform_foundation.md) | Linux相机/v3只读分类软件已验；正式模型/动作/安装待完成 |
 | [T21](21_music_and_volume_application.md) | 实现歌曲切换、播放暂停与音量上层应用 | P1 | B 主责，A 补数据/识别 | [T18](18_generic_action_dispatch.md), [T19](19_presentation_application.md), [T23](23_replay_and_integration.md) | 待实施 |
 | [T22](22_pointer_and_continuous_control.md) | 实现光标移动、点击与可选拖拽滚动 | P1；拖拽滚动后置 | B 主责，A 补数据/识别 | [T18](18_generic_action_dispatch.md), [T19](19_presentation_application.md), [T23](23_replay_and_integration.md) | 待实施 |
-| [T23](23_replay_and_integration.md) | 实现确定性回放并打通端到端应用闭环 | P0 | A+B | [T06](06_collection_tool.md), [T16](16_export_and_online_inference.md), [T17](17_interaction_state_machine.md), [T18](18_generic_action_dispatch.md), [T19](19_presentation_application.md), [T20](20_desktop_ui.md) | 待实施 |
+| [T23](23_replay_and_integration.md) | 实现确定性回放并打通端到端应用闭环 | P0 | A+B | [T06](06_collection_tool.md), [T16](16_export_and_online_inference.md), [T17](17_interaction_state_machine.md), [T18](18_generic_action_dispatch.md), [T19](19_presentation_application.md), [T20](20_desktop_ui.md) | 部分：15类合成逻辑/内置页码回放通过；真实数据/模型/UI闭环待验 |
 | [T24](24_safety_faults_and_performance.md) | 完成故障注入、停止释放与性能稳定性测试 | P0 | B 主责，A 复核 | [T23](23_replay_and_integration.md) | 待实施 |
 | [T25](25_local_global_multitask.md) | 扩展局部全局双分支与意图阶段多任务网络 | P1；研究完整版主线 | A | [T09](09_annotation_and_quality_audit.md), [T13](13_causal_tcn_network.md), [T14](14_training_and_experiment_tracking.md) | 待实施 |
 | [T26](26_rejection_and_hard_negatives.md) | 研究开放集拒识并开展困难负样本迭代 | P1 负样本迭代；P2 系统拒识比较 | A 主责，B 采集/回放 | [T15](15_validation_and_calibration.md), [T23](23_replay_and_integration.md) | 待实施 |

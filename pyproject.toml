@@ -31,6 +31,7 @@ handshake-perception-probe = "backend.perception.probe:main"
 handshake-data = "backend.importing.commands:main"
 handshake-model = "algorithm.deployment:main"
 handshake-evaluate = "algorithm.evaluation.cli:main"
+handshake-public-replay = "backend.interaction.public_replay:main"
 
 [tool.setuptools]
 include-package-data = true

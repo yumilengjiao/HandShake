@@ -1,5 +1,7 @@
 # backend：实时运行与安全终端控制
 
+> **公开策略增量**：`interaction/public_policy.py`新增独立15类draft状态机，`public_presentation.py`/`public_replay.py`实现明确合成的调度/内置页码回放，保留停止、epoch、owner、surface和TTL检查。不开放相机或真实手势控制。见[策略与验证](../docs/public_gesture_policy.md)。
+
 > 数据扩容：`importing/spool.py`、`verified_lines.py`、`stream_features.py`提供磁盘审查和紧凑cache v3；`handshake-data build-stream-cache/inspect-cache`共用严格导入/数据完整性要求，不启动训练。见[数据阶段](../docs/public_data_scale.md)。
 
 > T19内置阶段：`presentation.py`/`presentation_cli.py`及`actions/backends/presentation.py`以独立私有管道接人工操作，只有一个T18调度器，目标绑定内置稿SHA；相机/模型进程仍只读。见[演示阶段](../docs/local_presentation.md)。
@@ -31,7 +33,7 @@
 | `telemetry/` | 结构化日志、健康监控、计时与事件轨迹 |
 | 应用控制器 | 生命周期、运行上下文、输入/模型/模式切换、停止 |
 
-`capture/`、`perception/`、`tracking/association.py`、`collection/` 已落地；`interaction/`、`actions/` 已实现独立模块与合成故障检查；真实集成/平台仍待T19/T23/T24。公开版UI/键盘启停与15类契约迁移未实施，见[训练与交互](../docs/training_and_interaction.md)。命令见 [采集操作指南](../docs/collection_workflow.md)。
+`capture/`、`perception/`、`tracking/association.py`、`collection/` 已落地；`interaction/`、`actions/` 已实现独立模块与合成故障检查；真实集成/平台仍待T19/T23/T24。公开15类策略已有合成实现；原生UI/键盘启停与真实流接入仍未实施，见[公开策略](../docs/public_gesture_policy.md)及[旧5类训练与交互](../docs/training_and_interaction.md)。命令见 [采集操作指南](../docs/collection_workflow.md)。
 
 感知诊断统一由 `backend/perception/probe.py` 执行；T14旧入口 `diagnostics.py` / `scripts/probe_perception.py` 仅兼容转发，保留原参数/摘要格式。
 
