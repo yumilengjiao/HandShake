@@ -2,6 +2,8 @@
 
 ## 当前已有内容
 
+- [T23：关键点文件与校验模型的只读逻辑回放](observation_replay.md)
+
 - [公开15类安全策略与内置演示合成回放](public_gesture_policy.md)
 
 - [T15阶段一：离线分类、验证集校准与分层事件评估](evaluation_and_calibration.md)
