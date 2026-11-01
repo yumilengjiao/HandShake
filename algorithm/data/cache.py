@@ -50,6 +50,12 @@ def load_cache(directory: str | Path, *, expected_dataset_sha256: str,
                expected_vocabulary: ClassVocabulary | None = None) -> tuple[dict, dict]:
     root = Path(directory)
     index = json.loads((root / "index.json").read_text(encoding="utf-8"))
+    if index.get("format_version") == "t11-cache-v3":
+        from algorithm.data.compact import load_compact_cache
+        return load_compact_cache(root, expected_dataset_sha256=expected_dataset_sha256,
+            expected_split_sha256=expected_split_sha256, expected_stats_sha256=expected_stats_sha256,
+            expected_config_sha256=expected_config_sha256, expected_split=expected_split,
+            expected_vocabulary=expected_vocabulary)
     claimed_hash = index.get("index_sha256")
     if claimed_hash != canonical_digest({key: value for key, value in index.items() if key != "index_sha256"}):
         raise ValueError("cache index hash mismatch")

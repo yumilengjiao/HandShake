@@ -1,5 +1,7 @@
 # HandShake 分阶段任务规划
 
+> **数据扩容增量**：compact cache v3、SQLite暂存审查、按批窗口/训练读取适配及缓存转移预检已实现。30,003条合成缓存探针通过；官方SHA仍待解。**当前机器暂停神经网络训练**，最新训练回归及正式训练交给后续机器，见[阶段记录](../docs/public_data_scale.md)。
+
 > **T19内置应用增量**：人工双向翻页、调度/绘制确认和原生入口已实现，仅application-local；外部软件/手势闭环待验。本机神经网络训练继续暂停，见[演示阶段记录](../docs/local_presentation.md)。
 
 > **T16阶段一增量**：校验模型包、共享在线分类及v3只读UI已实现；566项Python、51项Flutter通过。正式数据/T15未完成，模型均只允许未校准预览，不执行应用命令。见[模型包与推理](../docs/model_bundle_and_inference.md)。
@@ -72,11 +74,11 @@ T15 完成分类校准与合成事件评估；T23 使用 draft 参数联调。T2
 | [T07](07_pilot_collection.md) | 完成公开数据适配预检（自采可选） | P0 | A+B | [T04](04_perception_tracking_quality.md), [T05](05_gesture_and_annotation_protocol.md) | 进行中：导入/时轴软件已验证，真实SHA待解 |
 | [T08](08_main_dataset_collection.md) | 获取公开主数据并建立版本账本（自采可选） | P0 | A+B | [T07](07_pilot_collection.md) | 进行中：导入账本已实现，大包未下载 |
 | [T09](09_annotation_and_quality_audit.md) | 标注动作时间轴并完成数据质量审核 | P0 | A+B 交叉复核 | [T05](05_gesture_and_annotation_protocol.md), [T08](08_main_dataset_collection.md) | 进行中：格式/监督校验已实现，真实审查待验 |
-| [T10](10_splits_and_dataset_version.md) | 固定用户划分、排查泄漏并版本化数据集 | P0 | A | [T09](09_annotation_and_quality_audit.md) | 进行中：显式分组与小规模缓存已验证，正式冻结待验 |
+| [T10](10_splits_and_dataset_version.md) | 固定用户划分、排查泄漏并版本化数据集 | P0 | A | [T09](09_annotation_and_quality_audit.md) | 进行中：磁盘审查/紧凑缓存v3已验；真实主体证据与正式冻结待验 |
 | [T11](11_features_and_windows.md) | 实现共享特征工程、掩码与时序数据加载 | P0 | A（用户待填） | [T04](04_perception_tracking_quality.md), [T05](05_gesture_and_annotation_protocol.md), [T10](10_splits_and_dataset_version.md) | 待验证：软件/合成通过，正式统计待T10 |
 | [T12](12_rules_and_mlp_baselines.md) | 建立规则与单帧 MLP 对照基线 | P0：MLP；规则作为工程对照 | A（用户待填） | [T11](11_features_and_windows.md) | 已完成：模块及合成冒烟；正式实验待T14+ |
 | [T13](13_causal_tcn_network.md) | 搭建可验证的单分支因果 TCN 神经网络 | P0 | A（用户待填） | [T11](11_features_and_windows.md) | 已完成：结构/因果/梯度验收 |
-| [T14](14_training_and_experiment_tracking.md) | 实现可复现训练、采样与模型选择 | P0 | A | [T12](12_rules_and_mlp_baselines.md), [T13](13_causal_tcn_network.md) | 模块完成：5/15类合成训练/恢复通过；正式训练待T07/T10 |
+| [T14](14_training_and_experiment_tracking.md) | 实现可复现训练、采样与模型选择 | P0 | A | [T12](12_rules_and_mlp_baselines.md), [T13](13_causal_tcn_network.md) | 模块及合成证据已有；v3读取已适配，本机训练暂停，正式训练待来源审核/新机器 |
 | [T15](15_validation_and_calibration.md) | 建立分类与事件评估、验证集校准和门限选择 | P0 | A | [T14](14_training_and_experiment_tracking.md) | 待实施 |
 | [T16](16_export_and_online_inference.md) | 打包模型并实现带新鲜度校验的在线推理 | P0 桌面参考；移动导出归 T37 | A 主责，B 集成 | [T14](14_training_and_experiment_tracking.md), [T15](15_validation_and_calibration.md) | 阶段一：校验包/在线分类通过；正式训练/校准/热切换/全链待验 |
 | [T17](17_interaction_state_machine.md) | 实现唤醒、控制权、释放去重与独立停止状态机 | P0 | B | [T02](02_scaffold_and_contracts.md), [T04](04_perception_tracking_quality.md), [T05](05_gesture_and_annotation_protocol.md) | 模块完成：旧5类合成/停止通过；公开版启停迁移及实机待验 |

@@ -1,5 +1,7 @@
 # scripts：采集、训练与运维命令入口
 
+> **本机训练暂停**：新增`probe_stream_cache.py`默认只创建合成容量样例并构建缓存；训练阶段必须显式`--with-training`，留给后续机器。本轮不运行该选项。正式缓存构建/迁移验证使用`handshake-data build-stream-cache/inspect-cache`，见[交接说明](../docs/public_data_scale.md)。
+
 > T16模型命令：`python -m algorithm.deployment export|inspect|benchmark`（安装后`handshake-model`）；`run_native.py`可选`--model-package`与`--model-sha256`，须配合感知资产。无自动下载/训练/应用控制，见[模型包指南](../docs/model_bundle_and_inference.md)。
 
 > 原生原型入口：`.venv/bin/python scripts/run_native.py`，可指定`--flutter`或已构建的`--bundle`；显式传入当前Python解释器和仓库目录，不使用shell、不自动打开相机；可选`--camera`/`--perception-model`，相机需UI显式启用。见[启动与验证](../frontend/native/README.md)。

@@ -16,14 +16,14 @@ from backend.importing.ipn_hands import import_ipn_hands
 def _parser():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="mode", required=True)
-    for name in ("audit-ipn", "import-ipn", "build-cache"):
+    for name in ("audit-ipn", "import-ipn", "build-cache", "build-stream-cache"):
         command = commands.add_parser(name)
         command.add_argument(
             "--report",
             type=Path,
             help="exclusive JSON report, including failure reasons",
         )
-        if name != "build-cache":
+        if name not in {"build-cache", "build-stream-cache"}:
             command.add_argument(
                 "--catalog",
                 type=Path,
@@ -40,7 +40,7 @@ def _parser():
                 help="reviewed subject-plan-v1; no filename guessing",
             )
             command.add_argument("--output", type=Path, required=True)
-        elif name == "build-cache":
+        elif name in {"build-cache", "build-stream-cache"}:
             command.add_argument("--imported", type=Path, required=True)
             command.add_argument("--output", type=Path, required=True)
             command.add_argument(
@@ -56,13 +56,47 @@ def _parser():
             command.add_argument(
                 "--max-records",
                 type=int,
-                default=10000,
-                help="bounded prototype; not a full-corpus streaming cache",
+                default=10000 if name == "build-cache" else 2_000_000,
+                help="record audit budget; streaming v3 uses a disk spool, not a whole-record list",
             )
+            if name == "build-stream-cache":
+                command.add_argument("--max-groups", type=int, default=50_000)
+                command.add_argument("--stride", type=int, default=1)
+    command = commands.add_parser(
+        "inspect-cache",
+        help="read-only compact cache transfer preflight; does not train",
+    )
+    command.add_argument("--cache", type=Path, required=True)
+    command.add_argument(
+        "--index-sha256",
+        required=True,
+        help="trusted index_sha256 from the build receipt",
+    )
+    command.add_argument("--report", type=Path)
     return parser
 
 
 def _run(args):
+    if args.mode == "inspect-cache":
+        from algorithm.data.compact import inspect_compact_cache
+
+        return inspect_compact_cache(
+            args.cache, expected_index_sha256=args.index_sha256
+        )
+    if args.mode == "build-stream-cache":
+        from backend.importing.stream_features import build_stream_cache
+
+        return build_stream_cache(
+            args.imported,
+            args.output,
+            split=args.split,
+            dataset_version=args.dataset_version,
+            review_reference=args.review_reference,
+            stats=args.stats,
+            max_records=args.max_records,
+            max_groups=args.max_groups,
+            stride=args.stride,
+        )
     if args.mode == "build-cache":
         return build_import_cache(
             args.imported,
@@ -122,6 +156,7 @@ def main(argv=None):
                 TypeError,
                 KeyError,
                 zipfile.BadZipFile,
+                EOFError,
             ) as error:
                 result = {
                     "status": "blocked",

@@ -1,5 +1,7 @@
 # data：公开数据来源与本地数据
 
+> 数据扩容新增[compact cache v3与换机预检](../docs/public_data_scale.md)。本机不再进行神经网络训练；正式来源SHA仍待核实。本轮30,003条规模样例是程序生成的诊断数据，不是已下载的官方主数据。
+
 > **当前路线 public-data-v1（2026-10-29）**：公开数据为主，不要求组员自行录制训练集。仓库只跟踪本说明、[`SOURCES.md`](SOURCES.md)和[`sources.json`](sources.json)；下载包、图片、关键点、原始标签与实验派生数据不进Git。
 
 ## 从这里开始

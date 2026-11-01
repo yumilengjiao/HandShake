@@ -16,7 +16,7 @@ from algorithm.model_config import build_model, load_model_config
 from algorithm.models.losses import masked_cross_entropy
 from algorithm.training.config import TrainConfig
 from algorithm.training.inputs import load_training_inputs
-from algorithm.training.metrics import classification_metrics
+from algorithm.training.metrics import metrics_from_confusion
 from shared.classes import vocabulary_for
 from shared.features import feature_schema_hash
 
@@ -66,23 +66,22 @@ def _restore_rng(state, generator):
 
 def _evaluate(model, data, kind, batch_size):
     model.eval()
-    labels, guesses, total_loss, count = [], [], 0.0, 0
+    matrix = np.zeros((model.num_classes, model.num_classes), dtype=np.int64)
+    total_loss, count = 0.0, 0
     with torch.no_grad():
         for start in range(0, len(data["y"]), batch_size):
             selected = slice(start, start + batch_size)
             x = torch.from_numpy(data["x"][selected]).float()
-            y = torch.from_numpy(data["y"][selected]).long()
-            mask = torch.from_numpy(data["class_valid"][selected])
+            y = torch.from_numpy(np.array(data["y"][selected], dtype=np.int64, copy=True))
+            mask = torch.from_numpy(np.array(data["class_valid"][selected], dtype=bool, copy=True))
             logits = model(x[:, -1] if kind == "mlp" else x)
             loss = masked_cross_entropy(logits, y, mask)
             valid = int(mask.sum())
             if loss is not None:
                 total_loss += float(loss) * valid
                 count += valid
-                labels.extend(y[mask].tolist())
-                guesses.extend(logits.argmax(-1)[mask].tolist())
-    return classification_metrics(np.asarray(labels, dtype=np.int64), np.asarray(guesses, dtype=np.int64),
-                                  class_count=model.num_classes) | {"loss": total_loss / count}
+                np.add.at(matrix, (y[mask].numpy(), logits.argmax(-1)[mask].numpy()), 1)
+    return metrics_from_confusion(matrix) | {"loss": total_loss / count}
 
 
 def train(train_cache, val_cache, output, *, config=None, resume=None, stop_after_epoch=None):
@@ -90,6 +89,9 @@ def train(train_cache, val_cache, output, *, config=None, resume=None, stop_afte
     if stop_after_epoch is not None and (type(stop_after_epoch) is not int or stop_after_epoch < 1):
         raise ValueError("stop_after_epoch must be a positive epoch boundary")
     training, validation, provenance = load_training_inputs(train_cache, val_cache)
+    compact = provenance.get("format_version") == "t11-cache-v3"
+    if compact and config.batch_size > 1024:
+        raise ValueError("compact cache batch size must not exceed 1024")
     torch.set_num_threads(config.threads)
     torch.use_deterministic_algorithms(True)
     random.seed(config.seed)
@@ -97,6 +99,7 @@ def train(train_cache, val_cache, output, *, config=None, resume=None, stop_afte
     torch.manual_seed(config.seed)
     generator = torch.Generator().manual_seed(config.seed)
     if config.shuffle_labels_diagnostic:
+        training["y"] = np.array(training["y"], copy=True)
         mask = training["class_valid"]
         training["y"][mask] = np.random.default_rng(config.seed).permutation(training["y"][mask])
     vocabulary = vocabulary_for(provenance["vocabulary_version"])
@@ -147,22 +150,28 @@ def train(train_cache, val_cache, output, *, config=None, resume=None, stop_afte
         for epoch in range(start + 1, config.max_epochs + 1):
             if bad_epochs >= config.patience:
                 break
+            for data in (training, validation):
+                if "_verify" in data:
+                    data["_verify"]()
             model.train()
-            order = torch.randperm(len(training["y"]), generator=generator).tolist()
+            order = torch.randperm(len(training["y"]), generator=generator).numpy()
             total_loss, supervised, skipped, grad_max = 0.0, 0, 0, 0.0
             batch_metrics = []
+            def record_batch(value):
+                if not compact or len(batch_metrics) < 256:
+                    batch_metrics.append(value)
             for batch_index, offset in enumerate(range(0, len(order), config.batch_size)):
                 selected = order[offset:offset + config.batch_size]
                 x = torch.from_numpy(training["x"][selected]).float()
-                y = torch.from_numpy(training["y"][selected]).long()
-                mask = torch.from_numpy(training["class_valid"][selected])
+                y = torch.from_numpy(np.array(training["y"][selected], dtype=np.int64, copy=True))
+                mask = torch.from_numpy(np.array(training["class_valid"][selected], dtype=bool, copy=True))
                 optimizer.zero_grad(set_to_none=True)
                 logits = model(x[:, -1] if config.model_type == "mlp" else x)
                 loss = masked_cross_entropy(logits, y, mask)
                 valid = int(mask.sum())
                 if loss is None:
                     skipped += 1
-                    batch_metrics.append(dict(batch=batch_index, supervised=0, skipped=True, loss=None, gradient_norm=None, learning_rate=config.learning_rate, class_counts=[0] * vocabulary.class_count))
+                    record_batch(dict(batch=batch_index, supervised=0, skipped=True, loss=None, gradient_norm=None, learning_rate=config.learning_rate, class_counts=[0] * vocabulary.class_count))
                     continue
                 loss.backward()
                 grad = torch.nn.utils.clip_grad_norm_(model.parameters(), config.grad_clip_norm, error_if_nonfinite=True)
@@ -173,10 +182,13 @@ def train(train_cache, val_cache, output, *, config=None, resume=None, stop_afte
                 supervised += valid
                 total_loss += float(loss.detach()) * valid
                 grad_max = max(grad_max, float(grad))
-                batch_metrics.append(dict(batch=batch_index, supervised=valid, skipped=False, loss=float(loss.detach()),
+                record_batch(dict(batch=batch_index, supervised=valid, skipped=False, loss=float(loss.detach()),
                                           gradient_norm=float(grad), learning_rate=config.learning_rate,
                                           class_counts=[int(((y == i) & mask).sum()) for i in range(vocabulary.class_count)]))
             metrics = _evaluate(model, validation, config.model_type, config.batch_size)
+            for data in (training, validation):
+                if "_verify" in data:
+                    data["_verify"]()
             score = metrics["macro_f1"]
             if best_state is None or score > best_score + config.min_delta:
                 best_score, best_epoch, bad_epochs = score, epoch, 0
@@ -185,7 +197,8 @@ def train(train_cache, val_cache, output, *, config=None, resume=None, stop_afte
                 bad_epochs += 1
             history.append(dict(epoch=epoch, global_step=global_step, train_loss=total_loss / supervised,
                                 supervised=supervised, skipped_batches=skipped, gradient_norm_max=grad_max,
-                                learning_rate=optimizer.param_groups[0]["lr"], batches=batch_metrics, validation=metrics))
+                                learning_rate=optimizer.param_groups[0]["lr"], batches=batch_metrics, validation=metrics,
+                                **({"batch_detail_limit": 256, "batches_total": len(range(0, len(order), config.batch_size))} if compact else {})))
             payload = dict(format_version="trainer-checkpoint-v1", run_id=run_id, identity_sha256=identity_hash,
                            identity=identity, epoch=epoch, global_step=global_step, state_dict=model.state_dict(),
                            optimizer=optimizer.state_dict(), rng=_rng_state(generator), history=history,
