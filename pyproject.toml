@@ -27,6 +27,7 @@ explicit = true
 
 [project.scripts]
 handshake = "backend.cli:main"
+handshake-handoff = "backend.handoff:main"
 handshake-perception-probe = "backend.perception.probe:main"
 handshake-data = "backend.importing.commands:main"
 handshake-model = "algorithm.deployment:main"
