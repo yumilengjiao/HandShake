@@ -34,6 +34,9 @@ void main() {
           perceptionModel: Platform.environment['HANDSHAKE_PERCEPTION_MODEL'],
           modelPackage: Platform.environment['HANDSHAKE_MODEL_PACKAGE'],
           modelSha256: Platform.environment['HANDSHAKE_MODEL_SHA256'],
+          calibration: Platform.environment['HANDSHAKE_CALIBRATION'],
+          calibrationSha256:
+              Platform.environment['HANDSHAKE_CALIBRATION_SHA256'],
         );
         return repository;
       });
