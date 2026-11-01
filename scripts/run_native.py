@@ -39,7 +39,17 @@ def main(argv=None):
     parser.add_argument(
         "--model-sha256", help="trusted checksums.json SHA256 from export receipt"
     )
+    parser.add_argument(
+        "--calibration", type=Path, help="optional validation calibration sidecar"
+    )
+    parser.add_argument("--calibration-sha256", help="trusted calibration file SHA256")
     args = parser.parse_args(argv)
+    if (
+        bool(args.calibration) != bool(args.calibration_sha256)
+        or args.calibration
+        and not args.model_package
+    ):
+        parser.error("calibration requires both sidecar/SHA256 and a model package")
     if bool(args.model_package) != bool(args.model_sha256):
         parser.error("provide both --model-package and --model-sha256")
     if args.model_package is not None and args.perception_model is None:
@@ -59,7 +69,19 @@ def main(argv=None):
                 "Flutter not found; pass --flutter /path/to/flutter/bin/flutter"
             )
         command = [executable, "--no-version-check", "run", "-d", "linux"]
-    environment = os.environ | {
+    # Never inherit an old model/calibration selection from the launching shell.
+    environment = {
+        k: v
+        for k, v in os.environ.items()
+        if k
+        not in {
+            "HANDSHAKE_PERCEPTION_MODEL",
+            "HANDSHAKE_MODEL_PACKAGE",
+            "HANDSHAKE_MODEL_SHA256",
+            "HANDSHAKE_CALIBRATION",
+            "HANDSHAKE_CALIBRATION_SHA256",
+        }
+    } | {
         "HANDSHAKE_PYTHON": sys.executable,
         "HANDSHAKE_ROOT": str(root),
         "HANDSHAKE_CAMERA": str(args.camera),
@@ -69,6 +91,9 @@ def main(argv=None):
     if args.model_package is not None:
         environment["HANDSHAKE_MODEL_PACKAGE"] = str(args.model_package.resolve())
         environment["HANDSHAKE_MODEL_SHA256"] = args.model_sha256
+    if args.calibration is not None:
+        environment["HANDSHAKE_CALIBRATION"] = str(args.calibration.resolve())
+        environment["HANDSHAKE_CALIBRATION_SHA256"] = args.calibration_sha256
     try:
         return subprocess.call(command, cwd=root / "frontend/native", env=environment)
     except KeyboardInterrupt:

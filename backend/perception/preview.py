@@ -97,10 +97,23 @@ class CameraPreviewWorker:
         model_package=None,
         model_sha256=None,
         context_epoch=0,
+        calibration_path=None,
+        calibration_sha256=None,
     ):
         self.device, self.model_path = device, model_path
         self.source_factory, self.detector_factory = source_factory, detector_factory
         self.model_package, self.model_sha256 = model_package, model_sha256
+        if (
+            bool(calibration_path) != bool(calibration_sha256)
+            or calibration_path
+            and not model_package
+        ):
+            raise ValueError("calibration requires a model package and its own SHA256")
+        self.calibration_path, self.calibration_sha256 = (
+            calibration_path,
+            calibration_sha256,
+        )
+        self.calibration = None
         self.context_epoch = context_epoch
         self.model_failed = False
         self.classification_max_age_ns = 150_000_000
@@ -148,6 +161,14 @@ class CameraPreviewWorker:
                     bundle = load_bundle(
                         self.model_package, expected_manifest_sha256=self.model_sha256
                     )
+                    if self.calibration_path is not None:
+                        from algorithm.evaluation.calibration import load_for_bundle
+
+                        self.calibration = load_for_bundle(
+                            self.calibration_path,
+                            expected_sha256=self.calibration_sha256,
+                            bundle=bundle,
+                        )
                     self.classification_max_age_ns = bundle.normalizer.config.max_age_ns
                     classifier = OnlineClassifier(
                         bundle,

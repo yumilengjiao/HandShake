@@ -43,3 +43,56 @@ class ClassifiedCameraSession(CameraPreviewSession):
                 ),
                 base.jpeg,
             )
+
+
+class CalibratedCameraSession(ClassifiedCameraSession):
+    """V4 conversion uses already-verified sidecar; old/stopped scores are never retained."""
+
+    def snapshot(self):
+        import numpy as np
+
+        from algorithm.evaluation.classification import log_probabilities
+        from shared.calibrated_preview_protocol import (
+            CalibratedPreviewPacket,
+            CalibratedPreviewSnapshot,
+            ProbabilityNotice,
+        )
+
+        with self.lock:
+            base = super().snapshot()
+            probability = None
+            notice = base.snapshot.classification
+            if notice is not None and notice.state == "predicted":
+                calibration = self.worker.calibration
+                if (
+                    calibration is None
+                    or notice.model_version
+                    != "sha256:" + calibration.source.model_sha256
+                ):
+                    raise ValueError("missing or mismatched verified calibration")
+                values = np.exp(
+                    log_probabilities([notice.logits], calibration.temperature)
+                )[0]
+                status = (
+                    "unavailable"
+                    if calibration.threshold is None
+                    else "accepted"
+                    if values.max() >= calibration.threshold
+                    else "rejected"
+                )
+                probability = ProbabilityNotice(
+                    calibration_sha256=self.worker.calibration_sha256,
+                    model_version=notice.model_version,
+                    synthetic=calibration.synthetic,
+                    temperature=calibration.temperature,
+                    threshold=calibration.threshold,
+                    probabilities=tuple(float(v) for v in values),
+                    rejection_status=status,
+                )
+            return CalibratedPreviewPacket(
+                CalibratedPreviewSnapshot(
+                    **base.snapshot.model_dump(exclude={"version"}),
+                    probability=probability,
+                ),
+                base.jpeg,
+            )

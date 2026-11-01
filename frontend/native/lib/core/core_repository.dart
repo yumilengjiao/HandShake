@@ -44,6 +44,8 @@ class ProcessCoreRepository implements CoreRepository {
     this.perceptionModel,
     this.modelPackage,
     this.modelSha256,
+    this.calibration,
+    this.calibrationSha256,
   });
   final String python;
   final String? workingDirectory;
@@ -51,6 +53,8 @@ class ProcessCoreRepository implements CoreRepository {
   final String? perceptionModel;
   final String? modelPackage;
   final String? modelSha256;
+  final String? calibration;
+  final String? calibrationSha256;
   final _snapshots = StreamController<CoreSnapshot>();
   Process? _process;
   StreamSubscription<CoreSnapshot>? _output;
@@ -78,6 +82,11 @@ class ProcessCoreRepository implements CoreRepository {
         ],
         if (modelPackage != null) ...['--model-package', modelPackage!],
         if (modelSha256 != null) ...['--model-sha256', modelSha256!],
+        if (calibration != null) ...['--calibration', calibration!],
+        if (calibrationSha256 != null) ...[
+          '--calibration-sha256',
+          calibrationSha256!,
+        ],
       ],
       workingDirectory: workingDirectory,
       runInShell: false,

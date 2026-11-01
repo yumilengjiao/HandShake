@@ -184,7 +184,19 @@ def main():
     )
     parser.add_argument("--model-package", help="optional verified gesture package")
     parser.add_argument("--model-sha256", help="trusted external checksums.json SHA256")
+    parser.add_argument(
+        "--calibration", help="optional verified validation calibration sidecar"
+    )
+    parser.add_argument(
+        "--calibration-sha256", help="trusted calibration artifact SHA256"
+    )
     args = parser.parse_args()
+    if (
+        bool(args.calibration) != bool(args.calibration_sha256)
+        or args.calibration
+        and not args.model_package
+    ):
+        parser.error("calibration requires both sidecar/SHA256 and a model package")
     if bool(args.model_package) != bool(args.model_sha256):
         parser.error("--model-package and --model-sha256 must be provided together")
     if args.model_package and not args.perception_model:
@@ -196,14 +208,25 @@ def main():
         from backend.classified_preview import ClassifiedCameraSession
         from shared.model_preview_protocol import ModelPreviewCommand
 
+        session_type = ClassifiedCameraSession
         command_type = ModelPreviewCommand
-        session = ClassifiedCameraSession(
+        if args.calibration:
+            from backend.classified_preview import CalibratedCameraSession
+            from shared.calibrated_preview_protocol import CalibratedPreviewCommand
+
+            session_type, command_type = (
+                CalibratedCameraSession,
+                CalibratedPreviewCommand,
+            )
+        session = session_type(
             worker_factory=lambda context_epoch: CameraPreviewWorker(
                 device=args.camera,
                 model_path=args.perception_model,
                 model_package=args.model_package,
                 model_sha256=args.model_sha256,
                 context_epoch=context_epoch,
+                calibration_path=args.calibration,
+                calibration_sha256=args.calibration_sha256,
             )
         )
     else:

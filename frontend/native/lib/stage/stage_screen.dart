@@ -84,6 +84,8 @@ class StageScreen extends StatelessWidget {
                                   title: Text(
                                     model.displayed?.classification == null
                                         ? '展开决策轨迹 · 模型未加载'
+                                        : model.displayed?.probability != null
+                                        ? '展开决策轨迹 · draft校准概率'
                                         : '展开决策轨迹 · 未校准分类',
                                   ),
                                   children: [_decisions(context)],
@@ -93,7 +95,7 @@ class StageScreen extends StatelessWidget {
                                   padding: const EdgeInsets.only(top: 20),
                                   child: Text(
                                     '讲解模式 / 骨架 → 共享特征与缺失掩码 → 因果TCN → 校准拒识 → 安全策略。'
-                                    '\n仅展示原始分类logits；未校准、未建立操作意图或动作授权。'
+                                    '\n可展示原始logits和已绑定验证集的draft校准概率；均不是操作意图或动作授权。'
                                     '32步是UI历史容量，不代表当前网络的感受野；帧数也不等于固定时长。',
                                     style: TextStyle(
                                       color: stageMint,
@@ -193,6 +195,17 @@ class StageScreen extends StatelessWidget {
   Widget _decisions(BuildContext context) {
     final snapshot = model.displayed;
     final classification = snapshot?.classification;
+    final probability = snapshot?.probability;
+    final calibrationEvidence = probability == null
+        ? '未校准，不是操作意图'
+        : '验证集温度校准 draft · p=${(probability.confidence * 100).toStringAsFixed(1)}%\n'
+              'T=${probability.temperature.toStringAsFixed(2)} · ${probability.rejectionStatus == 'accepted'
+                  ? '分类通过阈值'
+                  : probability.rejectionStatus == 'rejected'
+                  ? '分类拒识'
+                  : '拒识配置不可用'}\n'
+              '${probability.synthetic ? '合成校准 · 非正式效果' : '验证集校准 · 仍待实机验证'}\n'
+              '校准 ${probability.sha256.substring(0, 12)}… · 不授权动作';
     final modelEvidence = classification == null
         ? (snapshot?.modelStatus == 'error'
               ? '模型包校验/加载失败\n没有可用预测'
@@ -201,7 +214,7 @@ class StageScreen extends StatelessWidget {
               '包 ${classification.modelVersion.length > 20 ? '${classification.modelVersion.substring(0, 20)}…' : classification.modelVersion}\n'
               '${classification.syntheticTraining ? '合成训练 · 仅管线诊断' : '训练数据非合成 · 效果仍待实测'}\n'
               '${classification.state == 'predicted' ? '来源类 ${classification.topToken} / logit ${classification.topLogit!.toStringAsFixed(3)}' : '${classification.reason} · 历史${classification.windowLength}/32步'}\n'
-              '源帧 #${classification.frameId} · 未校准，不是操作意图';
+              '源帧 #${classification.frameId} · $calibrationEvidence';
     final steps = [
       (
         '观测 / OBSERVE',
@@ -386,7 +399,9 @@ class StageScreen extends StatelessWidget {
               child: Row(
                 spacing: 10,
                 children: [
-                  if (model.latest?.version == 2 || model.latest?.version == 3)
+                  if (model.latest?.version == 2 ||
+                      model.latest?.version == 3 ||
+                      model.latest?.version == 4)
                     OutlinedButton.icon(
                       key: const Key('start_camera'),
                       onPressed: model.canStartCamera

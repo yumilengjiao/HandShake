@@ -12,6 +12,8 @@
 
 > **T19内置演示增量**：原生界面可人工播放并双向翻页，全部导航经T18调度器，区分应用状态更新/Flutter绘制确认；仅application-local，不控制外部软件，不接模型手势。**本机继续暂停神经网络训练**。见[运行与证据](docs/local_presentation.md)。
 
+> **校准预览增量**：可显式加载验证集sidecar，在v4原生预览显示draft概率、分类拒识与校准SHA，仍无动作权限。见[校准概率预览](docs/calibrated_preview.md)。
+
 > **T16阶段一增量**：校验模型包、共享在线分类、v3界面原始logit/拒绝原因已接入；566项Python、51项Flutter通过。仅合成诊断训练证据，正式数据/校准/应用控制仍未完成。见[使用与验证](docs/model_bundle_and_inference.md)。
 
 > **2026-10-31相机增量**：[原生相机与同帧骨架](docs/native_camera_preview.md)已接入，显式打开、不保存真实画面；两轮原生相机开关/重开通过。505项Python、38项Flutter回归通过，尚无手势分类或翻页控制。

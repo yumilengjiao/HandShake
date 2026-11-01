@@ -40,7 +40,8 @@ class StageViewModel extends ChangeNotifier {
       _pendingStart == null &&
       latest?.state == 'stopped';
   bool get canStartCamera =>
-      canStart && (latest?.version == 2 || latest?.version == 3);
+      canStart &&
+      (latest?.version == 2 || latest?.version == 3 || latest?.version == 4);
 
   Future<void> connect() async {
     if (_disposed || link != LinkState.disconnected) return;
