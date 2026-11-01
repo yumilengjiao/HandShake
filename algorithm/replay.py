@@ -87,6 +87,10 @@ class ReplayManifest(WireModel):
 
 
 class ReplayArchive:
+    manifest_type = ReplayManifest
+    item_type = ReplayItem
+    strict_lifecycle = True
+
     def __init__(self, directory, *, expected_sha256):
         root = Path(directory)
         if not isinstance(expected_sha256, str) or not re.fullmatch(
@@ -101,7 +105,9 @@ class ReplayArchive:
         raw = read_bounded(root / "manifest.json", 1_048_576)
         if digest(raw) != expected_sha256:
             raise ValueError("replay manifest SHA256 mismatch")
-        self.manifest = ReplayManifest.model_validate_json(json_bytes(strict_json(raw)))
+        self.manifest = self.manifest_type.model_validate_json(
+            json_bytes(strict_json(raw))
+        )
         self.sha256 = expected_sha256
         self.path = root / "events.jsonl"
         info = self.path.stat()
@@ -138,13 +144,13 @@ class ReplayArchive:
                 count += 1
                 if count > self.manifest.events:
                     raise ValueError("replay event count mismatch")
-                item = ReplayItem.model_validate_json(json_bytes(strict_json(raw)))
+                item = self.item_type.model_validate_json(json_bytes(strict_json(raw)))
                 if item.at_ns < previous:
                     raise ValueError(
                         "replay timeline must be nondecreasing; file order breaks ties"
                     )
                 previous = item.at_ns
-                if item.kind in {"start", "reset", "stop"}:
+                if self.strict_lifecycle and item.kind in {"start", "reset", "stop"}:
                     if (
                         item.kind == "start"
                         and enabled

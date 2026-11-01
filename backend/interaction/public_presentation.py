@@ -30,14 +30,7 @@ class SyntheticPublicPresentation:
         policy=None,
         watchdog=True,
     ):
-        if (
-            allow_synthetic is not True
-            or not calibration.source.data_synthetic
-            or not calibration.source.model_synthetic
-        ):
-            raise ValueError(
-                "synthetic local execution requires explicit opt-in and synthetic calibration/model provenance"
-            )
+        self._validate_calibration_source(calibration, allow_synthetic)
         self._raw_clock = clock
         self._last_clock = 0
         self._revoked, self._closed = Event(), Event()
@@ -45,8 +38,8 @@ class SyntheticPublicPresentation:
         self._read_clock()
         deck, deck_id = demo_deck()
         self.controller = ApplicationController(
-            "public-replay-" + uuid4().hex,
-            timebase="synthetic",
+            self._stream_id(),
+            timebase=self._source_timebase(),
             target_context="local-presentation:" + deck_id,
         )
         self.controller.changes = deque(maxlen=128)
@@ -86,6 +79,28 @@ class SyntheticPublicPresentation:
                 target=self._watch, daemon=True, name="handshake-public-watchdog"
             )
             self._watchdog.start()
+
+    def _validate_calibration_source(self, calibration, allow_synthetic):
+        if (
+            allow_synthetic is not True
+            or not calibration.source.data_synthetic
+            or not calibration.source.model_synthetic
+        ):
+            raise ValueError(
+                "synthetic local execution requires explicit opt-in and synthetic calibration/model provenance"
+            )
+
+    def _stream_id(self):
+        return "public-replay-" + uuid4().hex
+
+    def _source_timebase(self):
+        return "synthetic"
+
+    def _arm_backend(self, context, track_id):
+        self.backend.arm(context, owner_track_id=track_id)
+
+    def _engine_tick(self, now_ns):
+        self.engine.tick(now_ns)
 
     def _read_clock(self):
         try:
@@ -203,7 +218,7 @@ class SyntheticPublicPresentation:
                 if context is None:
                     self.reason = self.engine.reason
                     return False
-                self.backend.arm(context, owner_track_id=track_id)
+                self._arm_backend(context, track_id)
                 self._grant_owner = track_id
                 self._revoked.clear()
                 self.rendered = None
@@ -276,7 +291,7 @@ class SyntheticPublicPresentation:
                     ):
                         self.stop("surface_response_timeout")
                     else:
-                        self.engine.tick(now)
+                        self._engine_tick(now)
                         if self.controller.snapshot().suspended:
                             self.reason = self.engine.reason
             except Exception:

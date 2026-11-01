@@ -35,6 +35,7 @@ handshake-model = "algorithm.deployment:main"
 handshake-evaluate = "algorithm.evaluation.cli:main"
 handshake-public-replay = "backend.interaction.public_replay:main"
 handshake-observation-replay = "algorithm.replay:main"
+handshake-model-session = "backend.interaction.model_replay:main"
 
 [tool.setuptools]
 include-package-data = true
