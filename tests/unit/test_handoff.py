@@ -186,6 +186,7 @@ def test_native_allowlist_modes_and_platform_mismatch(inputs, tmp_path):
         "handshake_stage",
         "lib/libapp.so",
         "lib/libflutter_linux_gtk.so",
+        "lib/native_assets.json",
         "data/icudtl.dat",
         "data/flutter_assets/NOTICES.Z",
     ):

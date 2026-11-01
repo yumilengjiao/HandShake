@@ -54,7 +54,7 @@ def allowed_member(name):
             part == "handshake_stage"
             or part.startswith("lib/")
             and part.endswith(".so")
-            or part == "data/icudtl.dat"
+            or part in {"data/icudtl.dat", "lib/native_assets.json"}
             or part.startswith("data/flutter_assets/")
             and (
                 PurePosixPath(part).suffix.lower()
@@ -189,7 +189,7 @@ def native_files(directory):
             relative == "handshake_stage"
             or relative.startswith("lib/")
             and path.suffix == ".so"
-            or relative == "data/icudtl.dat"
+            or relative in {"data/icudtl.dat", "lib/native_assets.json"}
             or relative.startswith("data/flutter_assets/")
             and (
                 path.suffix.lower()
