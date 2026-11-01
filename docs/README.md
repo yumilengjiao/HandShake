@@ -7,7 +7,6 @@
 - [T24：应用内停止、故障与资源长时诊断](safety_soak.md)
 - [T16/T20：验证集校准概率只读原生预览](calibrated_preview.md)
 - [T29：白名单离线交接与换机完整性预检](offline_handoff.md)
-
 - [T23：关键点文件与校验模型的只读逻辑回放](observation_replay.md)
 
 - [公开15类安全策略与内置演示合成回放](public_gesture_policy.md)
