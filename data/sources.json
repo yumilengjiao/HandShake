@@ -1,13 +1,14 @@
 {
   "schema_version": "public-dataset-sources-v1",
   "checked_on": "2026-10-29",
-  "ipn_annotations_rechecked_on": "2026-10-30",
+  "ipn_annotations_rechecked_on": "2026-10-31",
   "policy": {
     "route": "public-data-v1",
     "self_recorded_training_data_required": false,
     "commit_raw_data": false,
     "local_download_root": "data/external",
-    "status": "source_integrity_pending_importer_and_15class_training_software_verified",
+    "status": "source_integrity_pending_compact_cache_v3_implemented",
+    "training_on_current_machine": "paused_by_user_use_a_later_training_machine",
     "integrity_rule": "A published checksum mismatch blocks import. Never replace expected SHA256 with the observed value to mark a download valid."
   },
   "datasets": [
@@ -57,7 +58,9 @@
             "repeat_download_same_hash": true,
             "zip_crc_valid": true,
             "zip_members": 206,
-            "note": "Downloaded only to a temporary research directory. Archive metadata inspected without executing scripts or importing training data; CRC success does not resolve the upstream SHA256 mismatch."
+            "last_rechecked_on": "2026-10-31",
+            "last_download_url": "https://drive.usercontent.google.com/download?id=1HybcqZqnNKZGgJJXCMjj6tLFbpsNP_a1&export=download",
+            "note": "Public direct download rechecked on 2026-10-31: same 82274-byte ZIP and SHA; upstream HEAD remains 093729579be671df0cc9dd8cbc58b9a342663800 with the original expected SHA. CRC success does not resolve the mismatch. Temporary investigation copy only, never admitted as training data."
           }
         },
         {

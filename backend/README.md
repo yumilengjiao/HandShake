@@ -1,5 +1,7 @@
 # backend：实时运行与安全终端控制
 
+> 数据扩容：`importing/spool.py`、`verified_lines.py`、`stream_features.py`提供磁盘审查和紧凑cache v3；`handshake-data build-stream-cache/inspect-cache`共用严格导入/数据完整性要求，不启动训练。见[数据阶段](../docs/public_data_scale.md)。
+
 > T16阶段一新增可选v3模型通知：`classified_preview.py`与相机worker接校验后的MLP/TCN，复用共享窗口，只读未校准logits、无动作权限。没有分类配置时保持v2。见[模型包与在线分类](../docs/model_bundle_and_inference.md)。
 
 > 相机预览入口`python -m backend.desktop_preview`提供v2二进制图像/骨架通路，复用既有CaptureWorker/PerceptionPipeline；需显式`start_camera`，不记录数据、不接手势分类或应用动作。见[相机阶段](../docs/native_camera_preview.md)。

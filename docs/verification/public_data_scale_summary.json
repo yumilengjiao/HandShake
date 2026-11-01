@@ -1,0 +1,137 @@
+{
+  "scope": "compact public-data cache v3 and transfer preflight; no formal training",
+  "verified_on": "2026-10-31",
+  "base_commit": "13839c9",
+  "branch": "feat/public-data-scale",
+  "environment": {
+    "python": "3.12.15",
+    "os": "Linux",
+    "kernel": "7.2.11-arch1-1",
+    "machine": "x86_64",
+    "numpy": "1.26.4",
+    "pydantic": "2.14.1",
+    "sqlite": "3.53.1",
+    "ruff": "0.17.2"
+  },
+  "source_recheck": {
+    "upstream_head": "093729579be671df0cc9dd8cbc58b9a342663800",
+    "expected_sha256": "4686a2ebf70a6036166c261bc6992d050cfba08c3b18edcdd460b3fa9f30ec71",
+    "observed_sha256": "520dfbf3d52ecab6535d8841bba55e94d6b512596ed1cff4505d2c1345bcbaec",
+    "observed_bytes": 82274,
+    "zip_crc_passed": true,
+    "import_status": "blocked",
+    "large_landmark_archive_downloaded": false
+  },
+  "non_training_tests": {
+    "tests": "117",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "8.189",
+    "deselected_training_cases": 4
+  },
+  "scale_probe": {
+    "caches": [
+      {
+        "status": "cache_built",
+        "scope": "compact_stream_cache_v3",
+        "split": "train",
+        "records_audited": 30003,
+        "rows": 10001,
+        "endpoints": 10001,
+        "synthetic": true,
+        "index_sha256": "6edc82ade4c2ac15cbebe4d606692bf2cc966b7c73ec95e4404dcb71ac76a41d",
+        "coverage": {
+          "selected_endpoints": 10001,
+          "represented": 10001,
+          "ready": 9970,
+          "ready_coverage": 0.9969003099690031,
+          "unprocessed_frames": 0
+        },
+        "feature_bytes": 3760376,
+        "expanded_window_bytes_avoided": 120332032
+      },
+      {
+        "status": "cache_built",
+        "scope": "compact_stream_cache_v3",
+        "split": "val",
+        "records_audited": 30003,
+        "rows": 10001,
+        "endpoints": 10001,
+        "synthetic": true,
+        "index_sha256": "aa391500d39fa1ffc1312363fee81aca4f75de4b775bac36ae32f93dd1865e8b",
+        "coverage": {
+          "selected_endpoints": 10001,
+          "represented": 10001,
+          "ready": 9970,
+          "ready_coverage": 0.9969003099690031,
+          "unprocessed_frames": 0
+        },
+        "feature_bytes": 3760376,
+        "expanded_window_bytes_avoided": 120332032
+      }
+    ],
+    "stage": "cache",
+    "elapsed_seconds": 26.974188367999886,
+    "peak_process_rss_bytes": 127279104,
+    "synthetic": true,
+    "scope": "capacity probe, not official dataset or recognition accuracy"
+  },
+  "training_policy": {
+    "paused_on_current_machine": true,
+    "neural_training_after_user_pause": false,
+    "latest_full_training_regression": "deferred_to_training_machine",
+    "initial_small_mlp_tcn_resume_export_checks_before_pause": "passed_on_initial_revision_not_repeated_after_final_edits",
+    "default_probe": "cache_only",
+    "training_probe_requires": "--with-training"
+  },
+  "transfer_preflight": {
+    "status": "cache_verified",
+    "scope": "cache_integrity_only_not_source_or_review_approval",
+    "format_version": "t11-cache-v3",
+    "index_sha256": "6edc82ade4c2ac15cbebe4d606692bf2cc966b7c73ec95e4404dcb71ac76a41d",
+    "split": "train",
+    "synthetic": true,
+    "rows": 10001,
+    "endpoints": 10001,
+    "groups": 1,
+    "has_supervision": true,
+    "max_window_batch": 1024,
+    "feature_bytes": 3760376,
+    "logical_expanded_window_bytes": 120332032
+  },
+  "packaging": {
+    "sdist_wheel_build": true,
+    "wheel_code_preflight_outside_checkout": true,
+    "torch_imported_by_preflight": false,
+    "dependencies": "existing environment, not clean-machine installation"
+  },
+  "privacy": {
+    "camera_opened": false,
+    "real_images_saved": false,
+    "raw_data_or_weights_committed": false,
+    "scale_input": "procedural synthetic only"
+  },
+  "not_verified": [
+    "matching official annotations archive",
+    "real subject plan and full-corpus quality audit",
+    "entire official corpus run",
+    "final v3 training/resume on target machine",
+    "GPU training",
+    "T15 calibrated metrics",
+    "real application control"
+  ],
+  "source_sha256": {
+    "algorithm/data/compact.py": "8274b1f7071db052d2f77e269e7cc584d8317a947836ce9bc13b2dd28949208b",
+    "algorithm/data/cache.py": "d2f4287bc1254c9ff13e9b6b27df7e1e9a46f42a981a0ad7b2b1a37748cab3e1",
+    "algorithm/training/inputs.py": "cac23963365ee467523b5140266c6afff968ce12f9e35c89e99ccb058066518e",
+    "algorithm/training/metrics.py": "22d4a6ae06265a14ed8889d82ab029943977681ad38709e123ef5cab6b092272",
+    "algorithm/training/trainer.py": "98fc5fec7eeb3de7ff7de8986f9daa851b0468936111fb151cba94d9d1178b30",
+    "backend/importing/spool.py": "ce1be04e72254288d91d8588238921328c8247a4fcfe9aa7dd85cdeec61789b4",
+    "backend/importing/stream_features.py": "49679188f5a41bea84c30d3eb52312f9e6bb69bdf34393912449bcd69aaede23",
+    "backend/importing/verified_lines.py": "013a96c42e6a2e0bc7c0259d2dbfbd258de317a272fb82aef17a88b51fb27b4f",
+    "backend/importing/commands.py": "d37415e7f835267f3f3b11eec6d4f1c2f853582949c02610de6f779055016040",
+    "scripts/probe_stream_cache.py": "a537f3ceab2459663beb9dc1aa2e5563bd0351708aae6800fbf4cc39678f7b1e",
+    "tests/integration/test_stream_cache.py": "4fc283e6f7310f305101bb269356f3dbdbf3cbb8642cdf6b16431e04be3091bf"
+  }
+}

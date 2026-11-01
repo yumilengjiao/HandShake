@@ -1,5 +1,7 @@
 # algorithm：模型、训练、评估与推理
 
+> 数据扩容：`data/compact.py`支持v3紧凑/mmap缓存及按批32步窗口；训练IO保留v1/v2兼容，验证指标改为混淆矩阵累计，v3每epoch限制batch明细条数。当前机器不训练，后续机验证后再跑正式模型。见[缓存与交接](../docs/public_data_scale.md)。
+
 > T16阶段一新增`bundle.py`、`online.py`、`deployment.py`：可信本地best导出、有外部SHA锚点的无pickle推理包、共享在线窗口/原始logits以及模型探针。见[运行与验证](../docs/model_bundle_and_inference.md)。只读未校准，不接动作。
 
 > T11/T12/T13 已实现 `data/`、`models/`、`inference.py`、`model_config.py` 与合成 `smoke.py`，另保留T02显式MockPredictor。T14现已增加 `training/` 与 `scripts/train.py`，支持缓存校验、验证选择、checkpoint/恢复与健康诊断，见[训练与交互](../docs/training_and_interaction.md)。规则/MLP/TCN模块和接口可运行；没有真实数据训练结果或可发布权重。使用与边界见 [特征与模型](../docs/features_and_models.md)。

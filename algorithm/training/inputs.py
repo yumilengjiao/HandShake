@@ -10,7 +10,7 @@ from shared.classes import vocabulary_for
 def load_training_inputs(train_path, val_path):
     roots = [Path(train_path), Path(val_path)]
     headers = [json.loads((root / "index.json").read_text()) for root in roots]
-    common = ("dataset_sha256", "split_sha256", "stats_sha256", "config_sha256", "synthetic", "stride", "vocabulary_version", "classes_sha256")
+    common = ("format_version", "dataset_sha256", "split_sha256", "stats_sha256", "config_sha256", "synthetic", "stride", "vocabulary_version", "classes_sha256")
     if any(headers[0].get(key) != headers[1].get(key) for key in common):
         raise ValueError("train/val cache provenance or stride mismatch")
     vocabulary = vocabulary_for(headers[0]["vocabulary_version"])
@@ -25,8 +25,10 @@ def load_training_inputs(train_path, val_path):
             raise ValueError(f"{split} requires nonempty supervised endpoints")
         arrays.append(values)
         indexes.append(index)
-    for key in ("subject_id", "recording_id"):
-        groups = [{source[key] for source in index["source_ids"]} for index in indexes]
+    sources = [index["groups"] if index["format_version"] == "t11-cache-v3" else index["source_ids"] for index in indexes]
+    leak_keys = ("subject_id", "recording_id", "lineage_id", "original_sha256") if headers[0]["format_version"] == "t11-cache-v3" else ("subject_id", "recording_id")
+    for key in leak_keys:
+        groups = [{source[key] for source in values} for values in sources]
         if groups[0] & groups[1]:
             raise ValueError(f"train/val {key} leakage")
     provenance = {"train_index_sha256": indexes[0]["index_sha256"],
@@ -35,5 +37,8 @@ def load_training_inputs(train_path, val_path):
     for split, values, index in zip(("train", "val"), arrays, indexes):
         provenance[split] = dict(endpoints=len(values["y"]), supervised=int(values["class_valid"].sum()),
                                 class_counts=[int(((values["y"] == i) & values["class_valid"]).sum()) for i in range(vocabulary.class_count)],
-                                coverage=index["coverage"], endpoint_sha256=canonical_digest(index["source_ids"]))
+                                coverage=index["coverage"], endpoint_sha256=(canonical_digest({
+                                    "endpoints": index["files"]["endpoints.bin"]["sha256"],
+                                    "groups": index["files"]["groups.json"]["sha256"]})
+                                    if index["format_version"] == "t11-cache-v3" else canonical_digest(index["source_ids"])))
     return arrays[0], arrays[1], provenance

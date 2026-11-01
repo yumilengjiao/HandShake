@@ -1,5 +1,7 @@
 # HandShake：基于手部关键点与深度时序学习的意图感知终端交互系统
 
+> **数据扩容增量**：[compact cache v3与换机预检](docs/public_data_scale.md)已实现，避免全量展开重叠窗口；官方SHA阻塞未解除。用户要求本机暂停神经网络训练，当前只做数据准备及非训练检查，正式训练移交后续机器。
+
 > **T16阶段一增量**：[校验模型包、在线分类与v3只读UI](docs/model_bundle_and_inference.md)已实现，566项Python/51项Flutter通过。支持合成诊断验证，不代表正式数据训练、T15校准或应用控制完成。
 
 > **2026-10-31相机增量**：[原生相机与同帧骨架预览](docs/native_camera_preview.md)已接入并短时实机验证；505项Python/38项Flutter通过。尚未接手势分类、应用策略或真实翻页。
