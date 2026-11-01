@@ -229,6 +229,7 @@ class LoadedBundle:
     model_version: str
     synthetic_training: bool
     manifest_sha256: str
+    training_identity: dict
 
     @property
     def vocabulary(self):
@@ -312,6 +313,7 @@ def load_bundle(directory, *, expected_manifest_sha256: str) -> LoadedBundle:
         "sha256:" + expected_manifest_sha256,
         training["synthetic"],
         expected_manifest_sha256,
+        identity,
     )
 
 

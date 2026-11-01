@@ -1,5 +1,7 @@
 # scripts：采集、训练与运维命令入口
 
+> T15入口：`scripts/evaluate.py` / `python -m algorithm.evaluation.cli` / 安装后`handshake-evaluate`，提供`score|classify|calibrate|events`。前向评分不训练，校准只用验证集，所有动作保持禁用。见[运行与验证](../docs/evaluation_and_calibration.md)。
+
 > **本机训练暂停**：新增`probe_stream_cache.py`默认只创建合成容量样例并构建缓存；训练阶段必须显式`--with-training`，留给后续机器。本轮不运行该选项。正式缓存构建/迁移验证使用`handshake-data build-stream-cache/inspect-cache`，见[交接说明](../docs/public_data_scale.md)。
 
 > T16模型命令：`python -m algorithm.deployment export|inspect|benchmark`（安装后`handshake-model`）；`run_native.py`可选`--model-package`与`--model-sha256`，须配合感知资产。无自动下载/训练/应用控制，见[模型包指南](../docs/model_bundle_and_inference.md)。
@@ -8,9 +10,9 @@
 
 > 新增已安装入口`handshake-data`（`backend.importing.commands`）：`audit-ipn`、`import-ipn`、`build-cache`共用严格来源校验与显式审查流程，不访问相机或自动联网。使用方法与内存边界见 [公开数据实现](../docs/public_data_implementation.md)。
 
-> 现有 `check_environment.py`；T03/T06新增 `camera_probe.py`、`collect.py`、`annotate.py` 薄入口，转发已安装包的 `backend.cli`。`perception_probe.py` 转发 `backend.perception.probe`，与 `handshake-perception-probe` 共用不访问相机的真实模型诊断，见 [感知修复](../docs/perception_diagnostics.md)。训练/评估/事件回放仍未实现。完整命令和授权要求见 [采集指南](../docs/collection_workflow.md)。
+> 现有 `check_environment.py`；T03/T06新增 `camera_probe.py`、`collect.py`、`annotate.py` 薄入口，转发已安装包的 `backend.cli`。`perception_probe.py` 转发 `backend.perception.probe`，与 `handshake-perception-probe` 共用不访问相机的真实模型诊断，见 [感知修复](../docs/perception_diagnostics.md)。T14训练器及T15离线评估已实现，正式训练与完整事件回放仍待完成。完整命令和授权要求见 [采集指南](../docs/collection_workflow.md)。
 
-T11/T12/T13 已提供 `build_features.py`（草案观测JSON＋预分配划分→绑定版本的NPZ缓存）和 `smoke_models.py`（纯合成可过拟合/结构诊断，不保存权重）。完整用法见 [特征与模型](../docs/features_and_models.md)。正式train/evaluate/replay仍未实现。
+T11/T12/T13 已提供 `build_features.py`（草案观测JSON＋预分配划分→绑定版本的NPZ缓存）和 `smoke_models.py`（纯合成可过拟合/结构诊断，不保存权重）。完整用法见 [特征与模型](../docs/features_and_models.md)。`train.py`和`evaluate.py`现已提供薄入口；正式数据训练/评估与完整事件回放尚未验收。
 
 ## 原则
 

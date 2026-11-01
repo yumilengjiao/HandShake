@@ -1,0 +1,51 @@
+{
+  "format_version": "event-evaluation-v1",
+  "synthetic": true,
+  "protocol_reference": "synthetic-20-minute-dry-run-example-NOT-real-measurement",
+  "early_ns": -100000000,
+  "late_ns": 500000000,
+  "recordings": [
+    {
+      "recording_id": "example",
+      "timebase": "synthetic",
+      "start_ns": 0,
+      "end_ns": 1200000000000,
+      "valid_intervals": [[0, 1200000000000]],
+      "non_operation_intervals": [[0, 1200000000000]],
+      "enabled_intervals": [[0, 1200000000000]],
+      "active_intervals": [[0, 10000000000]],
+      "unavailable_intervals": [[10000000000, 1200000000000]],
+      "denominator_reference": "synthetic-protocol-do-not-derive-from-ACTIVE",
+      "validity_origin": "protocol_or_recording_damage"
+    }
+  ],
+  "targets": [
+    {
+      "event_id": "truth-1",
+      "recording_id": "example",
+      "timebase": "synthetic",
+      "target_context": "example-deck",
+      "mode": "presentation",
+      "kind": "command",
+      "action": "next_slide",
+      "start_ns": 800000000,
+      "confirmation_ns": 1000000000
+    }
+  ],
+  "predictions": [
+    {
+      "event_id": "proposal-1",
+      "recording_id": "example",
+      "timebase": "synthetic",
+      "target_context": "example-deck",
+      "mode": "presentation",
+      "kind": "command",
+      "action": "next_slide",
+      "scope": "dry_run",
+      "source_ns": 1000000000,
+      "prediction_ns": 1010000000,
+      "submitted_ns": 1020000000,
+      "external_injection_status": "not_attempted"
+    }
+  ]
+}
