@@ -22,6 +22,12 @@ Linux原生预览，Flutter 3.47.9 / Dart 3.13.7。支持合成舞台、显式�
 
 若显示核心失联，确认启动所用的是项目`.venv/bin/python`，不要解析该符号链接后改用系统解释器；确认已安装核心依赖。截图/日志不应混入真实采集内容。
 
+## 内置演示（application-local）
+
+窗口右上角“演示”提供四页内置稿；先人工播放，再用按钮/左右方向键翻页。导航经唯一T18调度器，应用状态与绘制回执分开；长按不连发，Esc/隐藏/失活停用。切到演示会停止相机预览，返回观测不会自动开启相机。
+
+这不是PowerPoint/WPS/LibreOffice控制，不接模型原始分类结果。无需相机或训练资产，当前机器不运行神经网络训练。完整边界与原生测试见[内置演示](../../docs/local_presentation.md)。
+
 ## 可选手势模型（T16阶段一）
 
 模型包须来自可信本地训练结果并已导出，启动时同时指定`--model-package <目录>`和`--model-sha256 <可信导出回执SHA256>`，另需`--perception-model`。包在相机启动请求后校验加载；数学合成舞台不伪造模型输出。窗口显示来源类/raw logit、拒绝原因和合成训练警示，不输出未经校准的概率，也不调用动作调度器。
@@ -69,6 +75,7 @@ flutter --no-version-check test integration_test/stage_smoke_test.dart -d linux
 
 ## 代码边界
 
+- `lib/presentation/`：独立只读状态/受控人工意图、内置页码与绘制确认；不在Widget注入系统按键。
 - `lib/core/`：严格只读协议、大小受限的解码、本机子进程repository。
 - `lib/stage/stage_view_model.dart`：连接/确认/回看/显示状态，历史有界，不实现手势或动作状态机。
 - `lib/stage/stage_screen.dart`：中央舞台、时间轴、决策轨迹、常驻停止区。

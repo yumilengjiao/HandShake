@@ -1,0 +1,76 @@
+{
+  "scope": "T19 phase 1, manual application-local native presentation",
+  "base_commit": "13839c9",
+  "branch": "feat/presentation-application",
+  "verified_on": "2026-11-01",
+  "environment": {
+    "python": "3.12.15",
+    "os": "Linux",
+    "kernel": "7.2.11-arch1-1",
+    "architecture": "x86_64",
+    "flutter": "3.47.9",
+    "dart": "3.13.7"
+  },
+  "python_non_training_subset": {
+    "tests": "171",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "9.148"
+  },
+  "flutter": {
+    "unit_widget_passed": 56,
+    "native_integration_passed": 1,
+    "analysis": "no issues",
+    "debug_build": true,
+    "release_build": true
+  },
+  "native_script": {
+    "visible_pages": [
+      1,
+      2,
+      3,
+      2
+    ],
+    "application_results_checked": true,
+    "flutter_render_ack_checked": true,
+    "held_key_repeat_ignored": true,
+    "escape_stops": true
+  },
+  "wheel": {
+    "code_loaded_outside_checkout": true,
+    "packaged_deck_and_schema": true,
+    "local_page_update_and_stop": true,
+    "torch_or_opencv_imported": false,
+    "dependency_note": "used existing base environment, not a clean OS install"
+  },
+  "privacy_and_authority": {
+    "neural_training_executed": false,
+    "camera_opened": false,
+    "external_app_input_injected": false,
+    "gesture_commands_enabled": false,
+    "screenshot": "own native application subtree, fixed 1280x900 logical test viewport, public sample text only"
+  },
+  "not_verified": [
+    "PowerPoint/WPS/LibreOffice external backend",
+    "OS global input or emergency stop",
+    "gesture-driven slides",
+    "physical display acknowledgement",
+    "full T23/T24 or other platforms"
+  ],
+  "source_sha256": {
+    "backend/actions/dispatcher.py": "7ca329418b45d793e05ff8f094310de8cf7a2179b049316d5003f504d6619036",
+    "backend/actions/backends/presentation.py": "4ba9a04646781cae68591d91e83db7bc59bf4487c25155a24001498ae4c554cc",
+    "backend/presentation.py": "b0abab34f0f529c86d32e134e66f29fd22fda0a90618c67eb69abfdb24d91edb",
+    "backend/presentation_cli.py": "77e14064b19c0a3ac24485ead70b77cd9e61789ae609458d943b3d8fc140c964",
+    "shared/presentation_protocol.py": "c8f3148a8c24bcad909eb1578dcdcfd07aa74654fdd35ddcf5052f17537c3526",
+    "shared/presentation_protocol.schema.json": "1ad96c5894498f1d6e23b819e985e432882f6fdd2b38f24dabf471b0bf3430fa",
+    "shared/defaults/presentation_demo.json": "ede656dbfafe2864e6bbb095645b8029bfe1de5c8edbf74c86ef64bcfe8dd1a6",
+    "frontend/native/lib/main.dart": "ae9696bd87b219186f21528ea4c099057461fa678873d3834ff8469eecd1fd97",
+    "docs/assets/local-presentation.png": "a5cc6809ac24369fa6f14d11061e4afea3195bf12c2dbaea578f36c94470edaa",
+    "frontend/native/lib/presentation/presentation_repository.dart": "335ab2c44492f8758796c886b06c007f63e787d3dbeeb0124c8ebcb79c3d46b3",
+    "frontend/native/lib/presentation/presentation_screen.dart": "7d077b42ef1c11e2efba409479de8301a579833c7c906c3878ac2ae78b929359",
+    "frontend/native/lib/presentation/presentation_snapshot.dart": "5da0a3dca60064bc48a88082144b4ef184f739ee5ca4e93fdb498156d52f0f8e",
+    "frontend/native/lib/presentation/presentation_view_model.dart": "3d4890f7779c2a3d702cc5f74907db14b02e1aa9c8d50982ad7578d20f9fe30d"
+  }
+}

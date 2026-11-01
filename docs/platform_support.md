@@ -1,5 +1,9 @@
 # 平台支持与实测矩阵
 
+## 内置演示应用（2026-11-01）
+
+本机Linux/Wayland的Flutter窗口完成手工1→2→3→2、应用状态/绘制回执、方向键长按不连发与Esc停止。171项非训练Python/56项Flutter测试通过，Release及wheel本地页码更新检查通过。能力限定application-local；本机无LibreOffice，未验证PowerPoint/WPS/外部注入或系统全局停止。详见[内置演示](local_presentation.md)。
+
 ## T16阶段一（2026-10-31）
 
 本轮Linux x86_64、Python3.12.15、PyTorch2.15.0+cpu、Flutter3.47.9：566项Python/51项Flutter通过；原生v2回归和v3坏模型拒绝通过，未访问真实相机。1线程batch=1合成前向CPU探针、Release构建和wheel模型一致性见[模型包记录](model_bundle_and_inference.md)。这是未校准只读分类的软件证据，不覆盖正式识别效果、全链时延、动作权限或其他平台。

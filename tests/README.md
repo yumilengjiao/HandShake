@@ -1,5 +1,7 @@
 # tests：公共测试与回归验证
 
+> T19内置演示阶段：171项不含训练的Python回归、56项Flutter单元/widget及1项实际原生演示集成通过。没有运行完整pytest、神经网络训练、真实相机或外部输入注入。见[演示记录](../docs/local_presentation.md)。
+
 > T16阶段一：566项Python、51项Flutter通过；另有原生v2回归/v3坏包拒绝验证。新增模型包语义/完整性、无pickle加载、离线在线logits、取消/新鲜度/同帧绑定与原生展示测试。训练与感知注入均为合成样例，本轮不打开真实相机。见[验证说明](../docs/model_bundle_and_inference.md)。
 
 > 相机阶段：**505项Python、38项Flutter通过**；另有常规原生集成及显式真机相机开关/重开验证。默认测试仍不访问相机；真机需`HANDSHAKE_CAMERA_TEST=1`，只记录元数据。见[运行与证据](../docs/native_camera_preview.md)。

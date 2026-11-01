@@ -2,6 +2,8 @@
 
 ## 当前已有内容
 
+- [T19阶段一：原生内置演示、双向翻页与绘制确认](local_presentation.md)
+
 - [T16阶段一：校验模型包、在线分类与v3原生通知](model_bundle_and_inference.md)
 
 - [原生相机与同帧骨架：v2协议、运行及实机验证](native_camera_preview.md)
