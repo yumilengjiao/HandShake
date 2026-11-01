@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'calibration_notice.dart';
 import 'model_classification.dart';
 import 'wire_values.dart';
 
@@ -43,6 +44,7 @@ class CoreSnapshot {
     required this.captureHz,
     required this.modelStatus,
     this.classification,
+    this.probability,
     Uint8List? jpeg,
   }) : hands = List.unmodifiable(hands),
        jpeg = jpeg == null
@@ -70,6 +72,7 @@ class CoreSnapshot {
   final Uint8List? jpeg;
   final String modelStatus;
   final ModelClassification? classification;
+  final CalibrationNotice? probability;
   bool get isPreview => state == 'preview';
   bool get isCamera => source == 'camera';
 
@@ -122,7 +125,7 @@ class CoreSnapshot {
       throw const FormatException('Unknown snapshot shape');
     }
     final version = value['version'];
-    final v2 = version == 2 || version == 3;
+    final v2 = version == 2 || version == 3 || version == 4;
     final expected = v2
         ? ({...fields}
             ..remove('landmarks')
@@ -133,18 +136,19 @@ class CoreSnapshot {
               'capture_hz',
               'perception_status',
               'hands',
-              if (version == 3) 'classification',
+              if (version == 3 || version == 4) 'classification',
+              if (version == 4) 'probability',
             }))
         : fields;
     if (value.length != expected.length || !expected.containsAll(value.keys)) {
       throw const FormatException('Unknown snapshot fields');
     }
     if (version is! int ||
-        (version != 1 && version != 2 && version != 3) ||
+        (version != 1 && version != 2 && version != 3 && version != 4) ||
         (value['source'] != 'synthetic' &&
             !(v2 && value['source'] == 'camera')) ||
         value['mode'] != 'dry_run' ||
-        !(version == 3
+        !((version == 3 || version == 4)
             ? {
                 'unavailable',
                 'loaded_uncalibrated',
@@ -251,7 +255,8 @@ class CoreSnapshot {
         'Invalid JPEG payload or image/state mismatch',
       );
     }
-    final classification = version == 3 && value['classification'] != null
+    final classification =
+        (version == 3 || version == 4) && value['classification'] != null
         ? ModelClassification.parse(value['classification'])
         : null;
     if (classification != null) {
@@ -277,6 +282,13 @@ class CoreSnapshot {
     } else if (value['model_status'] == 'loaded_uncalibrated') {
       throw const FormatException('Missing model status for current frame');
     }
+    final probability = version == 4 && value['probability'] != null
+        ? CalibrationNotice.parse(value['probability'], classification)
+        : null;
+    if (version == 4 &&
+        (classification?.state == 'predicted') != (probability != null)) {
+      throw const FormatException('Current calibrated prediction required');
+    }
     return CoreSnapshot._(
       version: version,
       sessionId: session,
@@ -296,6 +308,7 @@ class CoreSnapshot {
       captureHz: (hz as num?)?.toDouble(),
       modelStatus: value['model_status'] as String,
       classification: classification,
+      probability: probability,
       jpeg: jpeg,
     );
   }
