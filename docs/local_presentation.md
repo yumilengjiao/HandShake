@@ -93,7 +93,7 @@ flutter --no-version-check test integration_test/presentation_smoke_test.dart -d
 ## 尚未完成
 
 - 外部演示软件适配、版本/权限/焦点的实际平台profile。
-- 公开来源类别的应用策略、正式模型/校准、手势唤醒/释放及真实手势去重。
+- 公开来源类别的draft策略与独立合成页码回放已提供，见[公开策略](public_gesture_policy.md)；正式语义/模型/校准、原生手势接入与真实手势去重仍待验。
 - 全局停止、长时间安全/故障/系统生命周期测试、安装器与其他平台。
 - 新机器上的正式训练，本机仍按用户要求暂停训练。
 

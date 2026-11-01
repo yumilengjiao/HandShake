@@ -2,6 +2,8 @@
 
 ## 当前已有内容
 
+- [公开15类安全策略与内置演示合成回放](public_gesture_policy.md)
+
 - [T15阶段一：离线分类、验证集校准与分层事件评估](evaluation_and_calibration.md)
 
 - [公开数据扩容：compact cache v3、缓存预检与换机准备](public_data_scale.md)

@@ -1,5 +1,7 @@
 # scripts：采集、训练与运维命令入口
 
+> 新增`replay_public_policy.py` / `python -m backend.interaction.public_replay` / 安装后`handshake-public-replay`：显式`--allow-synthetic`，手写分数/几何经15类策略、调度器改变内置页码；不训练、不打开相机、不支持live。见[合成回放](../docs/public_gesture_policy.md)。
+
 > T15入口：`scripts/evaluate.py` / `python -m algorithm.evaluation.cli` / 安装后`handshake-evaluate`，提供`score|classify|calibrate|events`。前向评分不训练，校准只用验证集，所有动作保持禁用。见[运行与验证](../docs/evaluation_and_calibration.md)。
 
 > **本机训练暂停**：新增`probe_stream_cache.py`默认只创建合成容量样例并构建缓存；训练阶段必须显式`--with-training`，留给后续机器。本轮不运行该选项。正式缓存构建/迁移验证使用`handshake-data build-stream-cache/inspect-cache`，见[交接说明](../docs/public_data_scale.md)。

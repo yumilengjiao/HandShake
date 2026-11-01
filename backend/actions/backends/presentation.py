@@ -63,14 +63,14 @@ class PresentationBackend:
     def capabilities(self):
         return (Capability.PRESENTATION,)
 
-    def arm(self, context):
+    def arm(self, context, *, owner_track_id=None):
         with self.controller.gate:
             if (
                 context.target_context != self.target
                 or not context.enabled
-                or context.owner_track_id is not None
+                or context.owner_track_id != owner_track_id
             ):
-                raise ValueError("manual local presentation context required")
+                raise ValueError("explicit local presentation owner/context required")
             self.armed_epoch = context.context_epoch
             self.stop_requested.clear()
 
