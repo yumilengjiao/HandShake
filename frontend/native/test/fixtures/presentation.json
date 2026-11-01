@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "session_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "sequence": "1",
+  "epoch": "0",
+  "last_command_id": "0",
+  "timestamp_ns": "9007199254740999",
+  "scope": "application-local",
+  "control_origin": "manual",
+  "external_control_available": false,
+  "gesture_control_available": false,
+  "state": "stopped",
+  "reason": "initial",
+  "deck_id": "ede656dbfafe2864e6bbb095645b8029bfe1de5c8edbf74c86ef64bcfe8dd1a6",
+  "deck_title": "HandShake · 交互实验台",
+  "page": 1,
+  "page_count": 4,
+  "revision": "0",
+  "rendered_revision": null,
+  "busy": false,
+  "release_confirmed": true,
+  "slide": {
+    "title": "让动作成为输入",
+    "lines": [
+      "原生内置演示 · application-local",
+      "本轮仅人工翻页，不控制其他应用。",
+      "按下播放后，用按钮或方向键操作。"
+    ]
+  },
+  "last_action": null
+}

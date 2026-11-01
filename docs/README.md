@@ -4,6 +4,8 @@
 
 - [公开数据扩容：compact cache v3、缓存预检与换机准备](public_data_scale.md)
 
+- [T19阶段一：原生内置演示、双向翻页与绘制确认](local_presentation.md)
+
 - [T16阶段一：校验模型包、在线分类与v3原生通知](model_bundle_and_inference.md)
 
 - [原生相机与同帧骨架：v2协议、运行及实机验证](native_camera_preview.md)

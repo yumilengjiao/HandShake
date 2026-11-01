@@ -1,0 +1,313 @@
+{
+  "command": {
+    "additionalProperties": false,
+    "properties": {
+      "version": {
+        "const": 1,
+        "title": "Version",
+        "type": "integer"
+      },
+      "session_id": {
+        "pattern": "^[a-f0-9]{32}$",
+        "title": "Session Id",
+        "type": "string"
+      },
+      "command_id": {
+        "pattern": "^(0|[1-9][0-9]{0,18})$",
+        "title": "Command Id",
+        "type": "string"
+      },
+      "epoch": {
+        "pattern": "^(0|[1-9][0-9]{0,18})$",
+        "title": "Epoch",
+        "type": "string"
+      },
+      "based_on_sequence": {
+        "pattern": "^(0|[1-9][0-9]{0,18})$",
+        "title": "Based On Sequence",
+        "type": "string"
+      },
+      "revision": {
+        "pattern": "^(0|[1-9][0-9]{0,18})$",
+        "title": "Revision",
+        "type": "string"
+      },
+      "kind": {
+        "enum": [
+          "play",
+          "next",
+          "previous",
+          "stop",
+          "heartbeat",
+          "render_ack",
+          "shutdown"
+        ],
+        "title": "Kind",
+        "type": "string"
+      }
+    },
+    "required": [
+      "version",
+      "session_id",
+      "command_id",
+      "epoch",
+      "based_on_sequence",
+      "revision",
+      "kind"
+    ],
+    "title": "PresentationCommand",
+    "type": "object"
+  },
+  "snapshot": {
+    "$defs": {
+      "PageResult": {
+        "additionalProperties": false,
+        "properties": {
+          "request_id": {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "title": "Request Id",
+            "type": "string"
+          },
+          "action": {
+            "enum": [
+              "next_slide",
+              "previous_slide"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "outcome": {
+            "enum": [
+              "application_updated",
+              "boundary_no_change",
+              "rejected",
+              "uncertain"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Reason"
+          },
+          "page_before": {
+            "maximum": 32,
+            "minimum": 1,
+            "title": "Page Before",
+            "type": "integer"
+          },
+          "page_after": {
+            "maximum": 32,
+            "minimum": 1,
+            "title": "Page After",
+            "type": "integer"
+          },
+          "revision": {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "title": "Revision",
+            "type": "string"
+          }
+        },
+        "required": [
+          "request_id",
+          "action",
+          "outcome",
+          "page_before",
+          "page_after",
+          "revision"
+        ],
+        "title": "PageResult",
+        "type": "object"
+      },
+      "Slide": {
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          },
+          "lines": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 8,
+            "minItems": 1,
+            "title": "Lines",
+            "type": "array"
+          }
+        },
+        "required": [
+          "title",
+          "lines"
+        ],
+        "title": "Slide",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "version": {
+        "const": 1,
+        "default": 1,
+        "title": "Version",
+        "type": "integer"
+      },
+      "session_id": {
+        "pattern": "^[a-f0-9]{32}$",
+        "title": "Session Id",
+        "type": "string"
+      },
+      "sequence": {
+        "pattern": "^(0|[1-9][0-9]{0,18})$",
+        "title": "Sequence",
+        "type": "string"
+      },
+      "epoch": {
+        "pattern": "^(0|[1-9][0-9]{0,18})$",
+        "title": "Epoch",
+        "type": "string"
+      },
+      "last_command_id": {
+        "pattern": "^(0|[1-9][0-9]{0,18})$",
+        "title": "Last Command Id",
+        "type": "string"
+      },
+      "timestamp_ns": {
+        "pattern": "^(0|[1-9][0-9]{0,18})$",
+        "title": "Timestamp Ns",
+        "type": "string"
+      },
+      "scope": {
+        "const": "application-local",
+        "default": "application-local",
+        "title": "Scope",
+        "type": "string"
+      },
+      "control_origin": {
+        "const": "manual",
+        "default": "manual",
+        "title": "Control Origin",
+        "type": "string"
+      },
+      "external_control_available": {
+        "const": false,
+        "default": false,
+        "title": "External Control Available",
+        "type": "boolean"
+      },
+      "gesture_control_available": {
+        "const": false,
+        "default": false,
+        "title": "Gesture Control Available",
+        "type": "boolean"
+      },
+      "state": {
+        "enum": [
+          "stopped",
+          "playing"
+        ],
+        "title": "State",
+        "type": "string"
+      },
+      "reason": {
+        "maxLength": 128,
+        "minLength": 1,
+        "title": "Reason",
+        "type": "string"
+      },
+      "deck_id": {
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Deck Id",
+        "type": "string"
+      },
+      "deck_title": {
+        "maxLength": 200,
+        "minLength": 1,
+        "title": "Deck Title",
+        "type": "string"
+      },
+      "page": {
+        "maximum": 32,
+        "minimum": 1,
+        "title": "Page",
+        "type": "integer"
+      },
+      "page_count": {
+        "maximum": 32,
+        "minimum": 1,
+        "title": "Page Count",
+        "type": "integer"
+      },
+      "revision": {
+        "pattern": "^(0|[1-9][0-9]{0,18})$",
+        "title": "Revision",
+        "type": "string"
+      },
+      "rendered_revision": {
+        "anyOf": [
+          {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Rendered Revision"
+      },
+      "busy": {
+        "title": "Busy",
+        "type": "boolean"
+      },
+      "release_confirmed": {
+        "title": "Release Confirmed",
+        "type": "boolean"
+      },
+      "slide": {
+        "$ref": "#/$defs/Slide"
+      },
+      "last_action": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/PageResult"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "session_id",
+      "sequence",
+      "epoch",
+      "last_command_id",
+      "timestamp_ns",
+      "state",
+      "reason",
+      "deck_id",
+      "deck_title",
+      "page",
+      "page_count",
+      "revision",
+      "rendered_revision",
+      "busy",
+      "release_confirmed",
+      "slide",
+      "last_action"
+    ],
+    "title": "PresentationSnapshot",
+    "type": "object"
+  }
+}

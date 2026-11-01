@@ -6,6 +6,8 @@
 
 > **数据扩容与换机准备**：已新增紧凑cache v3、磁盘暂存审查、按批窗口及缓存转移预检；30,003条合成记录的缓存构建通过。**按用户要求，本机暂停神经网络训练**，只跑不含训练的检查；官方标注SHA仍不一致。见[命令与交接说明](docs/public_data_scale.md)。
 
+> **T19内置演示增量**：原生界面可人工播放并双向翻页，全部导航经T18调度器，区分应用状态更新/Flutter绘制确认；仅application-local，不控制外部软件，不接模型手势。**本机继续暂停神经网络训练**。见[运行与证据](docs/local_presentation.md)。
+
 > **T16阶段一增量**：校验模型包、共享在线分类、v3界面原始logit/拒绝原因已接入；566项Python、51项Flutter通过。仅合成诊断训练证据，正式数据/校准/应用控制仍未完成。见[使用与验证](docs/model_bundle_and_inference.md)。
 
 > **2026-10-31相机增量**：[原生相机与同帧骨架](docs/native_camera_preview.md)已接入，显式打开、不保存真实画面；两轮原生相机开关/重开通过。505项Python、38项Flutter回归通过，尚无手势分类或翻页控制。
@@ -17,6 +19,7 @@
 > **最新数据约定 public-data-v1**：公开数据为主，不要求自录训练集。已整理 [官方下载入口](data/SOURCES.md) 和 [公开数据路线](docs/public_data_plan.md)；首选IPN HandS关键点候选，标注包SHA不一致仍待核验，不能直接开始训练。来源15类训练/分类已支持，旧5类交互保持兼容；新类别不会自动进入旧控制器。
 
 - [紧凑数据缓存、来源复核与训练机交接](docs/public_data_scale.md)
+- [原生内置演示、人工翻页与安全边界](docs/local_presentation.md)
 - [模型包导出、在线分类与原生UI接入](docs/model_bundle_and_inference.md)
 - [公开数据导入与15类训练管线](docs/public_data_implementation.md)
 - [深度学习实验与答辩主线](docs/deep_learning_experiment_plan.md)
