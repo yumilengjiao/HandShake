@@ -4,6 +4,8 @@
 
 > 已实现T01/T02/T05核心、T03/T04/T06采集工具、T11～T13特征/模型，以及T14训练器、T17交互状态机、T18映射与安全调度模块。感知依赖采用master固定的MediaPipe 0.10.21/OpenCV 4.11.0.86，统一探针见[感知修复](docs/perception_diagnostics.md)。公开数据为主，已新增严格导入、版本化15类特征/缓存/MLP/TCN训练与恢复；461项回归通过。官方标注SHA、全量流式训练、公开类别应用策略、正式实验和原生产品UI仍待完成，见[本轮实现](docs/public_data_implementation.md)。
 
+> **T15离线评估增量**：固定分母分类、验证集校准/拒识、分层事件匹配和CLI已实现，保留模型/缓存SHA与合成标记；本机不训练、不启用动作。正式评估与线上校准仍待验。见[评估与校准](docs/evaluation_and_calibration.md)。
+
 > **数据扩容与换机准备**：已新增紧凑cache v3、磁盘暂存审查、按批窗口及缓存转移预检；30,003条合成记录的缓存构建通过。**按用户要求，本机暂停神经网络训练**，只跑不含训练的检查；官方标注SHA仍不一致。见[命令与交接说明](docs/public_data_scale.md)。
 
 > **T19内置演示增量**：原生界面可人工播放并双向翻页，全部导航经T18调度器，区分应用状态更新/Flutter绘制确认；仅application-local，不控制外部软件，不接模型手势。**本机继续暂停神经网络训练**。见[运行与证据](docs/local_presentation.md)。
@@ -18,6 +20,7 @@
 
 > **最新数据约定 public-data-v1**：公开数据为主，不要求自录训练集。已整理 [官方下载入口](data/SOURCES.md) 和 [公开数据路线](docs/public_data_plan.md)；首选IPN HandS关键点候选，标注包SHA不一致仍待核验，不能直接开始训练。来源15类训练/分类已支持，旧5类交互保持兼容；新类别不会自动进入旧控制器。
 
+- [离线分类、验证集校准与分层事件评估](docs/evaluation_and_calibration.md)
 - [紧凑数据缓存、来源复核与训练机交接](docs/public_data_scale.md)
 - [原生内置演示、人工翻页与安全边界](docs/local_presentation.md)
 - [模型包导出、在线分类与原生UI接入](docs/model_bundle_and_inference.md)

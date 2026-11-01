@@ -4,6 +4,8 @@
 
 > **T19内置应用增量**：人工双向翻页、调度/绘制确认和原生入口已实现，仅application-local；外部软件/手势闭环待验。本机神经网络训练继续暂停，见[演示阶段记录](../docs/local_presentation.md)。
 
+> **T15阶段一增量**：离线分类、验证集有限校准、分层事件匹配及CLI已实现；模型/缓存SHA绑定，合成和零参数前向测试，不运行神经训练、不启用动作。正式数据/线上校准/T28事件搜索仍待验。见[评估工具](../docs/evaluation_and_calibration.md)。
+
 > **T16阶段一增量**：校验模型包、共享在线分类及v3只读UI已实现；566项Python、51项Flutter通过。正式数据/T15未完成，模型均只允许未校准预览，不执行应用命令。见[模型包与推理](../docs/model_bundle_and_inference.md)。
 
 > **相机阶段增量**：Linux原生相机/骨架同帧显示、v2有界传输和短时重开已验证；505项Python/38项Flutter通过。自训分类、应用策略/翻页和完整安全仍未完成，见[相机阶段记录](../docs/native_camera_preview.md)。
@@ -79,7 +81,7 @@ T15 完成分类校准与合成事件评估；T23 使用 draft 参数联调。T2
 | [T12](12_rules_and_mlp_baselines.md) | 建立规则与单帧 MLP 对照基线 | P0：MLP；规则作为工程对照 | A（用户待填） | [T11](11_features_and_windows.md) | 已完成：模块及合成冒烟；正式实验待T14+ |
 | [T13](13_causal_tcn_network.md) | 搭建可验证的单分支因果 TCN 神经网络 | P0 | A（用户待填） | [T11](11_features_and_windows.md) | 已完成：结构/因果/梯度验收 |
 | [T14](14_training_and_experiment_tracking.md) | 实现可复现训练、采样与模型选择 | P0 | A | [T12](12_rules_and_mlp_baselines.md), [T13](13_causal_tcn_network.md) | 模块及合成证据已有；v3读取已适配，本机训练暂停，正式训练待来源审核/新机器 |
-| [T15](15_validation_and_calibration.md) | 建立分类与事件评估、验证集校准和门限选择 | P0 | A | [T14](14_training_and_experiment_tracking.md) | 待实施 |
+| [T15](15_validation_and_calibration.md) | 建立分类与事件评估、验证集校准和门限选择 | P0 | A | [T14](14_training_and_experiment_tracking.md) | 阶段一：离线工具/合成验收通过；正式数据、线上接入与事件冻结待验 |
 | [T16](16_export_and_online_inference.md) | 打包模型并实现带新鲜度校验的在线推理 | P0 桌面参考；移动导出归 T37 | A 主责，B 集成 | [T14](14_training_and_experiment_tracking.md), [T15](15_validation_and_calibration.md) | 阶段一：校验包/在线分类通过；正式训练/校准/热切换/全链待验 |
 | [T17](17_interaction_state_machine.md) | 实现唤醒、控制权、释放去重与独立停止状态机 | P0 | B | [T02](02_scaffold_and_contracts.md), [T04](04_perception_tracking_quality.md), [T05](05_gesture_and_annotation_protocol.md) | 模块完成：旧5类合成/停止通过；公开版启停迁移及实机待验 |
 | [T18](18_generic_action_dispatch.md) | 实现通用命令映射、调度器与 mock 适配器 | P0 | B | [T02](02_scaffold_and_contracts.md), [T05](05_gesture_and_annotation_protocol.md), [T17](17_interaction_state_machine.md) | 模块完成：dry-run/mock调度通过；真实后端待T19/T24 |
