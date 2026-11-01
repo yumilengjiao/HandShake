@@ -4,6 +4,8 @@
 
 > **T19内置应用增量**：人工双向翻页、调度/绘制确认和原生入口已实现，仅application-local；外部软件/手势闭环待验。本机神经网络训练继续暂停，见[演示阶段记录](../docs/local_presentation.md)。
 
+> **三任务与整合验收（2026-11-01）**：关键点/模型只读回放、v4校准概率原生预览、白名单离线交接分别完成；另合并到独立整合分支，681项非训练回归、70项Flutter及9000秒应用内合成长测通过。未训练、未启用真实手势控制。详见[交付记录](../docs/delivery_2026-11-01.md)。
+
 > **公开策略增量**：15类独立draft引擎与合成内置页码回放已实现；57项专项/607项非训练回归通过。显式owner、几何释放、停止/超时、T15事件报告可用；无真实相机或原生手势控制。见[策略与回放](../docs/public_gesture_policy.md)。
 
 > **T15阶段一增量**：离线分类、验证集有限校准、分层事件匹配及CLI已实现；模型/缓存SHA绑定，合成和零参数前向测试，不运行神经训练、不启用动作。正式数据/线上校准/T28事件搜索仍待验。见[评估工具](../docs/evaluation_and_calibration.md)。
@@ -91,13 +93,13 @@ T15 完成分类校准与合成事件评估；T23 使用 draft 参数联调。T2
 | [T20](20_desktop_ui.md) | 实现原生桌面界面与多端交互契约 | P0 桌面；手机归 T37 | B | [T02](02_scaffold_and_contracts.md), [T36](36_native_platform_foundation.md) | Linux相机/v3只读分类软件已验；正式模型/动作/安装待完成 |
 | [T21](21_music_and_volume_application.md) | 实现歌曲切换、播放暂停与音量上层应用 | P1 | B 主责，A 补数据/识别 | [T18](18_generic_action_dispatch.md), [T19](19_presentation_application.md), [T23](23_replay_and_integration.md) | 待实施 |
 | [T22](22_pointer_and_continuous_control.md) | 实现光标移动、点击与可选拖拽滚动 | P1；拖拽滚动后置 | B 主责，A 补数据/识别 | [T18](18_generic_action_dispatch.md), [T19](19_presentation_application.md), [T23](23_replay_and_integration.md) | 待实施 |
-| [T23](23_replay_and_integration.md) | 实现确定性回放并打通端到端应用闭环 | P0 | A+B | [T06](06_collection_tool.md), [T16](16_export_and_online_inference.md), [T17](17_interaction_state_machine.md), [T18](18_generic_action_dispatch.md), [T19](19_presentation_application.md), [T20](20_desktop_ui.md) | 部分：15类合成逻辑/内置页码回放通过；真实数据/模型/UI闭环待验 |
-| [T24](24_safety_faults_and_performance.md) | 完成故障注入、停止释放与性能稳定性测试 | P0 | B 主责，A 复核 | [T23](23_replay_and_integration.md) | 待实施 |
+| [T23](23_replay_and_integration.md) | 实现确定性回放并打通端到端应用闭环 | P0 | A+B | [T06](06_collection_tool.md), [T16](16_export_and_online_inference.md), [T17](17_interaction_state_machine.md), [T18](18_generic_action_dispatch.md), [T19](19_presentation_application.md), [T20](20_desktop_ui.md) | 部分：公开策略/关键点模型只读回放通过；真实UI手势闭环待验 |
+| [T24](24_safety_faults_and_performance.md) | 完成故障注入、停止释放与性能稳定性测试 | P0 | B 主责，A 复核 | [T23](23_replay_and_integration.md) | 部分：应用内软件故障/2.5小时长测通过；真实平台/最终候选待验 |
 | [T25](25_local_global_multitask.md) | 扩展局部全局双分支与意图阶段多任务网络 | P1；研究完整版主线 | A | [T09](09_annotation_and_quality_audit.md), [T13](13_causal_tcn_network.md), [T14](14_training_and_experiment_tracking.md) | 待实施 |
 | [T26](26_rejection_and_hard_negatives.md) | 研究开放集拒识并开展困难负样本迭代 | P1 负样本迭代；P2 系统拒识比较 | A 主责，B 采集/回放 | [T15](15_validation_and_calibration.md), [T23](23_replay_and_integration.md) | 待实施 |
 | [T27](27_personalization.md) | 实现几何校准、少样本适配与通用模型回退 | P1 几何；学习适配 P2（课程） | A 主责，B 向导/档案 | [T23](23_replay_and_integration.md) | 待实施 |
 | [T28](28_final_experiments.md) | 冻结完整实验、消融、用户任务与失败分析 | P0 核心；P1/P2 扩展按实现范围 | A+B | [T15](15_validation_and_calibration.md), [T23](23_replay_and_integration.md), [T24](24_safety_faults_and_performance.md) | 待实施 |
-| [T29](29_packaging_and_reproduction.md) | 整理可安装交付、模型卡与复现入口 | P0 | A+B | [T24](24_safety_faults_and_performance.md), [T28](28_final_experiments.md) | 待实施 |
+| [T29](29_packaging_and_reproduction.md) | 整理可安装交付、模型卡与复现入口 | P0 | A+B | [T24](24_safety_faults_and_performance.md), [T28](28_final_experiments.md) | 部分：白名单交接/预检通过；依赖闭包/跨机安装/发布待验 |
 | [T30](30_report_and_defense.md) | 完成课程 PDF 报告、PPT 与双人答辩准备 | P0 | A+B | [T28](28_final_experiments.md), [T29](29_packaging_and_reproduction.md) | 待实施 |
 | [T31](31_graph_temporal_candidate.md) | 验证骨骼图卷积与因果时序候选模型 | P2 | A | [T13](13_causal_tcn_network.md), [T14](14_training_and_experiment_tracking.md), [T23](23_replay_and_integration.md), [T25](25_local_global_multitask.md) | 待实施 |
 | [T32](32_causal_transformer_candidate.md) | 验证轻量因果 Transformer 候选模型 | P2 | A | [T13](13_causal_tcn_network.md), [T14](14_training_and_experiment_tracking.md), [T23](23_replay_and_integration.md) | 待实施 |
