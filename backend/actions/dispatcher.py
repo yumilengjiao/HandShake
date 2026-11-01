@@ -23,13 +23,16 @@ class Ticket:
 
 
 class Dispatcher:
-    def __init__(self, controller, *, backend=None, config=None, clock=None, capacity=32, timeout_ns=500_000_000, focus_check=None, audit_sink=None):
+    def __init__(self, controller, *, backend=None, config=None, clock=None, capacity=32, timeout_ns=500_000_000, focus_check=None, audit_sink=None, authorization_check=None):
         if type(capacity) is not int or capacity < 1 or type(timeout_ns) is not int or timeout_ns <= 0:
             raise ValueError("queue capacity and timeout must be positive integers")
         self.controller, self.config = controller, config or load_config()
         self.backend = backend or DryRunBackend()
         self.clock = clock or time.monotonic_ns
         self.focus_check = focus_check or (lambda target: target.startswith("mock-"))
+        # Trusted host policy only. The default gesture path still requires a real
+        # owner track; application-local manual control supplies an explicit grant.
+        self.authorization_check = authorization_check
         self.capacity, self.timeout_ns = capacity, timeout_ns
         self.gate = controller.gate
         self._stop = Event()
@@ -64,8 +67,17 @@ class Dispatcher:
         now = self.clock()
         if self._closed or self._stop.is_set():
             return "stopped"
-        if not context.enabled or context.suspended or context.owner_track_id is None:
+        if not context.enabled or context.suspended:
             return "inactive_context"
+        if self.authorization_check is None:
+            if context.owner_track_id is None:
+                return "inactive_context"
+        else:
+            try:
+                if self.authorization_check(context) is not True:
+                    return "inactive_context"
+            except Exception:
+                return "authorization_probe_failed"
         if (command.stream_id, command.context_epoch, command.timebase) != (context.stream_id, context.context_epoch, context.timebase):
             return "stale_context"
         if not command.issued_at_ns <= now < command.expires_at_ns:

@@ -1,5 +1,7 @@
 # shared：公共契约与共享基础模块
 
+> 新增`presentation_protocol.py`、schema及`defaults/presentation_demo.json`，仅用于本机人工application-local演示。外部/手势控制能力必须为false；不改旧手势/动作契约的默认授权要求。见[演示阶段](../docs/local_presentation.md)。
+
 > T16新增`inference_protocol.py`、`model_preview_protocol.py`及schema：同帧/epoch/model身份绑定的只读未校准分类通知。v3可选，v1/v2兼容；不改变旧T17/T18命令契约。见[模型阶段](../docs/model_bundle_and_inference.md)。
 
 > 后续新增`preview_protocol.py`和`preview_protocol.schema.json`，为相机预览提供独立v2有界二进制包；v1端点保留兼容。图像与双手骨架共用帧身份，手势分类/动作能力仍不可用，见[相机阶段](../docs/native_camera_preview.md)。

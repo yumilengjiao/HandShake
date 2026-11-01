@@ -1,5 +1,7 @@
 # backend：实时运行与安全终端控制
 
+> T19内置阶段：`presentation.py`/`presentation_cli.py`及`actions/backends/presentation.py`以独立私有管道接人工操作，只有一个T18调度器，目标绑定内置稿SHA；相机/模型进程仍只读。见[演示阶段](../docs/local_presentation.md)。
+
 > T16阶段一新增可选v3模型通知：`classified_preview.py`与相机worker接校验后的MLP/TCN，复用共享窗口，只读未校准logits、无动作权限。没有分类配置时保持v2。见[模型包与在线分类](../docs/model_bundle_and_inference.md)。
 
 > 相机预览入口`python -m backend.desktop_preview`提供v2二进制图像/骨架通路，复用既有CaptureWorker/PerceptionPipeline；需显式`start_camera`，不记录数据、不接手势分类或应用动作。见[相机阶段](../docs/native_camera_preview.md)。
