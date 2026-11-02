@@ -43,7 +43,17 @@ def main(argv=None):
         "--calibration", type=Path, help="optional validation calibration sidecar"
     )
     parser.add_argument("--calibration-sha256", help="trusted calibration file SHA256")
+    parser.add_argument(
+        "--shadow-session",
+        action="store_true",
+        help="enable native shadow owner UI, NOT application execution",
+    )
+    parser.add_argument("--allow-synthetic-model", action="store_true")
     args = parser.parse_args(argv)
+    if args.shadow_session and not args.calibration:
+        parser.error("shadow session requires model, perception and calibration assets")
+    if args.allow_synthetic_model and not args.shadow_session:
+        parser.error("--allow-synthetic-model belongs to --shadow-session")
     if (
         bool(args.calibration) != bool(args.calibration_sha256)
         or args.calibration
@@ -80,6 +90,8 @@ def main(argv=None):
             "HANDSHAKE_MODEL_SHA256",
             "HANDSHAKE_CALIBRATION",
             "HANDSHAKE_CALIBRATION_SHA256",
+            "HANDSHAKE_SHADOW_SESSION",
+            "HANDSHAKE_ALLOW_SYNTHETIC_MODEL",
         }
     } | {
         "HANDSHAKE_PYTHON": sys.executable,
@@ -94,6 +106,11 @@ def main(argv=None):
     if args.calibration is not None:
         environment["HANDSHAKE_CALIBRATION"] = str(args.calibration.resolve())
         environment["HANDSHAKE_CALIBRATION_SHA256"] = args.calibration_sha256
+    if args.shadow_session:
+        environment["HANDSHAKE_SHADOW_SESSION"] = "1"
+        environment["HANDSHAKE_ALLOW_SYNTHETIC_MODEL"] = (
+            "1" if args.allow_synthetic_model else "0"
+        )
     try:
         return subprocess.call(command, cwd=root / "frontend/native", env=environment)
     except KeyboardInterrupt:

@@ -36,6 +36,22 @@ Stream<String> boundedLines(
   }
 }
 
+Map<String, Object?> shadowCommandFields(String kind, CoreSnapshot context) {
+  final shadow = context.shadow;
+  final contextual =
+      {'surface_ack', 'enable_shadow', 'request_owner'}.contains(kind) ||
+      kind == 'heartbeat' && shadow != null;
+  if (contextual && shadow == null) {
+    throw StateError('No captured shadow context');
+  }
+  return {
+    'model_epoch': contextual ? shadow!.epoch.toString() : null,
+    'model_sequence': contextual ? shadow!.sequence.toString() : null,
+    'model_revision': contextual ? shadow!.revision.toString() : null,
+    'track_id': kind == 'request_owner' ? shadow?.eligibleOwner : null,
+  };
+}
+
 class ProcessCoreRepository implements CoreRepository {
   ProcessCoreRepository({
     required this.python,
@@ -46,6 +62,8 @@ class ProcessCoreRepository implements CoreRepository {
     this.modelSha256,
     this.calibration,
     this.calibrationSha256,
+    this.shadowSession = false,
+    this.allowSyntheticModel = false,
   });
   final String python;
   final String? workingDirectory;
@@ -55,6 +73,8 @@ class ProcessCoreRepository implements CoreRepository {
   final String? modelSha256;
   final String? calibration;
   final String? calibrationSha256;
+  final bool shadowSession;
+  final bool allowSyntheticModel;
   final _snapshots = StreamController<CoreSnapshot>();
   Process? _process;
   StreamSubscription<CoreSnapshot>? _output;
@@ -63,6 +83,12 @@ class ProcessCoreRepository implements CoreRepository {
 
   @override
   Stream<CoreSnapshot> get snapshots => _snapshots.stream;
+
+  /// Fixed in the application; test subclasses may select a procedural core.
+  String get entryModule => 'backend.desktop_preview';
+
+  /// Production discards stderr; procedural integration tests can diagnose faults.
+  void handleStderr(List<int> bytes) {}
 
   @override
   Future<void> connect() async {
@@ -73,7 +99,7 @@ class ProcessCoreRepository implements CoreRepository {
       python,
       [
         '-m',
-        'backend.desktop_preview',
+        entryModule,
         '--camera',
         '$cameraIndex',
         if (perceptionModel != null) ...[
@@ -82,6 +108,8 @@ class ProcessCoreRepository implements CoreRepository {
         ],
         if (modelPackage != null) ...['--model-package', modelPackage!],
         if (modelSha256 != null) ...['--model-sha256', modelSha256!],
+        if (shadowSession) '--shadow-session',
+        if (allowSyntheticModel) '--allow-synthetic-model',
         if (calibration != null) ...['--calibration', calibration!],
         if (calibrationSha256 != null) ...[
           '--calibration-sha256',
@@ -100,7 +128,7 @@ class ProcessCoreRepository implements CoreRepository {
       _fail(error);
     });
     // Drain without collecting logs or exposing local paths in UI.
-    _errors = process.stderr.listen((_) {}, onError: _fail);
+    _errors = process.stderr.listen(handleStderr, onError: _fail);
     _output = decodePreviewPackets(process.stdout).listen(
       (snapshot) => _snapshots.add(snapshot),
       onError: _fail,
@@ -125,6 +153,7 @@ class ProcessCoreRepository implements CoreRepository {
         'command_id': commandId.toString(),
         'epoch': context.epoch.toString(),
         'kind': kind,
+        if (context.version == 5) ...shadowCommandFields(kind, context),
       }),
     );
   }

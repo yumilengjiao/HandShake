@@ -2,6 +2,8 @@
 
 基于 MediaPipe 手部关键点与自主训练时序神经网络的手势终端控制项目。
 
+> **原生影子会话增量**：HSP5 已接入明确启用、owner 选择、绑定后重新预热、同帧校准概率及候选展示；始终不执行应用命令。新增不依赖开发者路径的一键合成原生检查，仍不训练、不打开真实相机。见[启动、验证与限制](docs/native_shadow_session.md)。
+
 > 已实现T01/T02/T05核心、T03/T04/T06采集工具、T11～T13特征/模型，以及T14训练器、T17交互状态机、T18映射与安全调度模块。感知依赖采用master固定的MediaPipe 0.10.21/OpenCV 4.11.0.86，统一探针见[感知修复](docs/perception_diagnostics.md)。公开数据为主，已新增严格导入、版本化15类特征/缓存/MLP/TCN训练与恢复；461项回归通过。官方标注SHA、全量流式训练、公开类别应用策略、正式实验和原生产品UI仍待完成，见[本轮实现](docs/public_data_implementation.md)。
 
 > **模型会话桥增量**：关键点经MLP/TCN前向后可进入同一校准/owner/释放会话；修复绑定epoch后的预热交接，推理不占停止闸门。默认影子、合成执行验证1→2→3→2；真实相机/UI手势控制仍未开放。见[会话桥](docs/model_policy_bridge.md)。
@@ -26,6 +28,7 @@
 
 > **最新数据约定 public-data-v1**：公开数据为主，不要求自录训练集。已整理 [官方下载入口](data/SOURCES.md) 和 [公开数据路线](docs/public_data_plan.md)；首选IPN HandS关键点候选，标注包SHA不一致仍待核验，不能直接开始训练。来源15类训练/分类已支持，旧5类交互保持兼容；新类别不会自动进入旧控制器。
 
+- [原生影子会话与无相机一键检查](docs/native_shadow_session.md)
 - [公开15类安全策略与内置演示合成回放](docs/public_gesture_policy.md)
 - [离线分类、验证集校准与分层事件评估](docs/evaluation_and_calibration.md)
 - [紧凑数据缓存、来源复核与训练机交接](docs/public_data_scale.md)

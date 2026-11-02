@@ -1,0 +1,818 @@
+{
+  "command": {
+    "additionalProperties": false,
+    "properties": {
+      "version": {
+        "const": 5,
+        "title": "Version",
+        "type": "integer"
+      },
+      "session_id": {
+        "pattern": "^[a-f0-9]{32}$",
+        "title": "Session Id",
+        "type": "string"
+      },
+      "command_id": {
+        "pattern": "^(0|[1-9][0-9]{0,18})$",
+        "title": "Command Id",
+        "type": "string"
+      },
+      "epoch": {
+        "pattern": "^(0|[1-9][0-9]{0,18})$",
+        "title": "Epoch",
+        "type": "string"
+      },
+      "kind": {
+        "enum": [
+          "start_camera",
+          "stop",
+          "shutdown",
+          "heartbeat",
+          "surface_ack",
+          "enable_shadow",
+          "request_owner"
+        ],
+        "title": "Kind",
+        "type": "string"
+      },
+      "model_epoch": {
+        "anyOf": [
+          {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Model Epoch"
+      },
+      "model_sequence": {
+        "anyOf": [
+          {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Model Sequence"
+      },
+      "model_revision": {
+        "anyOf": [
+          {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Model Revision"
+      },
+      "track_id": {
+        "anyOf": [
+          {
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Track Id"
+      }
+    },
+    "required": [
+      "version",
+      "session_id",
+      "command_id",
+      "epoch",
+      "kind"
+    ],
+    "title": "ShadowCommand",
+    "type": "object"
+  },
+  "snapshot": {
+    "$defs": {
+      "ClassificationNotice": {
+        "additionalProperties": false,
+        "properties": {
+          "state": {
+            "enum": [
+              "warming_up",
+              "rejected",
+              "predicted",
+              "error"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "reason": {
+            "enum": [
+              "ready",
+              "warming_up",
+              "current_observation_invalid",
+              "history_uninitialized",
+              "stale",
+              "insufficient_valid_ratio",
+              "window_span_exceeded",
+              "no_hand",
+              "multiple_hands",
+              "not_processed",
+              "perception_error",
+              "out_of_order",
+              "future_input",
+              "inference_error",
+              "cancelled"
+            ],
+            "title": "Reason",
+            "type": "string"
+          },
+          "model_version": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Model Version",
+            "type": "string"
+          },
+          "model_type": {
+            "enum": [
+              "mlp",
+              "tcn"
+            ],
+            "title": "Model Type",
+            "type": "string"
+          },
+          "vocabulary_version": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Vocabulary Version",
+            "type": "string"
+          },
+          "synthetic_training": {
+            "title": "Synthetic Training",
+            "type": "boolean"
+          },
+          "calibrated": {
+            "const": false,
+            "default": false,
+            "title": "Calibrated",
+            "type": "boolean"
+          },
+          "stream_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Stream Id",
+            "type": "string"
+          },
+          "context_epoch": {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "title": "Context Epoch",
+            "type": "string"
+          },
+          "source_frame_id": {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "title": "Source Frame Id",
+            "type": "string"
+          },
+          "source_timestamp_ns": {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "title": "Source Timestamp Ns",
+            "type": "string"
+          },
+          "track_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Track Id"
+          },
+          "window_length": {
+            "maximum": 32,
+            "minimum": 0,
+            "title": "Window Length",
+            "type": "integer"
+          },
+          "inference_ns": {
+            "anyOf": [
+              {
+                "pattern": "^(0|[1-9][0-9]{0,18})$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Inference Ns"
+          },
+          "logits": {
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 15,
+            "title": "Logits",
+            "type": "array"
+          }
+        },
+        "required": [
+          "state",
+          "reason",
+          "model_version",
+          "model_type",
+          "vocabulary_version",
+          "synthetic_training",
+          "stream_id",
+          "context_epoch",
+          "source_frame_id",
+          "source_timestamp_ns",
+          "window_length",
+          "logits"
+        ],
+        "title": "ClassificationNotice",
+        "type": "object"
+      },
+      "PreviewHand": {
+        "additionalProperties": false,
+        "properties": {
+          "landmarks": {
+            "items": {
+              "$ref": "#/$defs/PreviewPoint"
+            },
+            "maxItems": 21,
+            "minItems": 21,
+            "title": "Landmarks",
+            "type": "array"
+          },
+          "validity": {
+            "items": {
+              "type": "boolean"
+            },
+            "maxItems": 21,
+            "minItems": 21,
+            "title": "Validity",
+            "type": "array"
+          },
+          "usable": {
+            "title": "Usable",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "landmarks",
+          "validity",
+          "usable"
+        ],
+        "title": "PreviewHand",
+        "type": "object"
+      },
+      "PreviewPoint": {
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "maximum": 16,
+            "minimum": -16,
+            "title": "X",
+            "type": "number"
+          },
+          "y": {
+            "maximum": 16,
+            "minimum": -16,
+            "title": "Y",
+            "type": "number"
+          },
+          "z": {
+            "maximum": 16,
+            "minimum": -16,
+            "title": "Z",
+            "type": "number"
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "z"
+        ],
+        "title": "PreviewPoint",
+        "type": "object"
+      },
+      "ProbabilityNotice": {
+        "additionalProperties": false,
+        "properties": {
+          "calibrated": {
+            "const": true,
+            "default": true,
+            "title": "Calibrated",
+            "type": "boolean"
+          },
+          "status": {
+            "const": "draft",
+            "default": "draft",
+            "title": "Status",
+            "type": "string"
+          },
+          "actions_enabled": {
+            "const": false,
+            "default": false,
+            "title": "Actions Enabled",
+            "type": "boolean"
+          },
+          "calibration_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Calibration Sha256",
+            "type": "string"
+          },
+          "model_version": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Model Version",
+            "type": "string"
+          },
+          "synthetic": {
+            "title": "Synthetic",
+            "type": "boolean"
+          },
+          "temperature": {
+            "maximum": 100,
+            "minimum": 0.05,
+            "title": "Temperature",
+            "type": "number"
+          },
+          "threshold": {
+            "anyOf": [
+              {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threshold"
+          },
+          "probabilities": {
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 15,
+            "minItems": 1,
+            "title": "Probabilities",
+            "type": "array"
+          },
+          "rejection_status": {
+            "enum": [
+              "accepted",
+              "rejected",
+              "unavailable"
+            ],
+            "title": "Rejection Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "calibration_sha256",
+          "model_version",
+          "synthetic",
+          "temperature",
+          "threshold",
+          "probabilities",
+          "rejection_status"
+        ],
+        "title": "ProbabilityNotice",
+        "type": "object"
+      },
+      "ShadowCandidate": {
+        "additionalProperties": false,
+        "properties": {
+          "event_id": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Event Id",
+            "type": "string"
+          },
+          "action": {
+            "enum": [
+              "next_slide",
+              "previous_slide"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "source_frame_id": {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "title": "Source Frame Id",
+            "type": "string"
+          },
+          "source_timestamp_ns": {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "title": "Source Timestamp Ns",
+            "type": "string"
+          },
+          "model_epoch": {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "title": "Model Epoch",
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_id",
+          "action",
+          "source_frame_id",
+          "source_timestamp_ns",
+          "model_epoch"
+        ],
+        "title": "ShadowCandidate",
+        "type": "object"
+      },
+      "ShadowInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "execution": {
+            "const": "shadow",
+            "default": "shadow",
+            "title": "Execution",
+            "type": "string"
+          },
+          "actions_enabled": {
+            "const": false,
+            "default": false,
+            "title": "Actions Enabled",
+            "type": "boolean"
+          },
+          "actual_page": {
+            "const": 1,
+            "default": 1,
+            "title": "Actual Page",
+            "type": "integer"
+          },
+          "model_epoch": {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "title": "Model Epoch",
+            "type": "string"
+          },
+          "model_sequence": {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "title": "Model Sequence",
+            "type": "string"
+          },
+          "model_revision": {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "title": "Model Revision",
+            "type": "string"
+          },
+          "model_stream_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Model Stream Id",
+            "type": "string"
+          },
+          "model_version": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Model Version",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "DISABLED",
+              "WAIT_OWNER",
+              "WAIT_RELEASE",
+              "ACTIVE",
+              "CANDIDATE",
+              "SUSPENDED"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "reason": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Reason",
+            "type": "string"
+          },
+          "model_warming": {
+            "title": "Model Warming",
+            "type": "boolean"
+          },
+          "model_busy": {
+            "title": "Model Busy",
+            "type": "boolean"
+          },
+          "surface_ready": {
+            "title": "Surface Ready",
+            "type": "boolean"
+          },
+          "eligible_owner": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Eligible Owner"
+          },
+          "owner_track_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Owner Track Id"
+          },
+          "owner_request_pending": {
+            "title": "Owner Request Pending",
+            "type": "boolean"
+          },
+          "candidates_total": {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "title": "Candidates Total",
+            "type": "string"
+          },
+          "candidate": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/ShadowCandidate"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "synthetic": {
+            "title": "Synthetic",
+            "type": "boolean"
+          },
+          "control_status": {
+            "default": "none",
+            "enum": [
+              "none",
+              "accepted",
+              "rejected"
+            ],
+            "title": "Control Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "model_epoch",
+          "model_sequence",
+          "model_revision",
+          "model_stream_id",
+          "model_version",
+          "state",
+          "reason",
+          "model_warming",
+          "model_busy",
+          "surface_ready",
+          "owner_request_pending",
+          "candidates_total",
+          "synthetic"
+        ],
+        "title": "ShadowInfo",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "version": {
+        "const": 5,
+        "default": 5,
+        "title": "Version",
+        "type": "integer"
+      },
+      "session_id": {
+        "pattern": "^[a-f0-9]{32}$",
+        "title": "Session Id",
+        "type": "string"
+      },
+      "sequence": {
+        "pattern": "^(0|[1-9][0-9]{0,18})$",
+        "title": "Sequence",
+        "type": "string"
+      },
+      "epoch": {
+        "pattern": "^(0|[1-9][0-9]{0,18})$",
+        "title": "Epoch",
+        "type": "string"
+      },
+      "last_command_id": {
+        "pattern": "^(0|[1-9][0-9]{0,18})$",
+        "title": "Last Command Id",
+        "type": "string"
+      },
+      "timestamp_ns": {
+        "pattern": "^(0|[1-9][0-9]{0,18})$",
+        "title": "Timestamp Ns",
+        "type": "string"
+      },
+      "state": {
+        "enum": [
+          "stopped",
+          "starting",
+          "preview",
+          "stopping"
+        ],
+        "title": "State",
+        "type": "string"
+      },
+      "reason": {
+        "enum": [
+          "initial",
+          "synthetic_preview",
+          "user_stop",
+          "heartbeat_timeout",
+          "stale_epoch",
+          "protocol_error",
+          "input_closed",
+          "shutdown",
+          "camera_starting",
+          "camera_preview",
+          "camera_unavailable",
+          "perception_unavailable",
+          "input_stalled",
+          "preview_error"
+        ],
+        "title": "Reason",
+        "type": "string"
+      },
+      "source": {
+        "enum": [
+          "synthetic",
+          "camera"
+        ],
+        "title": "Source",
+        "type": "string"
+      },
+      "mode": {
+        "const": "dry_run",
+        "default": "dry_run",
+        "title": "Mode",
+        "type": "string"
+      },
+      "model_status": {
+        "default": "unavailable",
+        "enum": [
+          "unavailable",
+          "loaded_shadow",
+          "error"
+        ],
+        "title": "Model Status",
+        "type": "string"
+      },
+      "control_available": {
+        "const": false,
+        "default": false,
+        "title": "Control Available",
+        "type": "boolean"
+      },
+      "frame_id": {
+        "pattern": "^(0|[1-9][0-9]{0,18})$",
+        "title": "Frame Id",
+        "type": "string"
+      },
+      "frame_timestamp_ns": {
+        "anyOf": [
+          {
+            "pattern": "^(0|[1-9][0-9]{0,18})$",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Frame Timestamp Ns"
+      },
+      "frame_width": {
+        "maximum": 640,
+        "minimum": 0,
+        "title": "Frame Width",
+        "type": "integer"
+      },
+      "frame_height": {
+        "maximum": 480,
+        "minimum": 0,
+        "title": "Frame Height",
+        "type": "integer"
+      },
+      "timestamp_kind": {
+        "enum": [
+          "synthetic_generation",
+          "software_read_complete_not_exposure"
+        ],
+        "title": "Timestamp Kind",
+        "type": "string"
+      },
+      "capture_hz": {
+        "anyOf": [
+          {
+            "maximum": 1000,
+            "minimum": 0,
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Capture Hz"
+      },
+      "perception_status": {
+        "enum": [
+          "unavailable",
+          "processed_hands",
+          "processed_no_hand",
+          "not_processed",
+          "error"
+        ],
+        "title": "Perception Status",
+        "type": "string"
+      },
+      "hands": {
+        "items": {
+          "$ref": "#/$defs/PreviewHand"
+        },
+        "maxItems": 2,
+        "title": "Hands",
+        "type": "array"
+      },
+      "classification": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/ClassificationNotice"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "probability": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/ProbabilityNotice"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "shadow": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/ShadowInfo"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [
+      "session_id",
+      "sequence",
+      "epoch",
+      "last_command_id",
+      "timestamp_ns",
+      "state",
+      "reason",
+      "source",
+      "frame_id",
+      "frame_timestamp_ns",
+      "frame_width",
+      "frame_height",
+      "timestamp_kind",
+      "perception_status",
+      "hands"
+    ],
+    "title": "ShadowSnapshot",
+    "type": "object"
+  }
+}

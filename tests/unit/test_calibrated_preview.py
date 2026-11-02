@@ -179,6 +179,8 @@ def test_launcher_clears_inherited_asset_selection(tmp_path, monkeypatch):
         "HANDSHAKE_CALIBRATION",
         "HANDSHAKE_CALIBRATION_SHA256",
         "HANDSHAKE_PERCEPTION_MODEL",
+        "HANDSHAKE_SHADOW_SESSION",
+        "HANDSHAKE_ALLOW_SYNTHETIC_MODEL",
     ):
         monkeypatch.setenv(key, "must-not-inherit")
     captured = {}

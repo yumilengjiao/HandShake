@@ -1,5 +1,7 @@
 # T16/T17/T23：模型—策略—演示会话桥
 
+> 后续已接入[原生影子owner会话](native_shadow_session.md)，复用本桥的启用/选手/重新预热接口，仍无真实动作权限。下文“未接原生”的描述与测试数量保留为会话桥交付时的历史范围。
+
 ## 本轮补的不是另一套手写分数回放
 
 新增 `ModelPresentationSession`：输入只能是完整 `ObservationFrame`，经已有共享特征、32步窗口、校验包中的MLP/TCN真实前向，保留同次推理产生的 `SourceClassification`，再进入校准、owner、几何完成/释放策略与T18调度器。
