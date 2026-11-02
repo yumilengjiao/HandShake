@@ -57,6 +57,8 @@ uv run export             # 导出最近模型
 ```bash
 uv run app           # 启动原生预览
 uv run app --model   # 加载最近模型进行只读预览
+# 别人训练的模型无需本机训练数据，见 docs/deadline_desktop_handoff.md
+uv run app --package /path/to/model --sha256 <可信SHA> --verify-only
 uv run check         # 运行非训练回归测试
 ```
 

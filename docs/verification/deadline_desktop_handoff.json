@@ -1,0 +1,12 @@
+{
+  "scope": "desktop handoff; no neural training, real camera or external input injection",
+  "date": "2026-11-02",
+  "python_nontraining": {"passed": 844, "deselected": 4, "warnings": 13, "excluded_training_files": 6},
+  "flutter_unit_widget": {"passed": 98},
+  "flutter_analyze": "passed",
+  "linux_release_build": "passed",
+  "native_shadow_analytical_mlp": {"passed": 2, "synthetic": true, "trained": false},
+  "native_shadow_analytical_tcn": {"passed": 2, "synthetic": true, "trained": false},
+  "initial_regression_failure": "new test assumed trainer absent in shared sys.modules; replaced with fresh-process import-isolation assertion and reran full selection",
+  "unverified": ["real gesture accuracy", "camera-to-application control", "long-term native stability", "Windows/macOS/mobile"]
+}

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'core_diagnostics.dart';
 import 'core_snapshot.dart';
 import 'preview_packets.dart';
 
@@ -80,6 +81,8 @@ class ProcessCoreRepository implements CoreRepository {
   StreamSubscription<CoreSnapshot>? _output;
   StreamSubscription<List<int>>? _errors;
   bool _closed = false;
+  bool _failed = false;
+  final diagnostics = CoreDiagnostics();
 
   @override
   Stream<CoreSnapshot> get snapshots => _snapshots.stream;
@@ -87,7 +90,7 @@ class ProcessCoreRepository implements CoreRepository {
   /// Fixed in the application; test subclasses may select a procedural core.
   String get entryModule => 'backend.desktop_preview';
 
-  /// Production discards stderr; procedural integration tests can diagnose faults.
+  /// Optional test sink. Production only retains bounded allowlisted lifecycle phases.
   void handleStderr(List<int> bytes) {}
 
   @override
@@ -128,17 +131,41 @@ class ProcessCoreRepository implements CoreRepository {
       _fail(error);
     });
     // Drain without collecting logs or exposing local paths in UI.
-    _errors = process.stderr.listen(handleStderr, onError: _fail);
+    _errors = process.stderr.listen((bytes) {
+      diagnostics.add(bytes);
+      handleStderr(bytes);
+    }, onError: _fail);
     _output = decodePreviewPackets(process.stdout).listen(
-      (snapshot) => _snapshots.add(snapshot),
+      (snapshot) {
+        if (!_closed && !_failed) _snapshots.add(snapshot);
+      },
       onError: _fail,
-      onDone: () => _fail(StateError('Core disconnected')),
+      onDone: () => unawaited(_exited(process)),
     );
-    unawaited(process.exitCode.then((_) => _fail(StateError('Core exited'))));
+    unawaited(
+      process.exitCode.then((code) {
+        _fail(CoreProcessFailure(diagnostics.summary, exitCode: code));
+      }),
+    );
+  }
+
+  Future<void> _exited(Process process) async {
+    // EOF and exit can arrive in either order; wait briefly for the real code,
+    // never report exit=0 when a native library was killed or crashed.
+    int? code;
+    try {
+      code = await process.exitCode.timeout(const Duration(milliseconds: 300));
+    } on TimeoutException {
+      // A closed protocol with a still-running process is also a failure.
+    }
+    _fail(CoreProcessFailure(diagnostics.summary, exitCode: code));
   }
 
   void _fail(Object error) {
-    if (!_closed && !_snapshots.isClosed) _snapshots.addError(error);
+    if (!_closed && !_failed && !_snapshots.isClosed) {
+      _failed = true;
+      _snapshots.addError(error);
+    }
   }
 
   @override

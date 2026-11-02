@@ -72,8 +72,16 @@ def parser():
             )
         elif name == "app":
             child.add_argument(
-                "--model", action="store_true", help="显式加载最近模型，仍仅预览"
+                "--model", action="store_true", help="显式加载本机最近模型，仍仅预览"
             )
+            child.add_argument("--package", help="别人交付的推理模型目录；不要求本机训练数据")
+            child.add_argument("--sha256", help="训练者提供的 checksums.json 可信SHA256")
+            child.add_argument("--calibration", help="与外部模型匹配的验证集校准文件")
+            child.add_argument("--calibration-sha256", help="校准文件可信SHA256")
+            child.add_argument("--shadow", action="store_true", help="启用影子owner界面，只显示候选，不执行")
+            child.add_argument("--allow-synthetic-model", action="store_true", help="仅供显式影子诊断")
+            child.add_argument("--bundle", help="已构建的Linux可执行文件，无需Flutter SDK")
+            child.add_argument("--verify-only", action="store_true", help="只校验模型，不启动界面或相机")
         elif name == "check":
             child.add_argument(
                 "--training", action="store_true", help="只在允许训练的机器上启用"
@@ -92,6 +100,17 @@ def main(argv=None):
     if args.command is None:
         cli.print_help()
         return 0
+    if args.command == "app":
+        if args.model and args.package:
+            cli.error("--model 与 --package 二选一，不混用本机训练和外部模型")
+        if bool(args.package) != bool(args.sha256):
+            cli.error("--package 与 --sha256 必须同时提供")
+        if bool(args.calibration) != bool(args.calibration_sha256) or (args.calibration and not args.package):
+            cli.error("外部 --calibration / --calibration-sha256 必须成对提供，并指定 --package")
+        if (args.shadow or args.verify_only) and not (args.model or args.package):
+            cli.error("--shadow / --verify-only 需要 --model 或 --package")
+        if args.allow_synthetic_model and not args.shadow:
+            cli.error("--allow-synthetic-model 仅用于 --shadow 诊断")
     execution_arguments = remaining + (["--debug"] if options.debug else [])
     emit = lambda message: print(message, flush=True)
     try:
@@ -120,9 +139,9 @@ def main(argv=None):
 
             return run_train(ws, args, execution_arguments, emit)
         if args.command in {"evaluate", "calibrate", "export", "check"} or (
-            args.command == "app" and args.model
+            args.command == "app" and (args.model or args.package)
         ):
-            if args.command != "check":
+            if args.command != "check" and not (args.command == "app" and args.package):
                 from backend.workflows.training import _bound_run
 
                 _bound_run(ws)
@@ -148,7 +167,12 @@ def main(argv=None):
         if args.command == "app":
             from backend.workflows.system import launch_app
 
-            return launch_app(ws, model=args.model, emit=emit)
+            return launch_app(
+                ws, model=args.model, package=args.package, sha256=args.sha256,
+                calibration=args.calibration, calibration_sha256=args.calibration_sha256,
+                shadow=args.shadow, allow_synthetic=args.allow_synthetic_model,
+                bundle=args.bundle, verify_only=args.verify_only, emit=emit,
+            )
         if args.command == "check":
             from backend.workflows.system import check
 

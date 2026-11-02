@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+import '../core/core_diagnostics.dart';
 import '../core/core_repository.dart';
 import '../core/core_snapshot.dart';
 
@@ -102,8 +103,12 @@ class StageViewModel extends ChangeNotifier {
         if (_disposed || generation != _generation) return;
         _receive(value);
       },
-      onError: (Object _) {
-        if (!_disposed && generation == _generation) _disconnect();
+      onError: (Object error) {
+        if (!_disposed && generation == _generation) {
+          _disconnect(
+            detail: error is CoreProcessFailure ? error.toString() : null,
+          );
+        }
       },
       onDone: () {
         if (!_disposed && generation == _generation) _disconnect();
@@ -327,7 +332,7 @@ class StageViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _disconnect() {
+  void _disconnect({String? detail}) {
     if (_disposed || link == LinkState.disconnected) return;
     ++_generation;
     _heartbeat?.cancel();
@@ -337,7 +342,7 @@ class StageViewModel extends ChangeNotifier {
     latest = inspected = null;
     _history.clear();
     _pendingStart = _pendingStop = null;
-    message = '核心失联 · 停止未确认，无应用控制。检查Python路径/依赖后重新连接。';
+    message = '${detail ?? "核心失联"} · 停止未确认，无应用控制。检查Python路径/依赖后重新连接。';
     unawaited(_subscription?.cancel());
     unawaited(_repository?.close());
     notifyListeners();

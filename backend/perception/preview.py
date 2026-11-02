@@ -6,6 +6,7 @@ import threading
 import time
 from dataclasses import dataclass
 
+from backend.perception.lifecycle import lifecycle
 from shared.inference_protocol import ClassificationNotice
 from shared.preview_protocol import MAX_JPEG_BYTES, PreviewHand, PreviewPoint
 
@@ -158,6 +159,8 @@ class CameraPreviewWorker:
     def _run(self):
         capture = pipeline = classifier = None
         release_ok = True
+        first_frame = True
+        lifecycle("worker_started")
         try:
             from backend.capture.camera import OpenCVSource
             from backend.capture.worker import CaptureWorker
@@ -165,6 +168,7 @@ class CameraPreviewWorker:
             from backend.perception.pipeline import PerceptionPipeline
 
             if self.model_package is not None:
+                lifecycle("model_loading")
                 try:
                     import torch
 
@@ -188,13 +192,18 @@ class CameraPreviewWorker:
                         )
                     self.classification_max_age_ns = bundle.normalizer.config.max_age_ns
                     classifier = self._make_classifier(bundle)
-                except Exception:  # noqa: BLE001 - optional model must fail closed before camera access
+                    lifecycle("model_ready")
+                except Exception as error:  # optional model must fail before camera access
+                    lifecycle("model_failed", error=error)
                     self.model_failed = True
                     self.error = "preview_error"
                     return
 
+            if self.stop_requested.is_set():
+                return
             # A supplied-but-broken asset is an error, never silent fallback.
             if self.model_path is not None or self.detector_factory is not None:
+                lifecycle("perception_loading")
                 try:
                     detector = (
                         self.detector_factory()
@@ -202,11 +211,14 @@ class CameraPreviewWorker:
                         else MediaPipeDetector(self.model_path)
                     )
                     pipeline = PerceptionPipeline(detector)
-                except Exception:  # noqa: BLE001 - translate arbitrary SDK init faults, never fall back
+                    lifecycle("perception_ready")
+                except Exception as error:  # SDK init faults never silently fall back
+                    lifecycle("perception_failed", error=error)
                     self.error = "perception_unavailable"
                     return
             if self.stop_requested.is_set():
                 return
+            lifecycle("camera_opening")
             source = (
                 self.source_factory()
                 if self.source_factory
@@ -217,7 +229,9 @@ class CameraPreviewWorker:
             capture = CaptureWorker(source, status_capacity=32)
             try:
                 capture.start(timeout=3)
-            except (RuntimeError, TimeoutError):
+                lifecycle("camera_ready")
+            except (RuntimeError, TimeoutError) as error:
+                lifecycle("camera_failed", error=error)
                 self.error = "camera_unavailable"
                 return
             next_frame_at = 0.0
@@ -254,12 +268,17 @@ class CameraPreviewWorker:
                     break
                 with self.lock:
                     self.latest = packet
+                if first_frame:
+                    lifecycle("first_frame")
+                    first_frame = False
                 next_frame_at = time.monotonic() + self.preview_interval_s
                 # Encoding cap only, not a camera FPS claim. Shadow uses a faster
                 # latest slot so two independent 10Hz caps do not age owner offers.
-        except Exception:  # noqa: BLE001 - worker boundary must publish failure and release resources
+        except Exception as error:  # worker boundary publishes failure and releases resources
+            lifecycle("worker_failed", error=error)
             self.error = "preview_error"
         finally:
+            lifecycle("release_started")
             if capture is not None:
                 release_ok = capture.stop(timeout=0.3) and not capture.release_failed
             if pipeline is not None:
@@ -276,6 +295,8 @@ class CameraPreviewWorker:
                 self.latest = None
             # Do NOT confirm stop if the capture thread still owns the camera.
             if release_ok:
+                lifecycle("release_complete")
                 self.done.set()
             else:
+                lifecycle("release_failed")
                 self.error = "preview_error"

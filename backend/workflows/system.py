@@ -72,54 +72,58 @@ def doctor(ws, emit=print):
     return 0
 
 
-def launch_app(ws, *, model=False, emit=print):
-    if platform.system() != "Linux":
+def launch_app(ws, *, model=False, package=None, sha256=None, calibration=None,
+               calibration_sha256=None, shadow=False, allow_synthetic=False,
+               bundle=None, verify_only=False, emit=print):
+    if not verify_only and platform.system() != "Linux":
         raise WorkflowError(
             "此仓库目前只交付 Flutter Linux 桌面宿主。",
             "当前系统仍可准备数据和训练；Windows/macOS原生宿主及手机需另外实现/验收。",
         )
-    native = ws.root / "frontend" / "native"
-    if not (native / "pubspec.yaml").is_file():
-        raise WorkflowError(
-            "找不到 Flutter 源码，安装版 Python wheel 不包含原生界面。",
-            "进入完整源码 checkout 运行 uv run app。",
-        )
-    flutter = os.environ.get("FLUTTER_BIN", ws.settings.app.flutter)
-    if shutil.which(flutter) is None:
-        raise WorkflowError(
-            "找不到 Flutter SDK。",
-            "安装Flutter并加入PATH，或在本机配置 [app] flutter 中填写可执行文件路径；训练不需要Flutter。",
-        )
-    args = [
-        "--flutter",
-        flutter,
-        "--camera",
-        str(ws.settings.app.camera),
-    ]
+    args = []
+    if not verify_only:
+        native = ws.root / "frontend" / "native"
+        if not (native / "pubspec.yaml").is_file():
+            raise WorkflowError(
+                "找不到 Flutter 源码，安装版 Python wheel 不包含原生界面。",
+                "进入完整源码 checkout 运行 uv run app。",
+            )
+        if bundle:
+            executable = ws.path(bundle)
+            if not executable.is_file() or not os.access(executable, os.X_OK):
+                raise WorkflowError(f"原生可执行文件不存在或不可执行：{executable}")
+            args += ["--bundle", str(executable)]
+        else:
+            flutter = os.environ.get("FLUTTER_BIN", ws.settings.app.flutter)
+            if shutil.which(flutter) is None:
+                raise WorkflowError(
+                    "找不到 Flutter SDK。",
+                    "配置 [app] flutter 或 FLUTTER_BIN；已有发布版可用 uv run app --bundle <可执行文件>。",
+                )
+            args += ["--flutter", flutter]
+        args += ["--camera", str(ws.settings.app.camera)]
     perception = ws.path(ws.settings.app.perception_model)
-    if perception.is_file():
+    if not verify_only and perception.is_file():
         if importlib.util.find_spec("mediapipe") is None:
             raise WorkflowError(
                 "发现感知资产，但尚未安装相机依赖。",
                 "先运行 uv run setup --camera；它不会打开相机。",
             )
         args += ["--perception-model", str(perception)]
+    if (model or package) and not verify_only and not perception.is_file():
+        raise WorkflowError(
+            f"缺少感知模型：{perception}",
+            "按 docs/perception_diagnostics.md 获取可信 MediaPipe 资产；不会自动下载陌生模型。",
+        )
+    selected_package = ws.path(package) if package else None
+    selected_calibration = ws.path(calibration) if calibration else None
     if model:
-        if not perception.is_file():
-            raise WorkflowError(
-                f"缺少感知模型：{perception}",
-                "按 docs/perception_diagnostics.md 获取可信 MediaPipe 资产；不会自动下载陌生模型。",
-            )
         from backend.workflows.training import _bound_run, export_run, model_directory
 
         root, data = _bound_run(ws)
         receipt = export_run(ws, emit, bound=(root, data))
-        args += [
-            "--model-package",
-            str(model_directory(root, receipt)),
-            "--model-sha256",
-            receipt["manifest_sha256"],
-        ]
+        selected_package = model_directory(root, receipt)
+        sha256 = receipt["manifest_sha256"]
         calibration_receipt = root / "calibration-receipt.json"
         if calibration_receipt.exists():
             from algorithm.data.source_archive import file_sha256
@@ -142,12 +146,26 @@ def launch_app(ws, *, model=False, emit=print):
                     "校准属于旧模型，不能混用。",
                     "运行 uv run calibrate 为当前best模型重新校准。",
                 )
-            args += [
-                "--calibration",
-                str(calibration),
-                "--calibration-sha256",
-                binding["sha256"],
-            ]
+            selected_calibration = calibration
+            calibration_sha256 = binding["sha256"]
+    if package or shadow or verify_only:
+        from backend.workflows.deployment import verify_assets
+
+        verify_assets(selected_package, sha256, calibration=selected_calibration,
+                      calibration_sha256=calibration_sha256, shadow=shadow,
+                      allow_synthetic=allow_synthetic, emit=emit)
+    if verify_only:
+        emit("只读交接校验完成；未启动Flutter、相机、训练器或应用操作。")
+        return 0
+    if selected_package:
+        args += ["--model-package", str(selected_package), "--model-sha256", sha256]
+    if selected_calibration:
+        args += ["--calibration", str(selected_calibration),
+                 "--calibration-sha256", calibration_sha256]
+    if shadow:
+        args.append("--shadow-session")
+    if allow_synthetic:
+        args.append("--allow-synthetic-model")
     from backend.native_launcher import main
 
     emit("启动原生预览；保持停止。相机只能由窗口中的明确操作打开，模型不会控制应用。")
