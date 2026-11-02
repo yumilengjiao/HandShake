@@ -78,7 +78,9 @@ class VerifiedArchive:
                 raise ValueError("archive total size/member limit exceeded")
             self.members = {}
             for entry in entries:
-                name = entry.filename
+                # Validate the on-disk name before ZipInfo's platform-specific
+                # normalization can hide backslashes or a NUL-truncated suffix.
+                name = entry.orig_filename
                 parts = PurePosixPath(name).parts
                 mode = entry.external_attr >> 16
                 if (

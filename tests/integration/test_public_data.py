@@ -25,7 +25,12 @@ from shared.features import FeatureStatisticsWarning
 def write_zip(path, entries):
     with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         for name, value in entries.items():
-            archive.writestr(name, value)
+            # ZipInfo normalizes Windows separators (and truncates NULs) during
+            # construction. Preserve the requested on-disk name so malformed
+            # archive fixtures test the reader, not the writer's normalization.
+            info = zipfile.ZipInfo(name)
+            info.filename = name
+            archive.writestr(info, value, compress_type=zipfile.ZIP_DEFLATED)
     return file_sha256(path)
 
 
@@ -234,14 +239,43 @@ def test_no_and_multiple_hands_keep_source_labels_without_guessing_target(
 
 @pytest.mark.parametrize(
     "member",
-    ["../outside.txt", "/outside.txt", "nested\\outside.txt", "C:/outside.txt"],
+    [
+        "../outside.txt",
+        "/outside.txt",
+        "nested\\outside.txt",
+        "C:/outside.txt",
+        "safe.txt\x00ignored",
+    ],
 )
 def test_archive_path_traversal_rejected(tmp_path, member):
     path = tmp_path / "bad.zip"
     digest = write_zip(path, {member: "not executed"})
+    with zipfile.ZipFile(path) as archive:
+        assert archive.infolist()[0].orig_filename == member
     with pytest.raises(ValueError, match="unsafe"):
         VerifiedArchive(path, expected_sha256=digest)
     assert not (tmp_path / "outside.txt").exists()
+
+
+def test_windows_normalized_archive_name_is_still_rejected(tmp_path, monkeypatch):
+    path = tmp_path / "windows-name.zip"
+    member = "nested\\outside.txt"
+    digest = write_zip(path, {member: "not executed"})
+    original_info = zipfile.ZipInfo
+
+    class WindowsZipInfo(original_info):
+        def __init__(self, filename="NoName", *args, **kwargs):
+            super().__init__(filename, *args, **kwargs)
+            self.filename = self.filename.replace("\\", "/")
+
+    # Reproduce Windows ZipInfo's read-time normalization on every CI host.
+    monkeypatch.setattr(zipfile, "ZipInfo", WindowsZipInfo)
+    with zipfile.ZipFile(path) as archive:
+        info = archive.infolist()[0]
+        assert info.orig_filename == member
+        assert info.filename == "nested/outside.txt"
+    with pytest.raises(ValueError, match="unsafe"):
+        VerifiedArchive(path, expected_sha256=digest)
 
 
 def test_archive_duplicate_and_size_limits(tmp_path):
