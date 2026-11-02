@@ -1,0 +1,12 @@
+# Stable source bytes across Windows/macOS/Linux: bundle contracts hash source files.
+* text=auto eol=lf
+*.bin binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.zip binary
+*.npz binary
+*.pdf binary

@@ -1,7 +1,7 @@
 {
   "schema_version": "public-dataset-sources-v1",
   "checked_on": "2026-10-29",
-  "ipn_annotations_rechecked_on": "2026-10-31",
+  "ipn_annotations_rechecked_on": "2026-11-02",
   "policy": {
     "route": "public-data-v1",
     "self_recorded_training_data_required": false,
@@ -58,9 +58,9 @@
             "repeat_download_same_hash": true,
             "zip_crc_valid": true,
             "zip_members": 206,
-            "last_rechecked_on": "2026-10-31",
+            "last_rechecked_on": "2026-11-02",
             "last_download_url": "https://drive.usercontent.google.com/download?id=1HybcqZqnNKZGgJJXCMjj6tLFbpsNP_a1&export=download",
-            "note": "Public direct download rechecked on 2026-10-31: same 82274-byte ZIP and SHA; upstream HEAD remains 093729579be671df0cc9dd8cbc58b9a342663800 with the original expected SHA. CRC success does not resolve the mismatch. Temporary investigation copy only, never admitted as training data."
+            "note": "Public archive rechecked by uv run download on 2026-11-02: same 82274-byte ZIP and SHA; quarantined rather than published. The previously pinned upstream expected SHA was not changed, and upstream Git HEAD was not re-fetched in this check. CRC success from the earlier audit does not resolve the mismatch. Not admitted as training data."
           }
         },
         {

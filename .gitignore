@@ -12,6 +12,7 @@
 .env
 .env.*
 !.env.example
+handshake.local.toml
 
 # Model binaries belong in controlled artifact storage, not ordinary Git.
 *.pt

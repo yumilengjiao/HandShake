@@ -255,9 +255,9 @@ def import_ipn_hands(
                         "supervised_records": supervised,
                         "empty_prediction_frames": empty,
                         "multiple_prediction_frames": ambiguous,
-                        "records_path": str(records_path.relative_to(root)),
+                        "records_path": records_path.relative_to(root).as_posix(),
                         "records_sha256": file_sha256(records_path),
-                        "frames_path": str(frames_path.relative_to(root)),
+                        "frames_path": frames_path.relative_to(root).as_posix(),
                         "frames_sha256": file_sha256(frames_path),
                     }
                 )

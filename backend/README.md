@@ -1,5 +1,7 @@
 # backend：实时运行与安全终端控制
 
+> 新增 `workflows/` 统一 `uv run` 日常入口，负责配置、下载、准备、训练/评估编排与友好错误；复用已有模块，不复制算法或取消安全校验。原生启动在 `native_launcher.py`，脚本仅兼容转发。见[快速开始](../docs/quickstart.md)。
+
 > **公开策略增量**：`interaction/public_policy.py`新增独立15类draft状态机，`public_presentation.py`/`public_replay.py`实现明确合成的调度/内置页码回放，保留停止、epoch、owner、surface和TTL检查。不开放相机或真实手势控制。见[策略与验证](../docs/public_gesture_policy.md)。
 
 > 数据扩容：`importing/spool.py`、`verified_lines.py`、`stream_features.py`提供磁盘审查和紧凑cache v3；`handshake-data build-stream-cache/inspect-cache`共用严格导入/数据完整性要求，不启动训练。见[数据阶段](../docs/public_data_scale.md)。

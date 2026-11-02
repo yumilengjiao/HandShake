@@ -10,7 +10,6 @@ import argparse
 import json
 import math
 import platform
-import resource
 import subprocess
 import sys
 import time
@@ -19,10 +18,16 @@ from pathlib import Path
 
 
 def _peak_bytes():
-    return int(
-        resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-        * (1 if platform.system() == "Darwin" else 1024)
-    )
+    """Return peak RSS in bytes, or None when the platform cannot expose it."""
+    try:
+        import resource
+
+        peak = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    except (ImportError, AttributeError, OSError):
+        # Windows has no resource module. Missing optional telemetry must not
+        # prevent argument validation or be reported as a fictitious zero RSS.
+        return None
+    return int(peak * (1 if platform.system() == "Darwin" else 1024))
 
 
 def prepare(root, frames):
@@ -148,10 +153,14 @@ def measure(root, stage):
             "batch_details_retained": len(epoch["batches"]),
             "batches_total": epoch["batches_total"],
         }
+    peak_rss = _peak_bytes()
     result.update(
         stage=stage,
         elapsed_seconds=time.monotonic() - start,
-        peak_process_rss_bytes=_peak_bytes(),
+        peak_process_rss_bytes=peak_rss,
+        peak_process_rss_source="resource.getrusage"
+        if peak_rss is not None
+        else "unavailable",
         synthetic=True,
         scope="capacity probe, not official dataset or recognition accuracy",
     )

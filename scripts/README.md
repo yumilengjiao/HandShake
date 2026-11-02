@@ -1,4 +1,8 @@
-# scripts：采集、训练与运维命令入口
+# scripts：兼容与高级诊断入口
+
+**日常操作不再要求使用这些脚本或长参数。** 使用根目录注册的 `uv run doctor`、`uv run download`、`uv run prepare`、`uv run train`、`uv run resume`、`uv run evaluate`、`uv run calibrate`、`uv run export`、`uv run app`、`uv run check`，配置见 `handshake.toml` 与[快速开始](../docs/quickstart.md)。
+
+日常命令实现在 `backend/workflows/`，原生启动实现在 `backend/native_launcher.py`；`run_native.py` 仅兼容转发。其余脚本保留用于明确授权的采集、离线回放、模型探针和专项验证，不将这些需要安全上下文的高级操作塞进无参数默认动作。下文为历史高级入口说明。
 
 > 新增`check_native_shadow.py`：在临时目录生成未训练的MLP/TCN诊断资产，启动程序输入的Linux原生影子检查并清理；无相机、无训练，不继承用户资产。通过PATH、`FLUTTER_BIN`或`--flutter`定位SDK，无开发者路径依赖。生产影子入口为`run_native.py --shadow-session`，见[指南](../docs/native_shadow_session.md)。
 

@@ -1,0 +1,40 @@
+# HandShake portable workflow defaults. All paths are relative to this file.
+# Optional machine-specific overrides: handshake.local.toml (not committed).
+version = 1
+
+[runtime]
+# cpu works without an NVIDIA GPU; cuda selects the pinned CUDA dependency extra.
+# On Apple Silicon, the cpu dependency profile uses PyPI's macOS torch (MPS capable).
+profile = "cpu"
+
+[data]
+catalog = "data/sources.json"
+raw = "data/raw/ipn-hands"
+subjects = "data/metadata/ipn-hands-subjects.json"
+imported = "data/processed/ipn-hands"
+cache = "data/cache/ipn-hands"
+dataset_version = "ipn-hands-reviewed-v1"
+# Fill after actual quality/split review, not just to silence a validation error.
+review_reference = ""
+stride = 1
+
+[train]
+model = "tcn"
+device = "auto" # auto / cpu / cuda / cuda:1 / mps
+batch_size = 64
+epochs = 80
+patience = 10
+learning_rate = 0.001
+weight_decay = 0.0001
+grad_clip_norm = 1.0
+min_delta = 0.0001
+seed = 42
+threads = 1
+runs = "artifacts/runs"
+auto_export = true
+
+[app]
+flutter = "flutter"
+camera = 0
+perception_model = "artifacts/perception/hand_landmarker.task"
+# The app is a Linux desktop preview, not a cross-platform camera/control promise.

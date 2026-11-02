@@ -347,11 +347,21 @@ def test_no_hand_and_multi_hand_preserve_partial_windows(tmp_path):
         assert np.count_nonzero(data["x"][first][:-1]) == 0
 
 
-def test_probe_training_requires_explicit_opt_in(tmp_path):
+@pytest.mark.parametrize("missing_resource", [False, True])
+def test_probe_training_requires_explicit_opt_in(tmp_path, missing_resource):
+    program = (
+        [
+            "-c",
+            "import runpy, sys; sys.modules['resource'] = None; "
+            "runpy.run_path('scripts/probe_stream_cache.py', run_name='__main__')",
+        ]
+        if missing_resource
+        else ["scripts/probe_stream_cache.py"]
+    )
     result = subprocess.run(
         [
             sys.executable,
-            "scripts/probe_stream_cache.py",
+            *program,
             "--output",
             str(tmp_path / "absent"),
             "--worker",
@@ -360,9 +370,56 @@ def test_probe_training_requires_explicit_opt_in(tmp_path):
         capture_output=True,
         text=True,
         check=False,
+        timeout=30,
     )
     assert result.returncode == 2 and "--with-training" in result.stderr
     assert not (tmp_path / "absent").exists()
+
+
+@pytest.mark.parametrize("system,expected", [("Linux", 7 * 1024), ("Darwin", 7)])
+def test_probe_peak_rss_units(tmp_path, monkeypatch, system, expected):
+    import platform
+    import runpy
+    from types import SimpleNamespace
+
+    monkeypatch.setitem(
+        sys.modules,
+        "resource",
+        SimpleNamespace(
+            RUSAGE_SELF=0,
+            getrusage=lambda _: SimpleNamespace(ru_maxrss=7),
+        ),
+    )
+    monkeypatch.setattr(platform, "system", lambda: system)
+    probe = runpy.run_path("scripts/probe_stream_cache.py")
+    assert probe["_peak_bytes"]() == expected
+
+
+def test_probe_cache_report_allows_unavailable_peak_rss(tmp_path, monkeypatch):
+    import runpy
+    from backend.importing import stream_features
+
+    monkeypatch.setitem(sys.modules, "resource", None)
+    probe = runpy.run_path("scripts/probe_stream_cache.py")
+    assert probe["_peak_bytes"]() is None
+    root = tmp_path / "probe"
+    (root / "imported").mkdir(parents=True)
+    (root / "imported/manifest.json").write_text(
+        json.dumps({"synthetic": True}), encoding="utf-8"
+    )
+    calls = []
+
+    def build_cache(*args, **kwargs):
+        calls.append(kwargs["split"])
+        return {"status": "synthetic-test-only"}
+
+    monkeypatch.setattr(stream_features, "build_stream_cache", build_cache)
+    probe["measure"](root, "cache")
+    report = json.loads((root / "cache-report.json").read_text(encoding="utf-8"))
+    assert report["peak_process_rss_bytes"] is None
+    assert report["peak_process_rss_source"] == "unavailable"
+    assert calls == ["train", "val"]
+    assert not (root / "run").exists()
 
 
 def test_validation_geometry_cannot_enter_training_statistics(imported, tmp_path):

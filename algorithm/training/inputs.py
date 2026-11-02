@@ -9,7 +9,7 @@ from shared.classes import vocabulary_for
 
 def load_training_inputs(train_path, val_path):
     roots = [Path(train_path), Path(val_path)]
-    headers = [json.loads((root / "index.json").read_text()) for root in roots]
+    headers = [json.loads((root / "index.json").read_text(encoding="utf-8")) for root in roots]
     common = ("format_version", "dataset_sha256", "split_sha256", "stats_sha256", "config_sha256", "synthetic", "stride", "vocabulary_version", "classes_sha256")
     if any(headers[0].get(key) != headers[1].get(key) for key in common):
         raise ValueError("train/val cache provenance or stride mismatch")

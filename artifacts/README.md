@@ -1,6 +1,8 @@
 # artifacts：模型、实验与运行产物
 
-> 当前仅有本说明，没有权重、训练结果或实际运行日志。这里保存生成的产物，不存网络源码或原始数据集。
+> Git只跟踪本说明；生成的模型、指标与运行日志按忽略规则保留在本机，不随clone分发。这里不存网络源码或原始训练数据。
+
+日常 `uv run train` 自动创建 `runs/<UTC时间>-<模型>-<标识>/`，保存配置、manifest、epochs、best/last checkpoint与版本化推理包；`runs/latest.json`供 `resume/evaluate/export`关联最近run。不会覆盖既有实验。详见[数据与产物布局](../docs/dataset_layout.md)。
 
 ## 主责
 

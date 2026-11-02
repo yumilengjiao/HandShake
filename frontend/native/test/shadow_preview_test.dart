@@ -107,12 +107,13 @@ void main() {
       final core = ShadowCore();
       final model = StageViewModel(() => core);
       await model.connect();
-      core.controller.add(shadowSnapshot());
+      final first = shadowSnapshot();
+      core.controller.add(first);
       await tester.pumpWidget(MaterialApp(home: StageScreen(model: model)));
-      await tester.runAsync(
-        () => Future<void>.delayed(const Duration(milliseconds: 40)),
-      );
-      await tester.pump();
+      // This test covers buttons and command context. Real decode/paint gating
+      // is covered by the separate PreviewSurface tests below, not a 40ms sleep
+      // that races CI scheduling and native image decoding.
+      model.surfacePresented(first);
       await tester.pump();
       expect(find.textContaining('所有候选均不执行'), findsOneWidget);
       expect(model.canRequestOwner, isTrue);

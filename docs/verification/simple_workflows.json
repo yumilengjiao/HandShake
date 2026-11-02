@@ -1,0 +1,49 @@
+{
+  "format_version": "workflow-verification-v1",
+  "date": "2026-11-02",
+  "branch": "feat/simple-workflows",
+  "base_revision": "aaa71c6a1b533c8339316aa4ede65a8bcc9d0d80",
+  "working_tree_changes": true,
+  "environment": {
+    "os": "Linux",
+    "architecture": "x86_64",
+    "python": "3.12.15",
+    "torch": "2.15.0+cpu"
+  },
+  "python_check": {
+    "command": "uv run check",
+    "passed": 814,
+    "deselected": 4,
+    "training_or_gradient_files_not_collected": 6,
+    "warnings": 12,
+    "neural_training_guard": true
+  },
+  "flutter": {
+    "analyze": "passed",
+    "unit_widget_passed": 95,
+    "native_window_revalidated": false,
+    "note": "Fixed a test-only 40ms decode wait assumption; native shadow disconnect remains unresolved."
+  },
+  "packaging": {
+    "offline_sdist_wheel": "passed",
+    "installed_daily_entry_points": 13,
+    "outside_checkout_import_and_missing_data_rejection": "passed",
+    "dependency_scope": "reused existing Python dependencies; not a clean cross-machine dependency closure"
+  },
+  "download": {
+    "status": "blocked_checksum_mismatch",
+    "file": "IPN_HandS_annotations.zip",
+    "bytes": 82274,
+    "expected_sha256": "4686a2ebf70a6036166c261bc6992d050cfba08c3b18edcdd460b3fa9f30ec71",
+    "observed_sha256": "520dfbf3d52ecab6535d8841bba55e94d6b512596ed1cff4505d2c1345bcbaec",
+    "quarantined": true,
+    "landmark_payload_downloaded": false
+  },
+  "neural_training_run": false,
+  "real_camera_opened": false,
+  "cuda_dependencies_downloaded": false,
+  "cuda_mps_training_verified": false,
+  "cross_os_ci_executed": false,
+  "formal_dataset_ready": false,
+  "formal_training_ready": false
+}

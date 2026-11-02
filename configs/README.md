@@ -1,5 +1,7 @@
 # configs：公共配置与实验设置
 
+> **日常配置入口已统一为根目录 `handshake.toml` / `handshake.local.toml`**：模型、学习率、batch、设备、数据/结果目录和Flutter路径在一处设置，随后使用 `uv run train` 等短命令。这里保留高级模块协议与打包默认配置；日常工作流不依赖Windows是否支持这些历史符号链接。见[快速开始](../docs/quickstart.md)。
+
 > T02/T05 已提供 runtime、interaction、gestures、actions、training、privacy 和 platforms/mock 配置，通过符号链接使用 `shared/defaults/` 的同一来源。所有门限均为 draft 起点；包内默认值和 `--config-dir configs` 加载结果一致，尚无验证集选择的最优门限。
 
 T11/T12/T13 增加统一 `classes.json` 和 `training/mlp.yaml`、`training/tcn.yaml`，仍链接至打包资源；特征字段/公式/阈值权威来源为 `shared/features/feature_schema.json`。模型配置加载用 `algorithm.model_config`；正式训练搜索与冻结仍待T14/T15。
