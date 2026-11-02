@@ -21,6 +21,8 @@ class StageViewModel extends ChangeNotifier {
   BigInt _commandId = BigInt.zero;
   BigInt? _pendingStop;
   BigInt? _pendingStart;
+  BigInt? _presentedSequence;
+  CoreSnapshot? _presented;
 
   LinkState link = LinkState.disconnected;
   CoreSnapshot? latest;
@@ -41,7 +43,45 @@ class StageViewModel extends ChangeNotifier {
       latest?.state == 'stopped';
   bool get canStartCamera =>
       canStart &&
-      (latest?.version == 2 || latest?.version == 3 || latest?.version == 4);
+      (latest?.version == 2 ||
+          latest?.version == 3 ||
+          latest?.version == 4 ||
+          latest?.version == 5);
+  bool get canEnableShadow =>
+      link == LinkState.connected &&
+      !reviewing &&
+      !stopPending &&
+      _pendingStart == null &&
+      latest?.isPreview == true &&
+      latest?.shadow?.state == 'DISABLED' &&
+      latest?.shadow?.surfaceReady == true &&
+      latest?.shadow?.busy == false;
+  bool get _presentedOwnerIsFresh {
+    final shown = _presented;
+    final current = latest;
+    if (shown == null ||
+        current == null ||
+        shown.shadow?.eligibleOwner == null ||
+        shown.sessionId != current.sessionId ||
+        shown.epoch != current.epoch ||
+        shown.shadow?.epoch != current.shadow?.epoch ||
+        shown.shadow?.eligibleOwner != current.shadow?.eligibleOwner ||
+        shown.frameTimestampNs == null) {
+      return false;
+    }
+    final age = current.timestampNs - shown.frameTimestampNs!;
+    return age >= BigInt.zero && age <= BigInt.from(150000000);
+  }
+
+  bool get canRequestOwner =>
+      link == LinkState.connected &&
+      !reviewing &&
+      !stopPending &&
+      _pendingStart == null &&
+      latest?.isPreview == true &&
+      latest?.shadow?.eligibleOwner != null &&
+      _presentedOwnerIsFresh &&
+      latest?.shadow?.ownerPending == false;
 
   Future<void> connect() async {
     if (_disposed || link != LinkState.disconnected) return;
@@ -51,6 +91,8 @@ class StageViewModel extends ChangeNotifier {
     _history.clear();
     _commandId = BigInt.zero;
     _pendingStart = _pendingStop = null;
+    _presentedSequence = null;
+    _presented = null;
     message = '正在连接本机核心…';
     notifyListeners();
     final repository = _factory();
@@ -67,7 +109,9 @@ class StageViewModel extends ChangeNotifier {
         if (!_disposed && generation == _generation) _disconnect();
       },
     );
-    _armDeadline();
+    // A cold Python process may need time to import/validate the protocol. No
+    // source or authority exists yet; connected liveness/stop deadlines stay 2s.
+    _armDeadline(timeout: const Duration(seconds: 10));
     try {
       await repository.connect();
       if (_disposed || generation != _generation) return;
@@ -92,14 +136,31 @@ class StageViewModel extends ChangeNotifier {
             value.lastCommandId < previous.lastCommandId)) {
       return;
     }
+    if (previous != null &&
+        value.epoch == previous.epoch &&
+        previous.shadow != null &&
+        value.shadow != null) {
+      if (value.shadow!.epoch < previous.shadow!.epoch ||
+          value.shadow!.sequence < previous.shadow!.sequence) {
+        return;
+      }
+      if (value.shadow!.streamId != previous.shadow!.streamId ||
+          value.shadow!.modelVersion != previous.shadow!.modelVersion) {
+        _disconnect();
+        return;
+      }
+    }
     if (value.lastCommandId > _commandId) {
       _disconnect();
       return;
     }
-    if (previous != null && value.epoch != previous.epoch) {
+    if (previous != null &&
+        (value.epoch != previous.epoch ||
+            value.shadow?.epoch != previous.shadow?.epoch)) {
       // Never carry a review frame or a trail across a source generation.
       _history.clear();
       inspected = null;
+      _presented = null;
     }
     latest = value;
     link = LinkState.connected;
@@ -134,6 +195,16 @@ class StageViewModel extends ChangeNotifier {
       'stale_epoch' => '已拒绝旧会话请求；请重新开始',
       _ => '核心停止或协议异常；请检查连接',
     };
+    if (value.shadow != null) {
+      final shadow = value.shadow!;
+      message = shadow.ownerPending
+          ? '已请求影子owner，等待下一条新模型结果；不执行命令'
+          : shadow.warming
+          ? 'owner已绑定，正在重新预热；无动作权限'
+          : shadow.controlStatus == 'rejected'
+          ? '影子请求已拒绝：状态已变化或证据不再有效，请查看当前状态'
+          : '影子会话 ${shadow.state} · 只记录候选，不翻页、不控制外部应用';
+    }
     if (value.modelStatus == 'error') {
       message = '手势模型包校验或加载失败；检查外部SHA、资产与依赖，未执行任何动作。';
     }
@@ -142,16 +213,17 @@ class StageViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _armDeadline() {
+  void _armDeadline({Duration timeout = const Duration(seconds: 2)}) {
     _deadline?.cancel();
-    _deadline = Timer(const Duration(seconds: 2), _disconnect);
+    _deadline = Timer(timeout, _disconnect);
   }
 
-  BigInt? _send(String kind) {
-    final snapshot = latest;
+  BigInt? _send(String kind, {CoreSnapshot? basedOn}) {
+    final snapshot = basedOn ?? latest;
     if (snapshot == null || link != LinkState.connected) return null;
     // Bound the sink even if the child stops reading while its output continues.
-    if (_commandId - snapshot.lastCommandId >= BigInt.from(8)) {
+    if (_commandId - (latest?.lastCommandId ?? snapshot.lastCommandId) >=
+        BigInt.from(8)) {
       _disconnect();
       return null;
     }
@@ -167,7 +239,7 @@ class StageViewModel extends ChangeNotifier {
   }
 
   void start() {
-    if (!canStart) return;
+    if (!canStart || latest?.version == 5) return;
     _pendingStart = _send('start');
     if (_pendingStart != null) _armIntentDeadline();
     notifyListeners();
@@ -180,8 +252,47 @@ class StageViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void enableShadow() {
+    if (!canEnableShadow) return;
+    _pendingStart = _send('enable_shadow');
+    if (_pendingStart != null) _armIntentDeadline();
+    notifyListeners();
+  }
+
+  void requestOwner() {
+    if (!canRequestOwner) return;
+    _pendingStart = _send('request_owner', basedOn: _presented);
+    if (_pendingStart != null) _armIntentDeadline();
+    notifyListeners();
+  }
+
+  void surfacePresented(CoreSnapshot value) {
+    final current = latest;
+    if (_disposed ||
+        reviewing ||
+        stopPending ||
+        value.shadow == null ||
+        current == null ||
+        current.sessionId != value.sessionId ||
+        current.epoch != value.epoch ||
+        current.shadow?.epoch != value.shadow?.epoch ||
+        current.sequence < value.sequence ||
+        current.timestampNs < value.timestampNs ||
+        current.timestampNs - value.timestampNs >= BigInt.from(500000000) ||
+        (_presentedSequence != null && _presentedSequence! >= value.sequence)) {
+      return;
+    }
+    // Decode/paint may finish after another telemetry packet arrived. A captured,
+    // still-current model token can be acknowledged; never relabel it as latest.
+    _presentedSequence = value.sequence;
+    _presented = value;
+    _send('surface_ack', basedOn: value);
+    notifyListeners();
+  }
+
   void stop() {
     inspected = null;
+    _presented = null;
     if (!stopPending) {
       _pendingStop = _send('stop');
       if (_pendingStop != null) _armIntentDeadline();

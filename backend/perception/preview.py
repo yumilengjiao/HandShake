@@ -21,6 +21,7 @@ class CameraFrame:
     perception_status: str
     capture_hz: float | None
     classification: ClassificationNotice | None = None
+    shadow_offer: tuple[str, str | None] | None = None
 
 
 def encode_frame(frame, observation, capture_hz, *, cv=None, classification=None):
@@ -87,6 +88,8 @@ class CameraPreviewWorker:
     its isolated core process after a stop-ACK deadline; no application actions exist.
     """
 
+    preview_interval_s = 0.1
+
     def __init__(
         self,
         *,
@@ -137,6 +140,21 @@ class CameraPreviewWorker:
             result, self.latest = self.latest, None
             return result
 
+    def _make_classifier(self, bundle):
+        from algorithm.online import OnlineClassifier
+
+        return OnlineClassifier(
+            bundle,
+            context_epoch=self.context_epoch,
+            cancelled=self.stop_requested.is_set,
+        )
+
+    def _decorate_frame(self, packet):
+        return packet
+
+    def _close_classifier(self, classifier):
+        return True
+
     def _run(self):
         capture = pipeline = classifier = None
         release_ok = True
@@ -151,7 +169,6 @@ class CameraPreviewWorker:
                     import torch
 
                     from algorithm.bundle import load_bundle
-                    from algorithm.online import OnlineClassifier
 
                     if self.model_path is None and self.detector_factory is None:
                         raise ValueError(
@@ -170,11 +187,7 @@ class CameraPreviewWorker:
                             bundle=bundle,
                         )
                     self.classification_max_age_ns = bundle.normalizer.config.max_age_ns
-                    classifier = OnlineClassifier(
-                        bundle,
-                        context_epoch=self.context_epoch,
-                        cancelled=self.stop_requested.is_set,
-                    )
+                    classifier = self._make_classifier(bundle)
                 except Exception:  # noqa: BLE001 - optional model must fail closed before camera access
                     self.model_failed = True
                     self.error = "preview_error"
@@ -236,13 +249,14 @@ class CameraPreviewWorker:
                     capture.stats.as_dict()["actual_capture_hz"],
                     classification=notice,
                 )
+                packet = self._decorate_frame(packet)
                 if self.stop_requested.is_set():
                     break
                 with self.lock:
                     self.latest = packet
-                next_frame_at = (
-                    time.monotonic() + 0.1
-                )  # display cap, not a camera FPS claim
+                next_frame_at = time.monotonic() + self.preview_interval_s
+                # Encoding cap only, not a camera FPS claim. Shadow uses a faster
+                # latest slot so two independent 10Hz caps do not age owner offers.
         except Exception:  # noqa: BLE001 - worker boundary must publish failure and release resources
             self.error = "preview_error"
         finally:
@@ -252,6 +266,11 @@ class CameraPreviewWorker:
                 try:
                     pipeline.close()
                 except Exception:  # noqa: BLE001 - SDK close failure must withhold the stop ACK
+                    release_ok = False
+            if classifier is not None:
+                try:
+                    release_ok = self._close_classifier(classifier) and release_ok
+                except Exception:
                     release_ok = False
             with self.lock:
                 self.latest = None

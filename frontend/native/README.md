@@ -1,6 +1,6 @@
 # HandShake Native Stage
 
-Linux原生预览，Flutter 3.47.9 / Dart 3.13.7。支持合成舞台、显式相机/MediaPipe骨架，以及可选校验模型包的只读原始分类输出；未校准，不控制应用。不依赖浏览器，也不把Python子进程方案当作手机运行方案。
+Linux原生预览，Flutter 3.47.9 / Dart 3.13.7。支持合成舞台、显式相机/MediaPipe骨架、校验模型包的原始分类及可选校准概率；新增只产生候选的影子owner会话，均不控制应用。不依赖浏览器，也不把Python子进程方案当作手机运行方案。
 
 ## 启动
 
@@ -12,7 +12,7 @@ Linux原生预览，Flutter 3.47.9 / Dart 3.13.7。支持合成舞台、显式�
 .venv/bin/python scripts/run_native.py --flutter /path/to/flutter/bin/flutter
 ```
 
-本轮机器SDK位于仓库外的`~/.local/share/handshake-tools/flutter`，可将上面的路径换成该目录下的`bin/flutter`。不要将SDK提交进Git。
+也可通过`FLUTTER_BIN`指定SDK可执行文件；无需放到某个开发者目录，不要将SDK提交进Git。
 
 1. 启动只连接本机核心，保持停止；可选“开始合成预览”或“打开相机预览”，切换来源需先停止。
 2. 相机骨架需启动时传`--perception-model artifacts/perception/hand_landmarker.task`；不传则明确显示仅视频，指定了错误资产则失败，不伪造骨架。
@@ -34,6 +34,19 @@ Linux原生预览，Flutter 3.47.9 / Dart 3.13.7。支持合成舞台、显式�
 
 使用/导出/性能探针与未完成事项见[模型包与在线分类](../../docs/model_bundle_and_inference.md)。正式数据权重尚未交付；不把测试合成包当正式识别模型。
 
+## 原生影子owner会话（不执行）
+
+`run_native.py --shadow-session`另需模型、感知和校准资产及可信SHA；界面提供明确启用/选手、32步重新预热和候选展示。回看不能授权，停止不等待模型返回，始终不翻页。完整参数和安全边界见[HSP5指南](../../docs/native_shadow_session.md)。
+
+无需真实相机/用户模型的一键检查，在仓库根目录运行：
+
+```bash
+.venv/bin/python scripts/check_native_shadow.py
+# 同样支持 --flutter /path/to/flutter；--model-type tcn 可切换诊断网络。
+```
+
+此源码检查自动生成临时的**未训练**诊断模型和程序图像，结束清理；需要Python dev/perception/training extras、Flutter和Linux图形会话。安装training extra仅提供推理依赖，不运行训练。它不等于真实相机效果或长期稳定性验收。
+
 ## 构建与不依赖Flutter工具的启动
 
 ```bash
@@ -49,11 +62,7 @@ cd ../..
 
 ## 验证
 
-在根目录：
-
-```bash
-.venv/bin/python -m pytest
-```
+Python验证请使用[无训练回归命令](../../docs/native_shadow_session.md#回归与证据边界2026-11-02)；未筛选的全量pytest包含训练，当前机器不要直接运行。
 
 在本目录：
 
@@ -82,6 +91,6 @@ flutter --no-version-check test integration_test/stage_smoke_test.dart -d linux
 - `lib/stage/preview_surface.dart`：单解码/最新目标，成对保留和替换图像/骨架；不使用全局ImageCache积累相机帧。
 - `lib/stage/skeleton_painter.dart`：统一镜像/letterbox变换、有效点和双手绘制。
 - `linux/`：Flutter官方生成的Linux宿主；未生成其他平台壳来冒充支持。
-- `../../backend/desktop_preview.py`：v2相机与可选v3模型通知端点，显式打开相机；v1合成NDJSON入口保留兼容。
+- `../../backend/desktop_preview.py`：v2相机、v3分类、v4校准及v5影子通知端点，显式打开相机；v1合成NDJSON入口保留兼容。
 
 完整范围、协议和验证见[相机阶段说明](../../docs/native_camera_preview.md)；[初次技术决策](../../docs/native_stack_decision.md)保留为历史。T36/T20整体尚未完成；下一步是正式模型/校准、应用策略、安全集成与独立打包。

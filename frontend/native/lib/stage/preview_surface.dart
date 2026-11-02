@@ -34,12 +34,14 @@ class PreviewSurface extends StatefulWidget {
     required this.mirror,
     required this.reviewing,
     this.decoder = decodePreviewImage,
+    this.onPresented,
   });
   final CoreSnapshot? snapshot;
   final List<CoreSnapshot> history;
   final bool mirror;
   final bool reviewing;
   final Future<ui.Image> Function(CoreSnapshot) decoder;
+  final void Function(CoreSnapshot)? onPresented;
 
   @override
   State<PreviewSurface> createState() => _PreviewSurfaceState();
@@ -134,6 +136,26 @@ class _PreviewSurfaceState extends State<PreviewSurface> {
   @override
   Widget build(BuildContext context) {
     final camera = widget.snapshot?.isCamera == true;
+    // A newer packet may arrive while decoding. Acknowledge the image actually
+    // painted, not the newest packet and not a re-labelled frame/model epoch.
+    final shown = _key(_decoded) == _key(widget.snapshot)
+        ? widget.snapshot
+        : _decoded;
+    if (shown != null &&
+        shown.shadow != null &&
+        !widget.reviewing &&
+        !_failed &&
+        _image != null &&
+        _key(_decoded) == _key(shown)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted &&
+            !widget.reviewing &&
+            !_failed &&
+            _key(_decoded) == _key(shown)) {
+          widget.onPresented?.call(shown);
+        }
+      });
+    }
     return Stack(
       fit: StackFit.expand,
       children: [

@@ -2,6 +2,8 @@
 
 ## 本轮完成了什么
 
+后续增量：[模型会话桥](model_policy_bridge.md)已将真正的MLP/TCN前向结果接入此策略，补充owner绑定后的新epoch预热和独立停止；默认影子，仍无真实输入执行权限。下列记录保留本阶段手写分数回放的历史范围。
+
 从已合入T15的 `master`（`bed1dbe`）建立 `feat/gesture-presentation-policy`：
 
 - 新增 `PublicGestureEngine`，直接使用 `SourceClassification` 的15类词表；不伪装成旧5类 `ModelPrediction`。

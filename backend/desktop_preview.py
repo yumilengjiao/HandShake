@@ -190,7 +190,21 @@ def main():
     parser.add_argument(
         "--calibration-sha256", help="trusted calibration artifact SHA256"
     )
+    parser.add_argument(
+        "--shadow-session",
+        action="store_true",
+        help="HSP5 owner/rewarm session; never executes actions",
+    )
+    parser.add_argument(
+        "--allow-synthetic-model",
+        action="store_true",
+        help="explicit synthetic model opt-in for shadow diagnostics",
+    )
     args = parser.parse_args()
+    if args.shadow_session and not args.calibration:
+        parser.error("shadow session requires model, perception and calibration assets")
+    if args.allow_synthetic_model and not args.shadow_session:
+        parser.error("--allow-synthetic-model belongs to --shadow-session")
     if (
         bool(args.calibration) != bool(args.calibration_sha256)
         or args.calibration
@@ -204,7 +218,24 @@ def main():
     if args.camera < 0:
         parser.error("camera index must be nonnegative")
     command_type = PreviewCommand
-    if args.model_package:
+    if args.shadow_session:
+        from backend.perception.shadow import ShadowCameraWorker
+        from backend.shadow_preview import NativeShadowSession
+        from shared.shadow_preview_protocol import ShadowCommand
+
+        command_type = ShadowCommand
+        session = NativeShadowSession(
+            worker_factory=lambda: ShadowCameraWorker(
+                device=args.camera,
+                model_path=args.perception_model,
+                model_package=args.model_package,
+                model_sha256=args.model_sha256,
+                calibration_path=args.calibration,
+                calibration_sha256=args.calibration_sha256,
+                allow_synthetic_model=args.allow_synthetic_model,
+            )
+        )
+    elif args.model_package:
         from backend.classified_preview import ClassifiedCameraSession
         from shared.model_preview_protocol import ModelPreviewCommand
 

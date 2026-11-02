@@ -22,10 +22,15 @@ Stream<CoreSnapshot> decodePreviewPackets(Stream<List<int>> input) async* {
       final bytes = builder.takeBytes();
       if (prefix) {
         final magic = ascii.decode(bytes.sublist(0, 4), allowInvalid: true);
-        if (magic != 'HSP2' && magic != 'HSP3' && magic != 'HSP4') {
+        if (magic != 'HSP2' &&
+            magic != 'HSP3' &&
+            magic != 'HSP4' &&
+            magic != 'HSP5') {
           throw const FormatException('Unsupported binary protocol');
         }
-        final version = magic == 'HSP4'
+        final version = magic == 'HSP5'
+            ? 5
+            : magic == 'HSP4'
             ? 4
             : magic == 'HSP3'
             ? 3

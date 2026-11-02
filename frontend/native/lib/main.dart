@@ -38,6 +38,9 @@ class _HandShakeAppState extends State<HandShakeApp> {
         modelSha256: Platform.environment['HANDSHAKE_MODEL_SHA256'],
         calibration: Platform.environment['HANDSHAKE_CALIBRATION'],
         calibrationSha256: Platform.environment['HANDSHAKE_CALIBRATION_SHA256'],
+        shadowSession: Platform.environment['HANDSHAKE_SHADOW_SESSION'] == '1',
+        allowSyntheticModel:
+            Platform.environment['HANDSHAKE_ALLOW_SYNTHETIC_MODEL'] == '1',
       ),
     );
     presenter = PresentationViewModel(
@@ -49,7 +52,10 @@ class _HandShakeAppState extends State<HandShakeApp> {
     lifecycle = AppLifecycleListener(
       onPause: _stopAll,
       onHide: _stopAll,
-      onInactive: presenter.stop,
+      onInactive: () {
+        presenter.stop();
+        if (model.latest?.version == 5) model.stop();
+      },
     );
     // Connecting does not start even a synthetic preview; user intent is required.
     model.connect();

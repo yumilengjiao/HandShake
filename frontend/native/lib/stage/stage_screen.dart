@@ -130,6 +130,13 @@ class StageScreen extends StatelessWidget {
           spacing: 16,
           runSpacing: 6,
           children: [
+            if (snapshot?.version == 5)
+              const Text('影子会话 · 所有候选均不执行', style: TextStyle(color: stageGold)),
+            if (snapshot?.shadow?.synthetic == true)
+              const Text(
+                '合成/诊断模型 · 不是正式识别效果',
+                style: TextStyle(color: stageGold, fontSize: 12),
+              ),
             Text(
               model.reviewing ? '01 / 时间透镜 · 只读回看' : '01 / 交互舞台',
               style: TextStyle(color: model.reviewing ? stageGold : stageMint),
@@ -156,6 +163,7 @@ class StageScreen extends StatelessWidget {
                   history: model.history,
                   mirror: model.mirror,
                   reviewing: model.reviewing,
+                  onPresented: model.surfacePresented,
                 ),
                 if (!hasPoints && snapshot?.isCamera != true)
                   Center(
@@ -196,8 +204,11 @@ class StageScreen extends StatelessWidget {
     final snapshot = model.displayed;
     final classification = snapshot?.classification;
     final probability = snapshot?.probability;
+    final shadow = snapshot?.shadow;
     final calibrationEvidence = probability == null
-        ? '未校准，不是操作意图'
+        ? snapshot?.version == 5
+              ? '等待当前帧概率；不授权动作'
+              : '未校准，不是操作意图'
         : '验证集温度校准 draft · p=${(probability.confidence * 100).toStringAsFixed(1)}%\n'
               'T=${probability.temperature.toStringAsFixed(2)} · ${probability.rejectionStatus == 'accepted'
                   ? '分类通过阈值'
@@ -209,6 +220,8 @@ class StageScreen extends StatelessWidget {
     final modelEvidence = classification == null
         ? (snapshot?.modelStatus == 'error'
               ? '模型包校验/加载失败\n没有可用预测'
+              : snapshot?.modelStatus == 'loaded_shadow'
+              ? '模型与校准已校验\n影子识别未启用，或正在等待新代际结果'
               : '未加载手势分类模型\nMediaPipe骨架不等于手势识别')
         : '${classification.modelType.toUpperCase()} / ${classification.vocabularyVersion}\n'
               '包 ${classification.modelVersion.length > 20 ? '${classification.modelVersion.substring(0, 20)}…' : classification.modelVersion}\n'
@@ -224,8 +237,32 @@ class StageScreen extends StatelessWidget {
             : '当前没有输入帧',
       ),
       ('模型 / INFER', modelEvidence),
-      ('策略 / DECIDE', '仅预览 · 不具备控制能力\n15个来源类别不直接等于操作意图'),
-      ('结果 / ACT', '没有发送应用命令\n翻页、音乐、光标暂不可用'),
+      (
+        '策略 / DECIDE',
+        shadow == null
+            ? '仅预览 · 不具备控制能力\n15个来源类别不直接等于操作意图'
+            : '影子状态 ${shadow.state}\n'
+                  '${shadow.warming
+                      ? '绑定后重新预热 ${classification?.windowLength ?? 0}/32 · 无动作权限'
+                      : shadow.owner == null
+                      ? '未选择owner：保持中性手型，等待可信NOG'
+                      : '影子owner ${shadow.owner}'}\n'
+                  '模型代际 ${shadow.epoch} / 相机代际 ${snapshot!.epoch}\n'
+                  '核心原因 ${shadow.reason}\n'
+                  '${shadow.busy
+                      ? '模型计算中；停止不会等待计算结束'
+                      : shadow.ownerPending
+                      ? '等待下一条新模型结果确认owner'
+                      : '不启用任何应用控制'}',
+      ),
+      (
+        '结果 / ACT',
+        shadow == null
+            ? '没有发送应用命令\n翻页、音乐、光标暂不可用'
+            : '${shadow.candidate == null ? '无当前代际候选' : '候选：${shadow.candidate!.action == 'next_slide' ? '下一页' : '上一页'} · 未执行\n事件源帧 #${shadow.candidate!.frameId}'}\n'
+                  '累计候选 ${shadow.candidatesTotal} · 内置页码仍为1\n'
+                  '没有发送应用命令',
+      ),
     ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -302,7 +339,7 @@ class StageScreen extends StatelessWidget {
         ],
       ),
       SizedBox(
-        height: 64,
+        height: 40 + MediaQuery.textScalerOf(context).scale(24),
         child: model.history.isEmpty
             ? const Align(
                 alignment: Alignment.centerLeft,
@@ -354,6 +391,8 @@ class StageScreen extends StatelessWidget {
                               const SizedBox(height: 6),
                               Text(
                                 '${frame.frameId}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(fontSize: 10),
                               ),
                             ],
@@ -401,7 +440,8 @@ class StageScreen extends StatelessWidget {
                 children: [
                   if (model.latest?.version == 2 ||
                       model.latest?.version == 3 ||
-                      model.latest?.version == 4)
+                      model.latest?.version == 4 ||
+                      model.latest?.version == 5)
                     OutlinedButton.icon(
                       key: const Key('start_camera'),
                       onPressed: model.canStartCamera
@@ -410,12 +450,32 @@ class StageScreen extends StatelessWidget {
                       icon: const Icon(Icons.videocam_outlined),
                       label: const Text('打开相机预览'),
                     ),
+                  if (model.latest?.version == 5) ...[
+                    OutlinedButton(
+                      key: const Key('enable_shadow'),
+                      onPressed: model.canEnableShadow
+                          ? model.enableShadow
+                          : null,
+                      child: const Text('启用影子识别'),
+                    ),
+                    OutlinedButton(
+                      key: const Key('request_owner'),
+                      onPressed: model.canRequestOwner
+                          ? model.requestOwner
+                          : null,
+                      child: Text(
+                        model.latest?.shadow?.ownerPending == true
+                            ? '等待owner确认'
+                            : '选择当前手为影子owner',
+                      ),
+                    ),
+                  ],
                   if (model.link == LinkState.disconnected)
                     OutlinedButton(
                       onPressed: model.connect,
                       child: const Text('连接核心'),
                     )
-                  else
+                  else if (model.latest?.version != 5)
                     OutlinedButton(
                       key: const Key('start'),
                       onPressed: model.canStart ? model.start : null,

@@ -40,12 +40,14 @@ class OnlineClassifier:
         self.builder = FeatureWindowBuilder(bundle.normalizer.config, bundle.normalizer)
         self.identity = None
         self.last_frame = self.last_timestamp = None
+        self.last_prediction = None
 
     def reset(self):
         self.extractor.reset()
         self.builder.reset()
         self.identity = None
         self.last_frame = self.last_timestamp = None
+        self.last_prediction = None
 
     def _notice(
         self, frame, state, reason, *, track=None, inference_ns=None, logits=()
@@ -68,6 +70,9 @@ class OnlineClassifier:
         )
 
     def update(self, frame):
+        # Same-call typed result for trusted hosts; telemetry is never restamped
+        # into a fresh prediction. Any rejected/new update invalidates the old one.
+        self.last_prediction = None
         info = frame.info
         if info.timebase != self.timebase:
             raise ValueError("online source/clock timebase mismatch")
@@ -162,6 +167,7 @@ class OnlineClassifier:
         ):
             self.reset()
             return self._notice(frame, "error", "inference_error")
+        self.last_prediction = prediction
         return self._notice(
             frame,
             "predicted",

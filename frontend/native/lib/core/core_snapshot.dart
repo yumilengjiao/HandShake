@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'calibration_notice.dart';
 import 'model_classification.dart';
+import 'shadow_session.dart';
 import 'wire_values.dart';
 
 export 'wire_values.dart' show wireCounter;
@@ -45,6 +46,7 @@ class CoreSnapshot {
     required this.modelStatus,
     this.classification,
     this.probability,
+    this.shadow,
     Uint8List? jpeg,
   }) : hands = List.unmodifiable(hands),
        jpeg = jpeg == null
@@ -73,6 +75,7 @@ class CoreSnapshot {
   final String modelStatus;
   final ModelClassification? classification;
   final CalibrationNotice? probability;
+  final ShadowSession? shadow;
   bool get isPreview => state == 'preview';
   bool get isCamera => source == 'camera';
 
@@ -125,7 +128,7 @@ class CoreSnapshot {
       throw const FormatException('Unknown snapshot shape');
     }
     final version = value['version'];
-    final v2 = version == 2 || version == 3 || version == 4;
+    final v2 = version == 2 || version == 3 || version == 4 || version == 5;
     final expected = v2
         ? ({...fields}
             ..remove('landmarks')
@@ -136,19 +139,31 @@ class CoreSnapshot {
               'capture_hz',
               'perception_status',
               'hands',
-              if (version == 3 || version == 4) 'classification',
-              if (version == 4) 'probability',
+              if (version == 3 || version == 4 || version == 5)
+                'classification',
+              if (version == 4 || version == 5) 'probability',
+              if (version == 5) 'shadow',
             }))
         : fields;
     if (value.length != expected.length || !expected.containsAll(value.keys)) {
       throw const FormatException('Unknown snapshot fields');
     }
     if (version is! int ||
-        (version != 1 && version != 2 && version != 3 && version != 4) ||
+        (version != 1 &&
+            version != 2 &&
+            version != 3 &&
+            version != 4 &&
+            version != 5) ||
         (value['source'] != 'synthetic' &&
             !(v2 && value['source'] == 'camera')) ||
         value['mode'] != 'dry_run' ||
-        !((version == 3 || version == 4)
+        !(version == 5
+            ? {
+                'unavailable',
+                'loaded_shadow',
+                'error',
+              }.contains(value['model_status'])
+            : (version == 3 || version == 4)
             ? {
                 'unavailable',
                 'loaded_uncalibrated',
@@ -255,15 +270,37 @@ class CoreSnapshot {
         'Invalid JPEG payload or image/state mismatch',
       );
     }
+    final shadow = version == 5 && value['shadow'] != null
+        ? ShadowSession.parse(value['shadow'])
+        : null;
+    if (version == 5 &&
+        ((value['model_status'] == 'loaded_shadow') != (shadow != null) ||
+            shadow != null && (!camera || state != 'preview'))) {
+      throw const FormatException(
+        'Shadow state requires current camera preview',
+      );
+    }
     final classification =
-        (version == 3 || version == 4) && value['classification'] != null
+        (version == 3 || version == 4 || version == 5) &&
+            value['classification'] != null
         ? ModelClassification.parse(value['classification'])
         : null;
     if (classification != null) {
+      if (shadow != null && {'DISABLED', 'SUSPENDED'}.contains(shadow.state)) {
+        throw const FormatException(
+          'Inactive shadow model retained classification',
+        );
+      }
       if (!camera ||
           state != 'preview' ||
-          value['model_status'] != 'loaded_uncalibrated' ||
-          classification.epoch != wireCounter(value['epoch']) ||
+          value['model_status'] !=
+              (version == 5 ? 'loaded_shadow' : 'loaded_uncalibrated') ||
+          classification.epoch !=
+              (version == 5 ? shadow?.epoch : wireCounter(value['epoch'])) ||
+          (version == 5 &&
+              (classification.streamId != shadow?.streamId ||
+                  classification.modelVersion != shadow?.modelVersion ||
+                  classification.vocabularyVersion != 'ipn-hands-v1')) ||
           classification.frameId != wireCounter(value['frame_id']) ||
           classification.sourceNs != frameTime) {
         throw const FormatException(
@@ -282,12 +319,32 @@ class CoreSnapshot {
     } else if (value['model_status'] == 'loaded_uncalibrated') {
       throw const FormatException('Missing model status for current frame');
     }
-    final probability = version == 4 && value['probability'] != null
+    final probability =
+        (version == 4 || version == 5) && value['probability'] != null
         ? CalibrationNotice.parse(value['probability'], classification)
         : null;
-    if (version == 4 &&
+    if ((version == 4 || version == 5) &&
         (classification?.state == 'predicted') != (probability != null)) {
       throw const FormatException('Current calibrated prediction required');
+    }
+    if (shadow != null) {
+      if (shadow.warming && probability != null) {
+        throw const FormatException('Model warmup retained a prediction');
+      }
+      if (probability?.synthetic == true && !shadow.synthetic ||
+          shadow.candidate != null &&
+              shadow.candidate!.sourceNs > wireCounter(value['timestamp_ns'])) {
+        throw const FormatException('Invalid shadow provenance/time');
+      }
+      if (shadow.eligibleOwner != null &&
+          (classification?.state != 'predicted' ||
+              classification?.trackId != shadow.eligibleOwner ||
+              classification?.topToken != 'NOG' ||
+              probability?.rejectionStatus != 'accepted')) {
+        throw const FormatException(
+          'Owner offer requires current NOG prediction',
+        );
+      }
     }
     return CoreSnapshot._(
       version: version,
@@ -309,6 +366,7 @@ class CoreSnapshot {
       modelStatus: value['model_status'] as String,
       classification: classification,
       probability: probability,
+      shadow: shadow,
       jpeg: jpeg,
     );
   }
