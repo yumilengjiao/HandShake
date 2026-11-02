@@ -8,7 +8,7 @@ version = "0.2.0"
 description = "HandShake causal feature pipeline, baselines and gesture TCN"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = ["pydantic>=2.10,<3", "PyYAML>=6,<7", "numpy>=1.26,<3"]
+dependencies = ["pydantic>=2.10,<3", "PyYAML>=6,<7", "numpy>=1.26,<3", "tomli>=2,<3; python_version < '3.11'", "tomli-w>=1,<2"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8,<10"]
@@ -16,16 +16,41 @@ dev = ["pytest>=8,<10"]
 # 1.2.0 imports here but its native model initialization receives SIGKILL.
 perception = ["mediapipe==0.10.21", "opencv-contrib-python==4.11.0.86"]
 training = ["torch", "scikit-learn"]
+cuda = ["torch", "scikit-learn"]
+
+[tool.uv]
+conflicts = [[{ extra = "training" }, { extra = "cuda" }]]
 
 [tool.uv.sources]
-torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux' or sys_platform == 'win32'" }]
+torch = [
+  { index = "pytorch-cpu", extra = "training", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+  { index = "pytorch-cu128", extra = "cuda", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
 
 [[tool.uv.index]]
 name = "pytorch-cpu"
 url = "https://download.pytorch.org/whl/cpu"
 explicit = true
 
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
 [project.scripts]
+hs = "backend.workflows.cli:main"
+doctor = "backend.workflows.cli:doctor_entry"
+status = "backend.workflows.cli:status_entry"
+setup = "backend.workflows.cli:setup_entry"
+download = "backend.workflows.cli:download_entry"
+prepare = "backend.workflows.cli:prepare_entry"
+train = "backend.workflows.cli:train_entry"
+resume = "backend.workflows.cli:resume_entry"
+evaluate = "backend.workflows.cli:evaluate_entry"
+calibrate = "backend.workflows.cli:calibrate_entry"
+export = "backend.workflows.cli:export_entry"
+app = "backend.workflows.cli:app_entry"
+check = "backend.workflows.cli:check_entry"
 handshake = "backend.cli:main"
 handshake-handoff = "backend.handoff:main"
 handshake-safety-soak = "backend.safety_soak:main"

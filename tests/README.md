@@ -1,5 +1,7 @@
 # tests：公共测试与回归验证
 
+> **简化入口**：`uv run check` 默认运行非训练回归；`uv run check --training` 才包含神经训练测试，只在允许训练的机器上执行。新增工作流/下载/设备选择/数据准备回归及跨OS CPU CI任务；CI配置存在不代表已实际通过。见[新流程](../docs/quickstart.md)。
+
 > **原生影子会话**：HSP5跨语言协议、同帧概率/独立epoch、绘制令牌、owner重新预热、停止/释放和可移植启动器回归；`scripts/check_native_shadow.py`用临时未训练模型/程序输入跑原生检查，不打开真实相机。当前[无训练回归命令与验证边界](../docs/native_shadow_session.md)。
 
 > **公开策略阶段**：57项新增专项、607项广域非训练回归通过；验证15类独立策略、释放/回程、owner/epoch、surface/心跳、停止竞态与1→2→3→2应用内合成回放。不运行训练/梯度测试或真实相机，见[命令与边界](../docs/public_gesture_policy.md)。

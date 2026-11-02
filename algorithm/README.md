@@ -1,5 +1,7 @@
 # algorithm：模型、训练、评估与推理
 
+> 日常使用 `uv run train/resume/evaluate/calibrate/export`，默认配置见根目录 `handshake.toml`。训练代码新增CPU/CUDA/MPS显式设备与随机状态支持，GPU实际训练待目标机验证；本机仍不训练。数据准备与自动run关联由 `backend/workflows/` 编排，算法只负责核心实现。见[训练机指南](../docs/quickstart.md)。
+
 > T15阶段一：`evaluation/`提供模型/缓存绑定的分数归档、固定分母分类、验证集有限温度/拒识选择和分层事件评估。`calibration.json`为离线draft sidecar，不改变线上预览或动作权限。见[评估工具](../docs/evaluation_and_calibration.md)。本机不运行神经网络训练。
 
 > 数据扩容：`data/compact.py`支持v3紧凑/mmap缓存及按批32步窗口；训练IO保留v1/v2兼容，验证指标改为混淆矩阵累计，v3每epoch限制batch明细条数。当前机器不训练，后续机验证后再跑正式模型。见[缓存与交接](../docs/public_data_scale.md)。

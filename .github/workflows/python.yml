@@ -1,0 +1,65 @@
+name: Python workflows
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  portable-training:
+    name: CPU training / ${{ matrix.os }} / Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python: ["3.12"]
+        include:
+          - os: ubuntu-latest
+            python: "3.10"
+    env:
+      UV_PYTHON: ${{ matrix.python }}
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python }}
+          enable-cache: true
+      - run: uv sync --locked --extra dev --extra training
+      - run: uv run hs --help
+      - run: uv run doctor
+      # Explicit CI permission to run tiny synthetic CPU training/resume tests.
+      # No network datasets, GPU or camera tests here. Does not certify accelerators.
+      - name: Portable data, commands and CPU training regression
+        run: >-
+          uv run --no-sync python -m pytest
+          tests/unit/test_workflows.py tests/unit/test_workflow_download.py
+          tests/unit/test_workflow_training.py tests/unit/test_training_devices.py
+          tests/integration/test_workflow_data.py tests/unit/test_training.py
+          tests/unit/test_mlp.py tests/unit/test_tcn_causality.py
+          tests/integration/test_public_data.py tests/integration/test_stream_cache.py
+          tests/integration/test_model_bundle.py
+          -k "not camera_worker_uses_actual_model_at_source_cadence_without_device"
+      - run: uv build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-dist-${{ matrix.os }}-${{ matrix.python }}
+          path: dist/
+
+  linux-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - run: uv sync --locked --extra dev --extra training --extra perception
+      - run: uv run check

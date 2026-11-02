@@ -2,6 +2,9 @@
 
 ## 当前已有内容
 
+- **日常入口**：[训练机快速开始](quickstart.md) · [数据格式与目录](dataset_layout.md) · [工作流整理计划/验收](simple_workflows_plan.md)
+- 常规操作使用 `uv run doctor/download/prepare/train/resume/evaluate/calibrate/export/app/check`；下面保留各阶段的高级接口与历史证据。
+
 - [原生影子会话：明确owner、重新预热、不执行候选与可移植检查](native_shadow_session.md)
 
 - [模型—策略—演示会话桥：重新预热、独立停止与默认影子执行](model_policy_bridge.md)

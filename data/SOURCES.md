@@ -1,5 +1,7 @@
 # 公开数据下载入口（只提交链接，不提交数据）
 
+> **2026-11-02工作流复核**：新增 `uv run download`，默认放入 `data/raw/ipn-hands/`；本次实际下载仍为82,274字节、SHA `520dfbf3…bcbaec`，与已公布的预期值不一致，已隔离且未继续下载主关键点包。没有修改可信SHA来绕过。后续操作使用 `uv run prepare` / `uv run train`，见[快速开始](../docs/quickstart.md)。
+
 > **2026-10-31复核**：作者Git HEAD/预期SHA未更新；公开direct端点仍返回同一82,274字节ZIP和不同的实际SHA。正式导入继续阻塞，没有替换预期值。已完成的是[紧凑缓存及换机准备软件](../docs/public_data_scale.md)，不是官方数据已可训练。
 
 核查日期：2026-10-29。用户选择 **public-data-v1：公开数据为主，不要求自行录制训练集**。机器可读来源、固定文档版本、许可证、预期SHA256及实际检查状态见 [`sources.json`](sources.json)。HTTP 200/网页能打开不等于数据已完整下载或可训练。
