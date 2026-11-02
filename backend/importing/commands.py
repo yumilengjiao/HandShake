@@ -113,10 +113,10 @@ def _run(args):
     candidates = [item for item in catalog["datasets"] if item["id"] == "ipn-hands"]
     if len(candidates) != 1 or candidates[0]["license"]["id"] != "CC-BY-4.0":
         raise ValueError("expected one reviewed IPN HandS source and license")
-    entries = candidates[0]["files"]
-    hashes = {item["filename"]: item["expected_sha256"] for item in entries}
-    if len(hashes) != len(entries):
-        raise ValueError("duplicate source archive filename")
+    from backend.importing.source_release import resolve_source_entries
+
+    entries = resolve_source_entries(candidates[0])
+    hashes = {name: item["expected_sha256"] for name, item in entries.items()}
     annotation_sha = hashes["IPN_HandS_annotations.zip"]
     if args.mode == "audit-ipn":
         result = audit_annotations(args.annotations, expected_sha256=annotation_sha)
@@ -134,6 +134,13 @@ def _run(args):
             for key in ("format_version", "status", "complete", "ready_for_training")
         }
         result["recordings"] = len(manifest["recordings"])
+    if "project_release" in entries["IPN_HandS_annotations.zip"]:
+        result["source_review"] = entries["IPN_HandS_annotations.zip"][
+            "project_release"
+        ]
+        result["integrity_basis"] = (
+            "project-reviewed snapshot; upstream annotation checksum discrepancy retained"
+        )
     result["catalog_sha256"] = file_sha256(args.catalog)
     return result
 

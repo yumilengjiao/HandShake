@@ -96,6 +96,11 @@ def build_stream_cache(
                 "digest_kind": "stream-records-v1",
                 "import_manifest_sha256": spool.manifest_hash,
                 "record_stream_sha256": spool.payload_hash.hexdigest(),
+                **(
+                    {"grouping": spool.manifest["grouping"]}
+                    if "grouping" in spool.manifest
+                    else {}
+                ),
             }
             split_hash = canonical_digest(manifest)
             vocabulary = vocabulary_for(IPN_HANDS_VERSION)
@@ -256,6 +261,11 @@ def build_stream_cache(
                     for name in sorted(MEMBERS)
                 },
                 "storage": STORAGE,
+                **(
+                    {"grouping": spool.manifest["grouping"]}
+                    if "grouping" in spool.manifest
+                    else {}
+                ),
             }
             index["index_sha256"] = canonical_digest(index)
             (target / "incomplete.json").unlink()

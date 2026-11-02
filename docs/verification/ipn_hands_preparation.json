@@ -1,0 +1,114 @@
+{
+  "format_version": "ipn-hands-real-preparation-v1",
+  "release": {
+    "id": "ipn-hands-frames-v1",
+    "sha256": "d12f7df66e88de0c8ae978b29feb59fb0493f84e28af7db83da0ee632f81cf27"
+  },
+  "dataset_receipt_sha256": "1a4f4946582f48b6ea1f90cae3f68590c4aa776c2e002506f456e1dba2fe4642",
+  "synthetic": false,
+  "grouping": {
+    "unit": "source_capture_group",
+    "subject_identity_verified": false,
+    "legacy_subject_id_field": "capture-group namespace, NOT verified person identifiers"
+  },
+  "splits": {
+    "train": {
+      "index_sha256": "648910238bfd631ba3b589b512652c40fedc12b21464633702c9fbdcb5c917bc",
+      "rows": 459704,
+      "endpoints": 459704,
+      "groups": 12856,
+      "has_supervision": true,
+      "feature_bytes": 172848704,
+      "coverage": {
+        "selected_endpoints": 465165,
+        "represented": 459704,
+        "ready": 224726,
+        "ready_coverage": 0.4831102941966829,
+        "unprocessed_frames": 0
+      },
+      "supervised": 334604,
+      "class_counts": [
+        66650,
+        112317,
+        107997,
+        3145,
+        2993,
+        3286,
+        2507,
+        2956,
+        2856,
+        5449,
+        4921,
+        5306,
+        4549,
+        3876,
+        5796
+      ]
+    },
+    "val": {
+      "index_sha256": "a20557f93a0b4850294983483b37923f4b670418c5d12348ae49802ca88026d5",
+      "rows": 131189,
+      "endpoints": 131189,
+      "groups": 4428,
+      "has_supervision": true,
+      "feature_bytes": 49327064,
+      "coverage": {
+        "selected_endpoints": 132119,
+        "represented": 131189,
+        "ready": 70069,
+        "ready_coverage": 0.530347641141698,
+        "unprocessed_frames": 0
+      },
+      "supervised": 99909,
+      "class_counts": [
+        24192,
+        31003,
+        30126,
+        939,
+        968,
+        958,
+        785,
+        798,
+        755,
+        1895,
+        1765,
+        1774,
+        1375,
+        1139,
+        1437
+      ]
+    },
+    "test": {
+      "index_sha256": "c6e21fdc68ddd156444c30a558ad8c9e1c0062d970c4eeabb148e4ff4a40a8cd",
+      "rows": 213777,
+      "endpoints": 213777,
+      "groups": 5092,
+      "has_supervision": true,
+      "feature_bytes": 80380152,
+      "coverage": {
+        "selected_endpoints": 215859,
+        "represented": 213777,
+        "ready": 135128,
+        "ready_coverage": 0.6260012322858903,
+        "unprocessed_frames": 0
+      }
+    }
+  },
+  "training_preflight": "passed",
+  "neural_training_run": false,
+  "video_payload_downloaded": false,
+  "camera_opened": false,
+  "untrained_forward_check": {
+    "batch_size": 4,
+    "mlp": "passed",
+    "tcn": "passed",
+    "purpose": "shape/finite-output only; not accuracy or training"
+  },
+  "data_ready_for_training": true,
+  "regression": {
+    "non_training_passed": 828,
+    "deselected": 4,
+    "warnings": 13
+  },
+  "packaging": "offline sdist/wheel; installed manifest/license/resolver verified outside checkout using existing dependencies"
+}

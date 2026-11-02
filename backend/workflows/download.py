@@ -12,6 +12,11 @@ import urllib.parse
 import urllib.request
 
 from algorithm.data.source_archive import file_sha256
+from backend.importing.source_release import (
+    resolve_source_entries,
+    load_release,
+    verify_release_annotations,
+)
 from backend.workflows.workspace import (
     WorkflowError,
     operation_lock,
@@ -39,10 +44,7 @@ def catalog(ws):
         or sources[0].get("license", {}).get("id") != "CC-BY-4.0"
     ):
         raise WorkflowError("数据来源清单的版本/来源/许可不正确。")
-    entries = sources[0]["files"]
-    mapping = {v["filename"]: v for v in entries}
-    if len(mapping) != len(entries):
-        raise WorkflowError("来源清单包含重复文件。")
+    mapping = resolve_source_entries(sources[0])
     for name in LIMITS:
         if name not in mapping or not re.fullmatch(
             r"[0-9a-f]{64}", str(mapping[name].get("expected_sha256", ""))
@@ -235,14 +237,30 @@ def download(ws, emit=print):
     entries = catalog(ws)
     directory = ws.path(ws.settings.data.raw)
     emit("来源：IPN HandS / CC BY 4.0。使用和报告时保留作者归属与论文引用。")
+    if "project_release" in entries[ANNOTATIONS]:
+        emit(
+            "使用项目审查的固定图片关键点版本；标注包与发布方旧SHA的差异仍保留，不是跳过校验。"
+        )
     with operation_lock(directory, "download"):
         for name, limit in LIMITS.items():
             fetch(entries[name], directory / name, limit=limit, emit=emit)
+            if name == ANNOTATIONS and "project_release" in entries[name]:
+                verify_release_annotations(
+                    directory / name, load_release(entries[name]["project_release"])
+                )
         write_json(
             directory / "download.json",
             {
                 "format_version": "workflow-download-v1",
                 "files": {name: entries[name]["expected_sha256"] for name in LIMITS},
+                **(
+                    {
+                        "source_review": entries[ANNOTATIONS]["project_release"],
+                        "integrity_basis": "project-reviewed snapshot; publisher discrepancy retained",
+                    }
+                    if "project_release" in entries[ANNOTATIONS]
+                    else {}
+                ),
             },
         )
     emit("数据包已就位。下一步：uv run prepare")

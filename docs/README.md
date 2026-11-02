@@ -2,6 +2,8 @@
 
 ## 当前已有内容
 
+- **默认训练数据已冻结**：[图片帧关键点审查版本与固定分组](ipn_hands_release.md)；真实全量准备/预检记录见[数据准备证据](verification/ipn_hands_preparation.json)。不下载视频，不把采集组冒充已核实主体。
+
 - **日常入口**：[训练机快速开始](quickstart.md) · [数据格式与目录](dataset_layout.md) · [工作流整理计划/验收](simple_workflows_plan.md)
 - 常规操作使用 `uv run doctor/download/prepare/train/resume/evaluate/calibrate/export/app/check`；下面保留各阶段的高级接口与历史证据。
 

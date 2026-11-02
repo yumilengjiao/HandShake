@@ -1,71 +1,57 @@
-# 公开数据下载入口（只提交链接，不提交数据）
+# 公开数据来源
 
-> **2026-11-02工作流复核**：新增 `uv run download`，默认放入 `data/raw/ipn-hands/`；本次实际下载仍为82,274字节、SHA `520dfbf3…bcbaec`，与已公布的预期值不一致，已隔离且未继续下载主关键点包。没有修改可信SHA来绕过。后续操作使用 `uv run prepare` / `uv run train`，见[快速开始](../docs/quickstart.md)。
+默认版本：**`ipn-hands-frames-v1`**，即 IPN HandS 的逐帧图片关键点与时间标签。**不下载视频，不需要摄像头，不执行数据包内脚本。**
 
-> **2026-10-31复核**：作者Git HEAD/预期SHA未更新；公开direct端点仍返回同一82,274字节ZIP和不同的实际SHA。正式导入继续阻塞，没有替换预期值。已完成的是[紧凑缓存及换机准备软件](../docs/public_data_scale.md)，不是官方数据已可训练。
+## 下载与准备
 
-核查日期：2026-10-29。用户选择 **public-data-v1：公开数据为主，不要求自行录制训练集**。机器可读来源、固定文档版本、许可证、预期SHA256及实际检查状态见 [`sources.json`](sources.json)。HTTP 200/网页能打开不等于数据已完整下载或可训练。
+```bash
+uv run download
+uv run prepare
+uv run train --dry-run
+```
 
-## 首选候选：IPN HandS，先用关键点，不必下载视频
+来源与固定SHA在 [`sources.json`](sources.json)，项目审查清单在 [`shared/defaults/ipn_hands_release.json`](../shared/defaults/ipn_hands_release.json)。完整依据见[版本审查](../docs/ipn_hands_release.md)。
 
-- [作者说明（固定Git版本）](https://github.com/GibranBenitez/IPN-hand/blob/093729579be671df0cc9dd8cbc58b9a342663800/README_HandS.md)
-- [作者Google Drive下载目录](https://drive.google.com/drive/folders/1eILZNuPRM53_Ige2jxGqXV3OdIeoMeIb?usp=sharing)
-- [IPN HandS论文](https://doi.org/10.3390/app15116321)、[原IPN Hand论文](https://arxiv.org/abs/2005.02134)
-- 作者明确将数据标为 **CC BY 4.0**，使用时保留来源、归属及两篇论文引用，注明预处理/重映射等修改。
+| 文件 | 用途 | 本次审查 |
+| --- | --- | --- |
+| [IPN_HandS_annotations.zip](https://drive.google.com/file/d/1HybcqZqnNKZGgJJXCMjj6tLFbpsNP_a1/view) | 15类、连续区间、帧数、官方train/test清单 | 82,274字节；采用明确的项目审查快照，旧发布方SHA差异保留 |
+| [IPN_HandS_landmarks_MPHands.zip](https://drive.google.com/file/d/1Y-3_MUHJ6OYpv-BNof5vYDRR4YNgrGQ2/view) | 图片帧的MediaPipe Hands预测，21点xyz | 实际375,332,617字节，作者公布SHA一致；全部200个JSON、801,476帧已核查 |
 
-| 文件 | 作者标称大小 | 用途 | 当前检查 |
-| --- | --- | --- | --- |
-| [IPN_HandS_annotations.zip](https://drive.google.com/file/d/1HybcqZqnNKZGgJJXCMjj6tLFbpsNP_a1/view?usp=drive_link) | <1 MB | 类别、连续区间标签、划分与帧计数；必需 | **SHA256与作者清单不一致，禁止直接导入** |
-| [IPN_HandS_landmarks_MPHands.zip](https://drive.google.com/file/d/1Y-3_MUHJ6OYpv-BNof5vYDRR4YNgrGQ2/view?usp=drive_link) | 375 MB | MediaPipe Hands预测；优先训练输入候选 | 分享页HTTP 200，未下载大包 |
-| [IPN_HandS_landmarks_GT.zip](https://drive.google.com/file/d/1pbCWxfzGZyexHe89lZtGgnHWfa958XJv/view?usp=drive_link) | 674 MB | 人工修正2D关键点的参考对照 | 可选，不是首轮必需 |
-| [IPN_HandS_landmarks_MPHolistic.zip](https://drive.google.com/file/d/1hdtmr4JpK14rt1zMcbN39-oTedn2sBx1/view?usp=drive_link) | 1.1 GB | 另一种感知前端对照 | 可选，不必现在下载 |
+大文件只保存在本机 `data/raw/ipn-hands/`，不提交Git。每帧0～2只手，未检出和多手情况不会被伪造为正常单手监督。GT/Holistic包不属于默认下载内容。
 
-覆盖200段原始视频，14类手势＋非手势；关键点为21点`[x,y,z]`，每帧0～2只手。官方列出148段训练/52段测试，但仍需审查参与者重叠，不能仅凭视频列表就宣称跨用户划分。GT只人工修正x/y，z不是人工验证的3D真值。
+## 标注SHA差异如何处理
 
-### 已发现的校验问题（不能隐瞒）
-
-作者上述固定版本公布标注包SHA256：
+作者固定README公布：
 
 ```text
 4686a2ebf70a6036166c261bc6992d050cfba08c3b18edcdd460b3fa9f30ec71
 ```
 
-本次从官方链接两次取得相同的82,274字节ZIP，实际SHA256：
+官方链接重复提供、本次项目审查采纳的快照：
 
 ```text
 520dfbf3d52ecab6535d8841bba55e94d6b512596ed1cff4505d2c1345bcbaec
 ```
 
-ZIP的206个成员CRC通过，也能读取类别/划分文本；这**不能解释或消除SHA256不一致**。原因可能涉及上游文件版本变化，但当前未证实。文件仅留临时调查目录，未当成正式训练资料、未执行包内脚本。后续先核对作者更新/获得一致版本；不能把实际哈希替换为期望哈希后谎称通过。若暂不能解决，转原IPN Hand视频路线评估，不要求用户因此改为自采。
+**这两个值仍不相同，不声称作者修复了校验或确认了原因。** 本次根据官方固定Git/下载链路、206个成员的逐项审查、匹配作者SHA的关键点包，以及独立Git/元数据的来源清单对照，采纳一个显式版本化的项目快照。
 
-## 备用：原始IPN Hand RGB视频
+原始 `expected_sha256` 没有被删除或改写；`project_release` 引用另一个固定SHA的审查清单。仅这个精确版本可被默认流程采纳；其他文件、未来变化或无review引用的校验不符仍会拒绝。没有运行时跳过校验的选项。
 
-- [官方网站与完整下载说明](https://gibranbenitez.github.io/IPN_Hand/)
-- [原始MP4视频入口](https://drive.google.com/open?id=1O4Fn_jbAEcKIksXHmQIMcHTyaDw4wt9x)：作者标称合计 **4.6 GB**，5个独立包，每包40段视频。
-- [原版标注入口](https://drive.google.com/open?id=1-mihJEIFoNDpfo1puF8xAMJz6PGVKsBD)：作者标称364 KB。本次分享页可打开，直接下载请求返回500，尚未取得有效包；不能当自动直链承诺可用。
-- 数据/标注为CC BY 4.0；基准代码MIT不是数据许可的替代说明。
+## 默认划分与限制
 
-可用于用本项目固定版本MediaPipe重新提取骨架。原始IPN Hand与HandS的**类别、帧索引、时间轴不同**：原版320×240帧曾去近重复帧，HandS在原视频上用`ffmpeg fps=30`重新抽帧，区间1-based且含末帧。禁止混用两套标签或用帧序号猜真实时间。
+默认按50个完整**来源采集组**固定划分：116个训练、32个验证、52个测试序列。保留官方测试集，只从官方训练组中固定选取验证组；不逐帧随机划分，同组四个序列不会跨集合。
 
-## 静态增强备选：HaGRID（首轮不用下载）
+来源采集键不是独立核实的参与者身份。模型/缓存会记录 `subject_identity_verified=false`；可以报告采集组留出结果，不能直接宣称已认证的跨人评估。原作者 `metadata.csv` 没有主体ID；本次只用它核对来源名称、集合及旧帧数，没有猜测人物身份。
 
-[官方仓库](https://github.com/hukenovs/hagrid)有`palm`、`fist`等手型，但不是连续挥动/操作意图数据。当前HaGRIDv2完整包约1.5 TB，512px版也约119.4 GB，不适合作为本轮第一步。
+保留HandS 15类词表和原640×480图片帧的30fps时间轴；不混用原IPN Hand缩放/去重后的320×240图片编号或原版14类时间标签。
 
-**许可特别注意**：已读取作者[英文许可PDF](https://github.com/hukenovs/hagrid/blob/080e18917376ec935e453cd0e599c23478c7e98f/license/en_us.pdf)，其脚注明确写“不是Creative Commons许可”，不能只看README图标就标成标准CC BY-SA 4.0。采用前按实际自定义条款审核。
+## 官方资料与许可
 
-## 本地目录与Git规则
+- [作者说明：固定Git版本](https://github.com/GibranBenitez/IPN-hand/blob/093729579be671df0cc9dd8cbc58b9a342663800/README_HandS.md)
+- [作者下载目录](https://drive.google.com/drive/folders/1eILZNuPRM53_Ige2jxGqXV3OdIeoMeIb)
+- [原版元数据目录](https://drive.google.com/drive/folders/1-mihJEIFoNDpfo1puF8xAMJz6PGVKsBD)（这是文件夹，不是ZIP直链）
+- [元数据CSV](https://drive.google.com/file/d/17d2lsFOJZ-R74PrkS83iO7xSV8ZDiwwT/view)（辅助审查，默认运行不需要额外下载）
 
-```text
-data/
-  README.md                     # Git跟踪
-  SOURCES.md                    # Git跟踪：人工阅读入口
-  sources.json                  # Git跟踪：链接、版本、许可、校验状态
-  external/                     # Git忽略：下载包与解压数据
-    IPN_HandS/
-    IPN_Hand/
-  ...                           # 其他真实数据仍忽略
-```
+数据与派生审查清单按 **CC BY 4.0** 保留归属。请引用 Benitez-Garcia 等人的 [IPN HandS论文](https://doi.org/10.3390/app15116321) 和 [IPN Hand论文](https://arxiv.org/abs/2005.02134)，并注明本项目的特征处理及分组修改。
 
-下载时先确认可用空间、条款和来源；完成后核对`sources.json`中的预期值，再检查归档成员与完整性。不使用登录Cookie、临时签名下载地址或私人网盘作为提交的固定入口。Google Drive需要人工确认或限制流量时，保留官方分享页，不绕过访问限制。
-
-**URL清单只解决“仓库不放大文件”**，不等于别人`git clone`后已经有数据、训练模型或能直接运行`train`。导入、版本化词表和小规模深度训练管线已实现，见 [操作指南](../docs/public_data_implementation.md)；官方数据核验和正式训练仍未完成；紧凑缓存v3及转移预检见[后续增量](../docs/public_data_scale.md)，本机训练按用户要求暂停。路线和验收见 [公开数据方案](../docs/public_data_plan.md)。本轮没有上传任何图片、视频、原始标签、权重或会话HTML。
+数据可用于训练不等于正式训练成绩、真实操作意图或端到端控制安全已验证。其他平台/设备兼容性仍以实际测试为准。

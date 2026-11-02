@@ -7,6 +7,12 @@ from algorithm.data.ipn_hands import read_annotations
 from algorithm.data.source_archive import VerifiedArchive
 from backend.importing.ipn_hands import import_ipn_hands, validate_subject_plan
 from backend.importing.spool import read_manifest
+from backend.importing.source_release import (
+    load_release,
+    capture_plan,
+    verify_release_annotations,
+    plan_grouping,
+)
 from backend.importing.stream_features import build_stream_cache
 from backend.workflows.download import ANNOTATIONS, LANDMARKS, catalog, check_archive
 from backend.workflows.workspace import (
@@ -55,10 +61,14 @@ def dataset_receipt(ws, *, allow_synthetic=False, verify_splits=("train", "val")
         )
         if result["split"] != split or result["synthetic"] is not value["synthetic"]:
             raise WorkflowError("缓存角色或来源与数据回执不一致。")
+        if read_json(ws.cache / split / "index.json").get("grouping") != value.get(
+            "grouping"
+        ):
+            raise WorkflowError("数据回执不可隐去或改变采集组评估范围。")
     return value
 
 
-def _subject_plan(ws, annotations, expected_videos):
+def _subject_plan(ws, annotations, expected_videos, release=None):
     with VerifiedArchive(
         annotations[0],
         expected_sha256=annotations[1],
@@ -67,6 +77,18 @@ def _subject_plan(ws, annotations, expected_videos):
     ) as archive:
         videos = read_annotations(archive, expected_videos=expected_videos)
     path = ws.path(ws.settings.data.subjects)
+    if release is not None and ws.settings.data.split_mode == "release":
+        plan = capture_plan(videos, release)
+        validate_subject_plan(plan, videos)
+        path = path.with_name("ipn-hands-capture-groups.json")
+        if path.exists() and read_json(path) != plan:
+            raise WorkflowError(
+                "固定采集组划分已被修改，不能静默覆盖。",
+                "保留旧文件；需要自定义主体划分时选择 split_mode='reviewed_subjects'。",
+            )
+        if not path.exists():
+            write_json(path, plan)
+        return path, plan
     if not path.exists():
         write_json(
             path,
@@ -110,12 +132,30 @@ def prepare(ws, emit=print, *, expected_videos=200, synthetic=False):
     raw = ws.path(cfg.raw)
     for name in (ANNOTATIONS, LANDMARKS):
         check_archive(raw / name, entries[name]["expected_sha256"])
+    reference = entries[ANNOTATIONS].get("project_release")
+    release = load_release(reference) if reference else None
+    if release is not None:
+        verify_release_annotations(raw / ANNOTATIONS, release)
     subject_path, plan = _subject_plan(
         ws,
         (raw / ANNOTATIONS, entries[ANNOTATIONS]["expected_sha256"]),
         expected_videos,
+        release,
     )
-    if not cfg.review_reference.strip():
+    review_reference = cfg.review_reference
+    if release is not None and cfg.split_mode == "release":
+        review_reference = release["review_document"] + "@" + reference["sha256"]
+        counts = {
+            role: sum(
+                plan["subject_splits"][v["subject_id"]] == role
+                for v in plan["videos"].values()
+            )
+            for role in ("train", "val", "test")
+        }
+        emit(
+            f"采用固定采集组划分：{counts['train']}训练/{counts['val']}验证/{counts['test']}测试序列，不随机拆散图片，不宣称独立核实的跨人评估。"
+        )
+    if not review_reference.strip():
         raise WorkflowError(
             "尚未填写数据质量/划分审核依据。",
             "在 handshake.local.toml 的 [data] 中填写真实 review_reference，然后再运行 uv run prepare。",
@@ -125,9 +165,10 @@ def prepare(ws, emit=print, *, expected_videos=200, synthetic=False):
         "landmarks_sha256": entries[LANDMARKS]["expected_sha256"],
         "subject_plan_sha256": canonical_digest(plan),
         "dataset_version": cfg.dataset_version,
-        "review_reference": cfg.review_reference,
+        "review_reference": review_reference,
         "stride": cfg.stride,
         "synthetic": synthetic,
+        **({"source_review": reference} if reference else {}),
     }
     with operation_lock(ws.cache, "prepare"):
         if (ws.cache / "dataset.json").exists():
@@ -167,6 +208,9 @@ def prepare(ws, emit=print, *, expected_videos=200, synthetic=False):
                 landmarks_sha256=identity["landmarks_sha256"],
                 expected_videos=expected_videos,
                 synthetic=synthetic,
+                progress=lambda done, total: emit(
+                    f"  已导入 {done}/{total} 个图片序列"
+                ),
             )
         # A partial preparation may resume only under its original pinned inputs.
         pending = ws.cache / "preparation.json"
@@ -202,7 +246,7 @@ def prepare(ws, emit=print, *, expected_videos=200, synthetic=False):
                 target,
                 split=split,
                 dataset_version=cfg.dataset_version,
-                review_reference=cfg.review_reference,
+                review_reference=review_reference,
                 stats=None if split == "train" else ws.cache / "train" / "stats.json",
                 stride=cfg.stride,
             )
@@ -225,7 +269,7 @@ def prepare(ws, emit=print, *, expected_videos=200, synthetic=False):
                 or header["synthetic"] is not synthetic
                 or frozen["import_manifest_sha256"] != import_hash
                 or frozen["dataset_version"] != cfg.dataset_version
-                or frozen["preregistration_reference"] != cfg.review_reference
+                or frozen["preregistration_reference"] != review_reference
             ):
                 raise WorkflowError("已有缓存不属于本次准备的来源、划分或配置。")
             current = tuple(
@@ -250,6 +294,7 @@ def prepare(ws, emit=print, *, expected_videos=200, synthetic=False):
             "preparation": identity,
             "splits": splits,
             "vocabulary_version": provenance["vocabulary_version"],
+            **({"grouping": plan_grouping(plan)} if plan_grouping(plan) else {}),
         }
         value["receipt_sha256"] = canonical_digest(value)
         write_json(ws.cache / "dataset.json", value)

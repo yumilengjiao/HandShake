@@ -11,10 +11,12 @@ profile = "cpu"
 catalog = "data/sources.json"
 raw = "data/raw/ipn-hands"
 subjects = "data/metadata/ipn-hands-subjects.json"
+# Default release uses fixed capture groups; no user-supplied identity claims.
+split_mode = "release"
 imported = "data/processed/ipn-hands"
 cache = "data/cache/ipn-hands"
-dataset_version = "ipn-hands-reviewed-v1"
-# Fill after actual quality/split review, not just to silence a validation error.
+dataset_version = "ipn-hands-frames-v1"
+# Only needed for split_mode = "reviewed_subjects"; never invent an audit reference.
 review_reference = ""
 stride = 1
 

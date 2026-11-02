@@ -7,7 +7,7 @@
 | 层 | 默认目录 | 约束 |
 | --- | --- | --- |
 | 原始来源 | `data/raw/ipn-hands/` | 官方ZIP只读；来源清单、许可和SHA绑定；不原地修补标签 |
-| 主体/会话审查 | `data/metadata/` | `subject-plan-v1`，真实身份与split，不猜测；不入公开Git |
+| 分组计划 | `data/metadata/` | 默认 `capture-group-plan-v1` 固定采集组；有真实主体资料时可选 `subject-plan-v1`；本地文件不入Git |
 | 标准化导入 | `data/processed/ipn-hands/` | `ipn-hands-import-v1`；逐视频gzip分片、源帧标签账本、全量清单 |
 | 训练缓存 | `data/cache/ipn-hands/{train,val,test}/` | `t11-cache-v3`；每步特征只存一次，按batch恢复窗口 |
 | 工作流回执 | `data/cache/ipn-hands/dataset.json` | 绑定来源、主体计划、审核依据、stride及三个缓存的可信构建SHA |
@@ -21,7 +21,8 @@
 - HandS原视频640×480，`fps=30`重抽帧，源帧从1开始，标签区间含末帧；不与原IPN Hand的去重/缩放时间轴混用。
 - 每帧0～2只手，每手MediaPipe顺序21个xyz点；无手保留为空，多手不能自动选操作人。
 - 外部SDK处理完成时间和实际曝光时间未知，不能填成0ms或推断成实时性能。
-- 训练/验证/测试先按主体/会话/来源分组，再生成窗口；train拟合统计，val/test只复用。最终test不用于调参。
+- 默认先按完整来源采集组划分再生成窗口，组内四个序列不跨集合；有可靠身份映射时可选主体/会话模式。train拟合统计，val/test只复用。最终test不用于调参。
+- 默认发布版使用 `capture-group:` 命名空间，旧记录中的 `subject_id` 只作为分组键；`grouping` 明确记录未独立核实人物身份，不能据此声称跨人评估。
 
 ## 导入层
 
@@ -56,7 +57,8 @@ split_manifest.json     # 固定分组/来源/审核身份
 它是日常命令的薄关联回执，**不是新的关键点/模型格式**：
 
 - `format_version = workflow-dataset-v1`
-- `preparation`：原始ZIP SHA、主体计划SHA、真实审核引用、版本、stride及synthetic声明。
+- `preparation`：原始ZIP SHA、分组计划SHA、项目审查引用（或自定义真实审核依据）、版本、stride及synthetic声明。
+- 默认发布版另带 `source_review` 和 `grouping`，保留项目审查与采集组评估范围；不能删掉分组范围后仍冒充相同数据回执。
 - `splits`：train/val/test的原始 `index_sha256`。
 - `receipt_sha256`：除自身外的规范化JSON摘要。
 
@@ -69,7 +71,7 @@ split_manifest.json     # 固定分组/来源/审核身份
 1. 原来 `data/external/IPN_HandS/` 中的ZIP可以保持原位，在 `[data] raw` 指向该目录；或复制到默认raw目录后由download复验。
 2. 旧导入目录可由 `[data] imported` 指向。清单完整且来源/主体SHA一致才能复用。
 3. 日常缓存默认使用新的 `data/cache/ipn-hands/`。旧v1/v2缓存仍可经原高级训练命令使用，不自动冒充v3。
-4. 新工作流不盲目认领没有prepare回执的已有缓存。需要明确审查后重新prepare到新目录；不会现场重算陌生文件SHA就当作可信构建回执。
+4. 新工作流不盲目认领没有prepare回执的已有缓存。默认[固定发布版](ipn_hands_release.md)已包含审查和采集组规则，可直接prepare；自定义来源仍需审查。既有capture-group导入只允许v3缓存，旧小缓存入口会拒绝，以免丢失评估范围。
 5. 旧高级命令 `handshake-*` 与 `scripts/`兼容入口保留。常规操作用短命令；回放、采集授权、真实SDK探针等高级用途仍需显式参数。
 6. 旧checkpoint不能通过修改identity字段强行恢复。本次训练实现有变更，旧run请保留原代码环境；新机器/新代码开启新run，交付部署使用导出的推理包。
 

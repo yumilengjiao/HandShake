@@ -1,0 +1,20 @@
+IPN HandS / IPN Hand derived release metadata
+
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+https://creativecommons.org/licenses/by/4.0/legalcode
+
+Attribution:
+Benitez-Garcia et al., IPN HandS: Efficient Annotation Tool and Dataset for
+Skeleton-Based Hand Gesture Recognition, Applied Sciences 15(11), 6321 (2025).
+https://doi.org/10.3390/app15116321
+
+Benitez-Garcia et al., IPN Hand: A Video Dataset and Benchmark for Real-Time
+Continuous Hand Gesture Recognition, ICPR 2020/2021.
+https://arxiv.org/abs/2005.02134
+
+Source: https://github.com/GibranBenitez/IPN-hand/tree/093729579be671df0cc9dd8cbc58b9a342663800
+
+HandShake modifications: checksum/member inventory review, frame-count audit,
+and a fixed source-capture-group validation split. These are project decisions,
+not a claim of author endorsement or independent participant identification.
+The original dataset payloads are not included in the Python distribution.
