@@ -41,7 +41,7 @@ jobs:
           uv run --no-sync python -m pytest
           tests/unit/test_workflows.py tests/unit/test_workflow_download.py
           tests/unit/test_workflow_training.py tests/unit/test_training_devices.py
-          tests/integration/test_workflow_data.py tests/unit/test_training.py
+          tests/integration/test_workflow_data.py tests/integration/test_source_release.py tests/unit/test_training.py
           tests/unit/test_mlp.py tests/unit/test_tcn_causality.py
           tests/integration/test_public_data.py tests/integration/test_stream_cache.py
           tests/integration/test_model_bundle.py

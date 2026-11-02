@@ -79,6 +79,8 @@ def preflight(ws, args, emit=print):
     emit(
         f"train={provenance['train']['supervised']}、val={provenance['val']['supervised']} 个有标签端点；不会读取 test 样本。"
     )
+    if provenance.get("grouping", {}).get("unit") == "source_capture_group":
+        emit("评估范围：固定采集组留出；没有独立核实主体身份，不宣称跨人识别成绩。")
     absent = [
         i for i, count in enumerate(provenance["train"]["class_counts"]) if count == 0
     ]
@@ -225,6 +227,8 @@ def evaluate_run(ws, *, split="val", calibrate=False, emit=print):
         output / "scores", expected_manifest_sha256=scores_receipt["manifest_sha256"]
     )
     result = evaluate_classification(scores)
+    if data.get("grouping") is not None:
+        result["grouping"] = data["grouping"]
     write_json(output / "classification.json", result)
     emit(f"{split} 分类报告：{output / 'classification.json'}")
     if calibrate:

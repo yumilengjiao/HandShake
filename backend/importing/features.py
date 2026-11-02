@@ -44,6 +44,10 @@ def build_import_cache(
     imported = strict_json(
         (Path(directory) / "manifest.json").read_text(encoding="utf-8")
     )
+    if imported.get("grouping") is not None:
+        raise ValueError(
+            "capture-group releases require compact cache v3 to preserve evaluation scope"
+        )
     records = []
     for record in iter_imported_records(directory):
         if len(records) >= max_records:

@@ -209,11 +209,21 @@ def load_compact_cache(
     ):
         raise ValueError("cache normalization mismatch")
     split = _json(root / "split_manifest.json")
+    grouping = index.get("grouping")
+    if grouping is not None and (
+        not isinstance(grouping, dict)
+        or grouping.get("unit") != "source_capture_group"
+        or grouping.get("subject_identity_verified") is not False
+    ):
+        raise ValueError(
+            "capture-group cache cannot claim verified participant identities"
+        )
     if (
         split.get("format_version") != "t11-stream-split-v1"
         or canonical_digest(split) != expected_split_sha256
         or split["dataset_sha256"] != expected_dataset_sha256
         or split["synthetic"] is not index["synthetic"]
+        or split.get("grouping") != index.get("grouping")
         or split["vocabulary_version"] != vocabulary.vocabulary_version
         or split["status"] != "frozen"
         or not split["preregistration_reference"]

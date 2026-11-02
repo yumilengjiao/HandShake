@@ -16,6 +16,7 @@ from pathlib import Path
 from algorithm.data.dataset import ObservationRecord, canonical_digest
 from algorithm.data.ipn_hands import iter_landmark_frames, read_annotations
 from algorithm.data.source_archive import VerifiedArchive, file_sha256, strict_json
+from backend.importing.source_release import plan_grouping
 from backend.perception.assembler import ObservationAssembler
 from backend.perception.mediapipe_adapter import RawHand
 from shared.classes import IPN_HANDS_VERSION, vocabulary_for
@@ -33,7 +34,7 @@ def validate_subject_plan(plan, videos):
     }:
         raise ValueError("invalid reviewed subject plan fields")
     if (
-        plan["format_version"] != "subject-plan-v1"
+        plan["format_version"] not in {"subject-plan-v1", "capture-group-plan-v1"}
         or plan["status"] != "reviewed"
         or not isinstance(plan["reference"], str)
         or not plan["reference"].strip()
@@ -65,6 +66,14 @@ def validate_subject_plan(plan, videos):
         ):
             raise ValueError("each video requires explicit subject_id and session_id")
         subject = item["subject_id"]
+        if plan["format_version"] == "capture-group-plan-v1" and (
+            not plan["reference"].startswith("project-release:")
+            or subject != "capture-group:" + name.rsplit("_#", 1)[0]
+            or item["session_id"] != name
+        ):
+            raise ValueError(
+                "capture grouping is a source key, not an invented subject identity"
+            )
         if subject not in splits:
             raise ValueError("unknown subject in reviewed video mapping")
         role = splits[subject]
@@ -114,6 +123,7 @@ def import_ipn_hands(
     landmarks_sha256,
     expected_videos=200,
     synthetic=False,
+    progress=None,
 ):
     """No output is created before hashes, label inventory and grouping pass.
 
@@ -168,6 +178,7 @@ def import_ipn_hands(
             "action_backend": "none",
             "ready_for_training": False,
             "recordings": [],
+            **({"grouping": plan_grouping(plan)} if plan_grouping(plan) else {}),
         }
         _atomic_json(root / "manifest.json", manifest)
         try:
@@ -262,6 +273,8 @@ def import_ipn_hands(
                     }
                 )
                 _atomic_json(root / "manifest.json", manifest)
+                if progress is not None:
+                    progress(len(manifest["recordings"]), len(videos))
             manifest.update(
                 complete=True, status="imported_pending_quality_and_split_freeze"
             )
@@ -291,6 +304,8 @@ def iter_imported_records(directory):
     ):
         raise ValueError("import vocabulary mismatch")
     plan = manifest["subject_plan"]
+    if manifest.get("grouping") != plan_grouping(plan):
+        raise ValueError("import grouping declaration mismatch")
     if canonical_digest(plan) != manifest["subject_plan_sha256"]:
         raise ValueError("import subject plan hash mismatch")
     ids = [entry["recording_id"] for entry in manifest["recordings"]]

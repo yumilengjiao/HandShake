@@ -1,5 +1,7 @@
 # 公开数据扩容：紧凑缓存与训练机交接
 
+> 后续已完成[固定图片帧关键点版本](ipn_hands_release.md)的真实全量缓存准备与预检；旧公布SHA差异保留为审查记录，默认使用预先审核的项目快照及固定采集组。下文“仍阻塞/大包未下载”属于原扩容阶段历史状态。
+
 > **后续工作流增量**：日常命令已统一为 `uv run download/prepare/train/resume/evaluate/export`，见[快速开始](quickstart.md)。训练代码新增CPU/CUDA/MPS显式设备选择；CUDA/MPS真实训练尚待目标机器验证，下文“仅CPU”描述保留为原扩容阶段历史范围。当前本机仍不训练，上游标注SHA问题仍未解决。
 
 **分支 `feat/public-data-scale`；基于已拉取的master `13839c9`。**

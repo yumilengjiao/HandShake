@@ -13,6 +13,7 @@ from pathlib import Path
 
 from algorithm.data.dataset import ObservationRecord, canonical_digest
 from algorithm.data.source_archive import strict_json
+from backend.importing.source_release import plan_grouping
 from backend.importing.verified_lines import verified_json_lines
 from shared.classes import IPN_HANDS_VERSION, vocabulary_for
 from shared.contracts import TransformMetadata
@@ -38,7 +39,8 @@ def read_manifest(root):
         raise ValueError("incomplete or unsupported import")
     plan = manifest["subject_plan"]
     if (
-        plan.get("format_version") != "subject-plan-v1"
+        plan.get("format_version") not in {"subject-plan-v1", "capture-group-plan-v1"}
+        or manifest.get("grouping") != plan_grouping(plan)
         or plan.get("status") != "reviewed"
         or not plan.get("reference")
         or canonical_digest(plan) != manifest["subject_plan_sha256"]

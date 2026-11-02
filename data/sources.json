@@ -6,16 +6,21 @@
     "route": "public-data-v1",
     "self_recorded_training_data_required": false,
     "commit_raw_data": false,
-    "local_download_root": "data/external",
-    "status": "source_integrity_pending_compact_cache_v3_implemented",
-    "training_on_current_machine": "paused_by_user_use_a_later_training_machine",
-    "integrity_rule": "A published checksum mismatch blocks import. Never replace expected SHA256 with the observed value to mark a download valid."
+    "local_download_root": "data/raw/ipn-hands",
+    "status": "project_reviewed_frame_landmark_release",
+    "training_policy": "Neural training requires an explicit train/resume command or opt-in training tests; download and prepare never train neural networks.",
+    "integrity_rule": "Published checksums are preserved. A mismatch is blocked unless an explicit versioned project review pins the exact official-download snapshot and its content inventory; no runtime skip or arbitrary observed-hash override.",
+    "input_policy": "Ordered image landmarks only; no videos or RGB image payloads are downloaded by the default route."
   },
   "datasets": [
     {
       "id": "ipn-hands",
       "name": "IPN HandS",
-      "role": "preferred_skeleton_sequence_candidate_integrity_pending",
+      "role": "default_reviewed_ordered_image_landmarks",
+      "project_release": {
+        "id": "ipn-hands-frames-v1",
+        "sha256": "d12f7df66e88de0c8ae978b29feb59fb0493f84e28af7db83da0ee632f81cf27"
+      },
       "homepage": "https://github.com/GibranBenitez/IPN-hand/blob/master/README_HandS.md",
       "upstream_commit": "093729579be671df0cc9dd8cbc58b9a342663800",
       "pinned_readme": "https://raw.githubusercontent.com/GibranBenitez/IPN-hand/093729579be671df0cc9dd8cbc58b9a342663800/README_HandS.md",
@@ -50,7 +55,7 @@
           "download_url": "https://drive.google.com/uc?export=download&id=1HybcqZqnNKZGgJJXCMjj6tLFbpsNP_a1",
           "expected_sha256": "4686a2ebf70a6036166c261bc6992d050cfba08c3b18edcdd460b3fa9f30ec71",
           "check": {
-            "status": "sha256_mismatch_import_blocked",
+            "status": "published_sha_mismatch_project_snapshot_reviewed",
             "observed_sha256": "520dfbf3d52ecab6535d8841bba55e94d6b512596ed1cff4505d2c1345bcbaec",
             "observed_bytes": 82274,
             "http_status": 200,
@@ -60,7 +65,7 @@
             "zip_members": 206,
             "last_rechecked_on": "2026-11-02",
             "last_download_url": "https://drive.usercontent.google.com/download?id=1HybcqZqnNKZGgJJXCMjj6tLFbpsNP_a1&export=download",
-            "note": "Public archive rechecked by uv run download on 2026-11-02: same 82274-byte ZIP and SHA; quarantined rather than published. The previously pinned upstream expected SHA was not changed, and upstream Git HEAD was not re-fetched in this check. CRC success from the earlier audit does not resolve the mismatch. Not admitted as training data."
+            "note": "The official ZIP still differs from the published checksum, which is preserved above. The explicit ipn-hands-frames-v1 project review admits only the pinned snapshot after auditing all 206 members, 801476 aligned frame records, the publisher-pinned landmark ZIP and independent Git/metadata source inventories. This is NOT a publisher correction or a manual semantic-label audit; see docs/ipn_hands_release.md."
           }
         },
         {
@@ -70,7 +75,7 @@
           "upstream_size": "375 MB",
           "url": "https://drive.google.com/file/d/1Y-3_MUHJ6OYpv-BNof5vYDRR4YNgrGQ2/view?usp=drive_link",
           "expected_sha256": "e511bb2b902207b82a296190daadc30a057f3abc16f628579542d2b1274ce598",
-          "check": {"status": "file_page_http_200_payload_not_downloaded", "observed_sha256": null}
+          "check": {"status": "downloaded_published_sha_and_all_frames_verified", "observed_sha256": "e511bb2b902207b82a296190daadc30a057f3abc16f628579542d2b1274ce598"}
         },
         {
           "filename": "IPN_HandS_landmarks_GT.zip",
@@ -92,25 +97,25 @@
         }
       ],
       "limitations": [
-        "Preferred route is NOT ready for training until the annotation checksum discrepancy is resolved and input archives are verified.",
+        "Default preparation uses the versioned project release and fixed source capture groups, not invented participant identities. Upstream annotation checksum discrepancy remains recorded; unrelated or subsequently changed bytes are rejected.",
         "Throw left/right are candidate command mappings, pending direction and gesture-semantic review; Open twice is not static palm wake, Grab is not static fist exit.",
         "Preserve all 15 source classes; initial app proposal emits commands only for validated left/right classes and uses explicit UI/keyboard enable/stop.",
         "Author MediaPipe predictions are not the project's pinned Hand Landmarker runtime. Record this domain/version difference; do not claim identical online/offline extraction.",
-        "Official lists are video splits. Audit participant overlap from metadata before claiming cross-subject evaluation; keep same participant/session/views in one group.",
+        "Default groups are source capture keys (four sequences each), NOT independently verified participant identities. All sequences of a capture group stay together; official test stays isolated. Custom reviewed subject plans remain available.",
         "No original application enable/owner state, operator intent, command-response or exposure-latency ground truth. Predefined replay contexts must be labeled as simulated."
       ]
     },
     {
       "id": "ipn-hand-original",
       "name": "IPN Hand (original RGB release)",
-      "role": "fallback_or_optional_reextraction_with_project_sdk",
+      "role": "metadata_reference_only_not_default_training_input",
       "homepage": "https://gibranbenitez.github.io/IPN_Hand/",
       "pinned_readme": "https://raw.githubusercontent.com/GibranBenitez/IPN-hand/093729579be671df0cc9dd8cbc58b9a342663800/README.md",
       "download_page": "https://drive.google.com/drive/folders/1aL645mUzzAvoTMwJKrbtQiNiDVJZ2EsA?usp=sharing",
       "license": {"id": "CC-BY-4.0", "url": "https://creativecommons.org/licenses/by/4.0/legalcode", "evidence": "Official project page License section covers data and annotations.", "required_citations": ["https://arxiv.org/abs/2005.02134"]},
       "files": [
         {"filename": null, "purpose": "original MP4 videos, five independent archives of 40 videos", "upstream_size": "4.6 GB total", "url": "https://drive.google.com/open?id=1O4Fn_jbAEcKIksXHmQIMcHTyaDw4wt9x", "expected_sha256": null, "check": {"status": "listed_on_official_page_payload_not_downloaded"}},
-        {"filename": null, "purpose": "original-release annotations and metadata; NOT IPN HandS annotations", "upstream_size": "364 KB", "url": "https://drive.google.com/open?id=1-mihJEIFoNDpfo1puF8xAMJz6PGVKsBD", "expected_sha256": null, "check": {"status": "view_page_http_200_direct_download_http_500", "note": "Use the author's download page; no claim that this link is an automatic direct download."}}
+        {"filename": null, "purpose": "original-release annotations and metadata; NOT IPN HandS annotations", "upstream_size": "364 KB", "url": "https://drive.google.com/open?id=1-mihJEIFoNDpfo1puF8xAMJz6PGVKsBD", "expected_sha256": null, "check": {"status": "public_folder_verified_metadata_csv_inspected", "note": "This ID is a public folder, not a downloadable ZIP. Its metadata.csv was inspected through file ID 17d2lsFOJZ-R74PrkS83iO7xSV8ZDiwwT for sequence names, splits and original frame counts. No video payload is used."}}
       ],
       "limitations": ["13 gestures plus non-gesture, not the HandS 14+1 taxonomy.", "Do not combine original frame indices with the HandS fps=30 extraction timeline.", "Downloaded archive sizes, checksums and all splits still require validation."]
     },

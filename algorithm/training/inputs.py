@@ -13,6 +13,8 @@ def load_training_inputs(train_path, val_path):
     common = ("format_version", "dataset_sha256", "split_sha256", "stats_sha256", "config_sha256", "synthetic", "stride", "vocabulary_version", "classes_sha256")
     if any(headers[0].get(key) != headers[1].get(key) for key in common):
         raise ValueError("train/val cache provenance or stride mismatch")
+    if headers[0].get("grouping") != headers[1].get("grouping"):
+        raise ValueError("train/val grouping claims differ")
     vocabulary = vocabulary_for(headers[0]["vocabulary_version"])
     arrays, indexes = [], []
     for root, split in zip(roots, ("train", "val")):
@@ -34,6 +36,8 @@ def load_training_inputs(train_path, val_path):
     provenance = {"train_index_sha256": indexes[0]["index_sha256"],
                   "val_index_sha256": indexes[1]["index_sha256"],
                   **{key: indexes[0][key] for key in common}}
+    if "grouping" in indexes[0]:
+        provenance["grouping"] = indexes[0]["grouping"]
     for split, values, index in zip(("train", "val"), arrays, indexes):
         provenance[split] = dict(endpoints=len(values["y"]), supervised=int(values["class_valid"].sum()),
                                 class_counts=[int(((values["y"] == i) & values["class_valid"]).sum()) for i in range(vocabulary.class_count)],

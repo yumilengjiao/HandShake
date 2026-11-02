@@ -390,7 +390,13 @@ def export_bundle(run_directory, normalization, output, *, allow_synthetic=False
         "model_card.md": (
             f"# {kind.upper()} / {vocabulary.vocabulary_version}\n\n"
             f"Synthetic training: {run['synthetic']}\n\n"
-            "UNVALIDATED / UNCALIBRATED / PREVIEW ONLY. No action authority.\n"
+            + (
+                "Evaluation uses source capture groups; participant identities are NOT independently verified.\n"
+                if identity["data"].get("grouping", {}).get("unit")
+                == "source_capture_group"
+                else ""
+            )
+            + "UNVALIDATED / UNCALIBRATED / PREVIEW ONLY. No action authority.\n"
             "Class head only; no intent or phase probabilities.\n"
             "Golden tensors verify numerical consistency, not recognition accuracy.\n"
             f"Training run: {run['run_id']}; selected validation epoch: {run['best_epoch']}.\n"

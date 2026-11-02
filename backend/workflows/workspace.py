@@ -31,9 +31,10 @@ class DataSettings(SettingsModel):
     catalog: str = "data/sources.json"
     raw: str = "data/raw/ipn-hands"
     subjects: str = "data/metadata/ipn-hands-subjects.json"
+    split_mode: Literal["release", "reviewed_subjects"] = "release"
     imported: str = "data/processed/ipn-hands"
     cache: str = "data/cache/ipn-hands"
-    dataset_version: str = "ipn-hands-reviewed-v1"
+    dataset_version: str = "ipn-hands-frames-v1"
     review_reference: str = ""
     stride: int = Field(default=1, ge=1, le=1024)
 
