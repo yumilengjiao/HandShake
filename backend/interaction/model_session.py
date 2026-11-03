@@ -1,7 +1,8 @@
 """One model→policy session. Inference never holds the dispatch/stop gate.
 
-Default shadow mode has no execution authority. The only executing mode still
-requires synthetic input AND a synthetic model/calibration, explicitly opted in.
+Default shadow mode has no execution authority. This base class executes only
+synthetic input/model/calibration with explicit opt-in. The separate local-demo
+subclass owns its additional live, application-local-only authorization checks.
 """
 
 from dataclasses import dataclass
@@ -85,7 +86,7 @@ class ModelPresentationSession:
             raise ValueError("model warmup requires a bounded reviewed window span")
         self.bundle, self.clock = bundle, clock
         self.synthetic = source_synthetic or calibration.synthetic
-        self.host = ModelHost(
+        self.host = self._make_host(
             execution=execution,
             timebase=timebase,
             source_synthetic=source_synthetic,
@@ -106,6 +107,9 @@ class ModelPresentationSession:
         self._last_notice = None
         self._eligible_track = None
         self.reason = "initial"
+
+    def _make_host(self, **kwargs):
+        return ModelHost(**kwargs)
 
     @classmethod
     def load(

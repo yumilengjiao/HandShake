@@ -15,6 +15,7 @@ dev = ["pytest>=8,<10"]
 # Verified Linux/Python 3.12 model-operation baseline; see docs/perception_diagnostics.md.
 # 1.2.0 imports here but its native model initialization receives SIGKILL.
 perception = ["mediapipe==0.10.21", "opencv-contrib-python==4.11.0.86"]
+demo = ["Pillow>=10,<14"]
 training = ["torch", "scikit-learn"]
 cuda = ["torch", "scikit-learn"]
 
@@ -51,6 +52,7 @@ calibrate = "backend.workflows.cli:calibrate_entry"
 export = "backend.workflows.cli:export_entry"
 app = "backend.workflows.cli:app_entry"
 check = "backend.workflows.cli:check_entry"
+handshake-demo = "backend.gesture_demo:main"
 handshake = "backend.cli:main"
 handshake-handoff = "backend.handoff:main"
 handshake-safety-soak = "backend.safety_soak:main"

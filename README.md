@@ -66,6 +66,18 @@ uv run check         # 运行非训练回归测试
 
 允许进行合成训练测试的机器可运行 `uv run check --training`。
 
+### 实验性手势演示
+
+新增[本地手势演示播放器](docs/local_gesture_demo.md)，可载入PPT导出的编号图片。它是独立的显式授权入口，**不改变影子模式、不注入系统按键**；真实相机成功率尚未验收。
+
+```bash
+uv run --extra training --extra perception --extra demo handshake-demo \
+  --run artifacts/runs/20261102T174832Z-tcn-af17e513 --allow-local-demo
+# 窗口内：C开相机 → E启用 → O选中立手；空格停控制，Esc关闭相机退出。
+```
+
+训练交付目录只在接收模型的本机存在；其他机器先按交接说明准备自己的模型及校准。
+
 ## 配置与帮助
 
 默认配置位于 [`handshake.toml`](handshake.toml)，可调整模型、设备、学习率、batch 和数据目录。本机设置写入 `handshake.local.toml`，无需修改共享配置；该文件不会提交到 Git。

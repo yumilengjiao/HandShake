@@ -1,0 +1,29 @@
+{
+  "date": "2026-11-03",
+  "scope": "Experimental application-local slide renderer, separate from non-executing Flutter shadow IPC. No OS input backend, no training, no real-camera test.",
+  "python_nontraining_regression": {"passed": 866, "deselected": 4, "warnings": 13},
+  "targeted_tests": {"passed": 59},
+  "positive_execution_test_evidence": "Programmatic contract simulations with untrained analytical MLP/TCN and in-memory provenance copies ONLY. No fake real-model packages are written; this is not camera recognition evidence.",
+  "verified_invariants": [
+    "explicit CLI opt-in; camera requires C; enable and neutral-owner request are separate",
+    "synthetic models rejected by live demo, existing shadow cannot dispatch",
+    "owner context reset requires fresh model window and release",
+    "single local page command per motion; release before another gesture",
+    "stale model input cannot be replaced by a UI heartbeat",
+    "stop bypasses blocked inference; late output does not change page",
+    "old rendered receipt cannot reenable a stopped context",
+    "PNG/JPEG ordering, pixel/byte/count limits and path containment",
+    "receipt-based model handoff does not overwrite local training pointers"
+  ],
+  "real_model_asset_verify_only": "TCN 1c3e0253b5a6f543df3f7472a4a48ab9f6ebe35aa240807beb787cd76a84e2da and calibration 966d00a4b32fd3479158246b9f92e99d4fb396f1b0377bdfed0c49d7b4eefd0d passed",
+  "ui_smoke": {
+    "platform": "local Linux niri/Wayland desktop, OpenCV Qt available backend",
+    "camera_opened": false,
+    "actions_enabled": false,
+    "render_and_exit": "passed; process exit 0",
+    "warning": "Qt reported missing wayland plugin; available display backend rendered successfully",
+    "image_review": "own framebuffer only; no screen capture or other applications"
+  },
+  "unverified": ["real camera recognition", "gesture event success/false activation rate", "live end-to-end latency", "long-running native capture cleanup", "other platforms"],
+  "release_boundary": "Experimental only. Existing 0.8 class-on, geometry, freshness and release requirements are unchanged. Poor minor-class recall may make actual gestures difficult to trigger."
+}

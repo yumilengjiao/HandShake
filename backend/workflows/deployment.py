@@ -1,6 +1,35 @@
 """Inspect handed-off inference assets without a training run, cache, camera or optimizer."""
 
-from backend.workflows.workspace import WorkflowError
+from backend.workflows.workspace import WorkflowError, read_json
+
+
+def handoff_assets(directory):
+    """Resolve an explicitly chosen local handoff, never alter local training pointers.
+
+    The user selects this directory as the trust source; embedded hashes provide
+    integrity, not independent authenticity. Verification still happens before use.
+    """
+    from pathlib import Path
+
+    root = Path(directory).expanduser().resolve()
+    if not root.is_dir():
+        raise WorkflowError("交接目录不存在。")
+
+    def inside(name):
+        if not isinstance(name, str) or not name or Path(name).is_absolute():
+            raise WorkflowError("交接回执必须使用目录内相对路径。")
+        path = (root / name).resolve()
+        if path == root or not path.is_relative_to(root):
+            raise WorkflowError("交接回执路径越出所选目录。")
+        return path
+
+    exported = read_json(root / "export.json")
+    if exported.get("format_version") != "model-export-receipt-v1":
+        raise WorkflowError("交接目录缺少有效的模型导出回执。")
+    calibration = read_json(root / "calibration-receipt.json")
+    return dict(package=inside(exported["directory"]), sha256=exported["manifest_sha256"],
+                calibration=inside(calibration["path"]),
+                calibration_sha256=calibration["sha256"])
 
 
 def verify_assets(package, sha256, *, calibration=None, calibration_sha256=None,
@@ -34,5 +63,5 @@ def verify_assets(package, sha256, *, calibration=None, calibration_sha256=None,
          f"synthetic={bundle.synthetic_training}")
     emit("类别：" + ", ".join(bundle.vocabulary.tokens))
     emit("校准：" + (value.rejection_status if value else "未提供（只显示原始分数）"))
-    emit("已验证包哈希、运行契约、归一化及golden前向；不代表真实识别精度。动作权限始终关闭。")
+    emit("已验证包哈希、运行契约、归一化及golden前向；不代表真实识别精度。本次校验不授予动作权限。")
     return bundle

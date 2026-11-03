@@ -1,7 +1,8 @@
 """Synthetic-only host for public-gesture application-local presentation testing.
 
-Not a camera/UI control entry point. No arbitrary backend injection, no external
-capabilities. Live grants remain unavailable while semantics/event policy are draft.
+Not a camera/UI control entry point. No arbitrary backend injection or external
+capabilities. This base constructor rejects real provenance; the separate opt-in
+local-demo subclass reuses only its bounded application-local dispatch machinery.
 """
 
 from collections import OrderedDict, deque
@@ -36,7 +37,7 @@ class SyntheticPublicPresentation:
         self._revoked, self._closed = Event(), Event()
         self._revoked.set()
         self._read_clock()
-        deck, deck_id = demo_deck()
+        deck, deck_id = self._deck()
         self.controller = ApplicationController(
             self._stream_id(),
             timebase=self._source_timebase(),
@@ -79,6 +80,9 @@ class SyntheticPublicPresentation:
                 target=self._watch, daemon=True, name="handshake-public-watchdog"
             )
             self._watchdog.start()
+
+    def _deck(self):
+        return demo_deck()
 
     def _validate_calibration_source(self, calibration, allow_synthetic):
         if (
@@ -131,7 +135,7 @@ class SyntheticPublicPresentation:
             and not self._revoked.is_set()
             and self._grant_owner is not None
             and context.owner_track_id == self._grant_owner
-            and context.timebase == "synthetic"
+            and context.timebase == self._source_timebase()
             and context.mode == "presentation"
             and context.target_context == self.backend.target
             and self.rendered == (context.context_epoch, self.backend.revision)
@@ -250,7 +254,7 @@ class SyntheticPublicPresentation:
                     source_event_id=event.event_id,
                     stream_id=event.stream_id,
                     context_epoch=event.context_epoch,
-                    timebase="synthetic",
+                    timebase=context.timebase,
                     action=Action(event.action),
                     issued_at_ns=event.commit_ns,
                     expires_at_ns=min(
@@ -264,7 +268,11 @@ class SyntheticPublicPresentation:
                 ticket = self.dispatcher.submit(command)
                 self.pending = ticket
                 self._render_since = self._last_clock
-                self.reason = "synthetic_public_command_submitted"
+                self.reason = (
+                    "synthetic_public_command_submitted"
+                    if context.timebase == "synthetic"
+                    else "application_local_demo_command_submitted"
+                )
                 return event, ticket
             except Exception:
                 self.stop("public_input_rejected")
