@@ -42,7 +42,14 @@ def safe_path(name):
 
 def allowed_member(name):
     safe_path(name)
-    if name in {"LICENSE", "OFFLINE_README.md", "environment/uv.lock"}:
+    if name in {
+        "LICENSE",
+        "OFFLINE_README.md",
+        "environment/uv.lock",
+        "calibration/validation.json",
+        "export.json",
+        "calibration-receipt.json",
+    }:
         return True
     if name.startswith("wheels/"):
         return len(PurePosixPath(name).parts) == 2 and name.endswith(".whl")
@@ -165,6 +172,57 @@ def model_files(directory, pin):
     ]
 
 
+def calibration_file(path, pin, *, model, model_sha256):
+    """Validate sidecar syntax/hash and exact validation metadata, never load weights.
+
+    model_files must have verified the model inventory first. This is not a golden
+    forward, a recomputation of scores or proof that the model is accurate.
+    """
+    from algorithm.evaluation.calibration import load_calibration
+    from algorithm.evaluation.scores import ScoreProvenance
+
+    if not isinstance(pin, str) or not HEX.fullmatch(pin):
+        raise ValueError("trusted calibration SHA256 required")
+    regular(Path(path), 1_048_576)
+    training = strict_json(
+        read_bounded(Path(model) / "training_manifest.json", 1_048_576)
+    )
+    data = training["identity"]["data"]
+    target = ScoreProvenance(
+        model_sha256=model_sha256,
+        dataset_sha256=data["dataset_sha256"],
+        split_sha256=data["split_sha256"],
+        stats_sha256=data["stats_sha256"],
+        config_sha256=data["config_sha256"],
+        cache_index_sha256=data["val_index_sha256"],
+        endpoint_sha256=data["val"]["endpoint_sha256"],
+        vocabulary_version=data["vocabulary_version"],
+        split="val",
+        data_synthetic=data["synthetic"],
+        model_synthetic=training["synthetic"],
+    )
+    return load_calibration(path, expected_sha256=pin, target=target)
+
+
+def deployment_receipts(model_sha256, calibration_sha256):
+    """Fixed relative convenience references, never copied from arbitrary source JSON."""
+    return {
+        "export.json": json_bytes(
+            {
+                "format_version": "model-export-receipt-v1",
+                "directory": "model",
+                "manifest_sha256": model_sha256,
+            }
+        ),
+        "calibration-receipt.json": json_bytes(
+            {
+                "path": "calibration/validation.json",
+                "sha256": calibration_sha256,
+            }
+        ),
+    }
+
+
 def native_files(directory):
     root = Path(directory)
     if root.is_symlink():
@@ -245,6 +303,10 @@ No training, installation, network access or executable launch occurs during bui
    Set HANDSHAKE_ROOT to an existing neutral working directory, not a private source path.
 7. Model assets are preview-only. Their byte integrity is checked, not forward correctness.
    Verify the actual model with handshake-model inspect and the externally recorded model SHA.
+8. If calibration/validation.json is included (kit v2), keep its separately recorded SHA256.
+   This sidecar is bound to this exact model and validation inventory. It is NOT the placeholder
+   model/calibration.json. Validate it with the real model loader before calibrated preview;
+   the kit inspector checks metadata/bytes only and never grants application authority.
 
 Keep each kit immutable. Roll back by selecting a previously verified kit/environment;
 do not mix wheel/model/native files between revisions. Delete a kit directory to remove
@@ -268,6 +330,8 @@ def build_kit(
     model=None,
     model_sha256=None,
     model_license=None,
+    calibration=None,
+    calibration_sha256=None,
 ):
     destination = Path(output)
     if destination.exists():
@@ -290,6 +354,8 @@ def build_kit(
         and (not model_license or len(model_license) > 256)
     ):
         raise ValueError("model requires a trusted hash and license review reference")
+    if bool(calibration) != bool(calibration_sha256) or (calibration and not model):
+        raise ValueError("calibration requires both path/SHA256 and its bound model")
     wheel = Path(core_wheel)
     core = wheel_metadata(wheel, core=True)
     files = [
@@ -318,6 +384,11 @@ def build_kit(
         files.extend(native_files(native))
     if model:
         files.extend(model_files(model, model_sha256))
+    if calibration:
+        calibration_file(
+            calibration, calibration_sha256, model=model, model_sha256=model_sha256
+        )
+        files.append((Path(calibration), "calibration/validation.json", False))
     if len(files) > MAX_FILES or len({name for _, name, _ in files}) != len(files):
         raise ValueError("duplicate/oversized kit inventory")
     total = 0
@@ -353,6 +424,13 @@ def build_kit(
         }
     if model:
         model_files(destination / "model", model_sha256)
+    if calibration:
+        calibration_file(
+            destination / "calibration/validation.json",
+            calibration_sha256,
+            model=destination / "model",
+            model_sha256=model_sha256,
+        )
     instructions = INSTRUCTIONS.encode()
     (destination / "OFFLINE_README.md").write_bytes(instructions)
     inventory["OFFLINE_README.md"] = {
@@ -360,8 +438,21 @@ def build_kit(
         "bytes": len(instructions),
         "executable": False,
     }
+    if calibration:
+        for name, data in deployment_receipts(model_sha256, calibration_sha256).items():
+            (destination / name).write_bytes(data)
+            inventory[name] = {
+                "sha256": digest(data),
+                "bytes": len(data),
+                "executable": False,
+            }
+    if (
+        len(inventory) > MAX_FILES
+        or sum(v["bytes"] for v in inventory.values()) > MAX_TOTAL
+    ):
+        raise ValueError("generated handoff inventory exceeds budget")
     manifest = {
-        "format_version": "offline-handoff-v1",
+        "format_version": "offline-handoff-v2" if calibration else "offline-handoff-v1",
         "status": "draft_integrity_only",
         "complete": True,
         "code_revision": code_revision,
@@ -378,6 +469,8 @@ def build_kit(
         "scope": "read_only_preview_and_synthetic_replay",
         "files": inventory,
     }
+    if calibration:
+        manifest["calibration_sha256"] = calibration_sha256
     raw = json_bytes(manifest)
     (destination / "manifest.json").write_bytes(raw)  # publish last
     return {
@@ -421,10 +514,13 @@ def inspect_kit(directory, *, expected_sha256):
         "scope",
         "files",
     }
+    version = value.get("format_version") if isinstance(value, dict) else None
+    if version == "offline-handoff-v2":
+        expected.add("calibration_sha256")
     if (
         not isinstance(value, dict)
         or set(value) != expected
-        or value["format_version"] != "offline-handoff-v1"
+        or version not in {"offline-handoff-v1", "offline-handoff-v2"}
         or value["complete"] is not True
         or value["status"] != "draft_integrity_only"
         or value["scope"] != "read_only_preview_and_synthetic_replay"
@@ -527,6 +623,31 @@ def inspect_kit(directory, *, expected_sha256):
         model_files(root / "model", value["model_sha256"])
     elif any(name.startswith("model/") for name in inventory):
         raise ValueError("unbound model in kit")
+    calibration_status = None
+    if version == "offline-handoff-v2":
+        if (
+            value["model_sha256"] is None
+            or "calibration/validation.json" not in inventory
+        ):
+            raise ValueError("calibrated kit requires its model and sidecar")
+        calibration_status = calibration_file(
+            root / "calibration/validation.json",
+            value["calibration_sha256"],
+            model=root / "model",
+            model_sha256=value["model_sha256"],
+        ).rejection_status
+        for name, data in deployment_receipts(
+            value["model_sha256"], value["calibration_sha256"]
+        ).items():
+            if name not in inventory or read_bounded(root / name, 4096) != data:
+                raise ValueError(
+                    "kit deployment receipt differs from bound model/calibration"
+                )
+    elif (
+        any(name.startswith("calibration/") for name in inventory)
+        or {"export.json", "calibration-receipt.json"} & inventory.keys()
+    ):
+        raise ValueError("unbound calibration/deployment receipt in v1 kit")
     target = value["target"]
     if set(target) != {"os", "machine", "python"}:
         raise ValueError("invalid target profile")
@@ -552,6 +673,7 @@ def inspect_kit(directory, *, expected_sha256):
         "dependency_resolution": "not_verified",
         "launch_verified": False,
         "actions_enabled": False,
+        "calibration_status": calibration_status,
         "next_step": "offline resolver in a fresh environment, then explicit smoke; no automatic install or launch",
     }
 
@@ -576,6 +698,8 @@ def main(argv=None):
         "model",
         "model-sha256",
         "model-license",
+        "calibration",
+        "calibration-sha256",
     ):
         build.add_argument("--" + name)
     check = commands.add_parser("inspect")

@@ -21,11 +21,24 @@ uv build --offline --out-dir /tmp/handshake-wheel
 - `--wheelhouse DIRECTORY`：目录只允许wheel文件；逐个检查ZIP路径、重复项、加密/符号链接、大小和METADATA。不会自行联网下载依赖。
 - `--native frontend/native/build/linux/x64/release/bundle`：只接受符合Linux Release布局的显式目录；必须有ELF主程序、libapp、Flutter库和ICU数据，其余仅接受已列出的运行时库、字体、着色器、图片和许可资产后缀。拒绝隐藏文件、会话HTML、原始CSV、密钥文件等，不扫描整个项目。
 - `--model MODEL_DIRECTORY --model-sha256 TRUSTED_SHA --model-license LICENSE_REVIEW`：只复制T16固定清单，校验带外SHA和每个文件。模型格式/数值一致性仍须在接收端通过真正的模型加载器验证；这里**只验证字节完整性，不运行模型**。
+- `--calibration SIDECAR --calibration-sha256 TRUSTED_SHA`：必须同时提供模型；生成`offline-handoff-v2`，将校准单独放在`calibration/validation.json`，校验其字段、哈希及与模型的验证集清单绑定。不覆盖模型包内的占位`model/calibration.json`，不运行模型前向。
+- v2还生成固定相对路径的`export.json`和`calibration-receipt.json`，方便明确选中交接目录后加载；inspect会校验这些便捷回执与manifest完全一致，重算哈希不能把它们改指其他资产。未提供校准仍生成兼容的v1；新的inspect同时支持v1/v2，但v1中不允许夹带未绑定的校准或便捷回执。
 - `--python-version 3.12`：指定接收端主/次版本。默认使用构建进程Python版本。
 
 所有输入都只读。文件先拷贝、检查修改时间/大小/哈希、设置明确执行位，最后发布 `manifest.json`。单文件512MiB、总计2GiB、10,000文件，目录扫描及wheel展开也有预算。输出已存在就拒绝；中断目录无有效清单，不得当作完整发布。
 
 ## 接收方预检
+
+校准v2使用示例（仍是暂存包，不是离线独立安装器）：
+
+```bash
+# 添加到上面的build命令；路径/HASH来自已经审查的具体交接资产
+--model MODEL_DIR --model-sha256 MODEL_SHA --model-license REVIEW_REFERENCE \
+--calibration VALIDATION_SIDECAR --calibration-sha256 CALIBRATION_SHA
+```
+
+必须先用带外manifest SHA检查整个kit，再由模型加载器验证运行契约和golden前向。依赖已经在目标环境显式安装后，可用`handshake-demo --run KIT --verify-only`验证v2的真实模型/校准；此命令不打开相机或窗口。之后的实验性本地演示仍要求独立的`--allow-local-demo`与窗口内的启用/owner操作，不属于完整性检查所授予的权限。
+
 
 ```bash
 .venv/bin/python scripts/build_handoff.py inspect \
@@ -43,6 +56,12 @@ uv build --offline --out-dir /tmp/handshake-wheel
 - 原生GTK、图形栈等系统依赖、动态库兼容性、相机权限、签名/分发许可都没有被哈希检查验证。
 
 交接包内 `OFFLINE_README.md` 给出安装前检查、无相机/无训练合成冒烟、清除遗留资产环境变量、显式启动、回退和删除范围。不会替用户安装或运行任何包内可执行文件。
+
+## 2026-11-03 校准交接补齐
+
+新增校准v2及便捷回执后，交接专项**43项通过**（包括旧v1）；校准测试使用不可推理的模型字节样例，只验证元数据/哈希绑定。独立进程检查确认inspect不导入torch/cv2/mediapipe，不自动安装或启动。
+
+真实TCN的校准已另行通过本机模型加载器验证；实际暂存包及其SHA将在构建完成后的本机交付记录中列出。未收齐依赖wheel，不宣称换机后可完全离线安装。
 
 ## 隐私与授权
 
