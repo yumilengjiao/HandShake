@@ -102,7 +102,7 @@ def main(argv=None):
     score.add_argument("--batch-size", type=int, default=256)
     score.add_argument("--threads", type=int, default=1)
     score.add_argument("--allow-synthetic", action="store_true")
-    for name in ("classify", "calibrate"):
+    for name in ("classify", "calibrate", "diagnose"):
         command = commands.add_parser(name)
         command.add_argument("--scores", required=True)
         command.add_argument(
@@ -111,9 +111,11 @@ def main(argv=None):
             help="trusted score manifest SHA256 from score receipt",
         )
         command.add_argument("--output", required=True)
-        if name == "classify":
+        if name in {"classify", "diagnose"}:
             command.add_argument("--calibration")
             command.add_argument("--calibration-sha256")
+            if name == "diagnose":
+                command.add_argument("--allow-synthetic", action="store_true")
         else:
             command.add_argument("--temperatures", type=float, nargs="+")
             command.add_argument("--thresholds", type=float, nargs="+")
@@ -160,7 +162,7 @@ def main(argv=None):
             result = _write_report(args.output, report)
         else:
             scores = load_scores(args.scores, expected_manifest_sha256=args.sha256)
-            if args.command == "classify":
+            if args.command in {"classify", "diagnose"}:
                 if bool(args.calibration) != bool(args.calibration_sha256):
                     raise ValueError(
                         "calibration requires both artifact path and trusted SHA256"
@@ -174,7 +176,15 @@ def main(argv=None):
                     if args.calibration
                     else None
                 )
-                report = classification_report(scores, calibration)
+                if args.command == "diagnose":
+                    from algorithm.evaluation.diagnostics import diagnose_validation
+
+                    report = diagnose_validation(
+                        scores, calibration, allow_synthetic=args.allow_synthetic
+                    )
+                    report["implementation_sha256"] = implementation_digest()
+                else:
+                    report = classification_report(scores, calibration)
                 report["calibration_sha256"] = args.calibration_sha256
                 result = _write_report(args.output, report)
             else:

@@ -2,6 +2,8 @@
 
 ## 当前已有内容
 
+- **2026-11-03交付**：[可编辑Word/黑白PDF课程报告](report/README.md) · [实验性本地手势演示](local_gesture_demo.md) · [真实TCN诊断与调参建议](validation_diagnostics.md)。真实相机成功率与最终测试仍未验收。
+
 - **默认训练数据已冻结**：[图片帧关键点审查版本与固定分组](ipn_hands_release.md)；真实全量准备/预检记录见[数据准备证据](verification/ipn_hands_preparation.json)。不下载视频，不把采集组冒充已核实主体。
 
 - **日常入口**：[训练机快速开始](quickstart.md) · [数据格式与目录](dataset_layout.md) · [工作流整理计划/验收](simple_workflows_plan.md)
@@ -72,7 +74,7 @@
 | `demo_guide.md` | 安装、离线资产、演示脚本、停止和备份 |
 | 报告/PPT | 实际完成内容、个人贡献、证据和边界 |
 
-其中范围、架构、协议已在本轮落盘；数据卡、实验、模型、报告仍待真实工作，不生成虚构结果。
+课程报告已根据交付TCN的真实验证结果生成，姓名与实际贡献仍待核对；最终测试、MLP对照及现场控制实验仍待完成，不生成虚构结果。
 
 ## 什么可以提交
 

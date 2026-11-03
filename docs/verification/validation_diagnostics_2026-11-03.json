@@ -1,0 +1,1036 @@
+{
+  "actions_enabled": false,
+  "calibrated_rejection": {
+    "abstained_labeled": 26833,
+    "accepted_accuracy": 0.9022524495046254,
+    "accepted_errors": 7143,
+    "accuracy_all_labeled": 0.6599305367884775,
+    "balanced_accuracy": 0.2896546544183501,
+    "coverage": 0.7314255972935371,
+    "labeled_endpoints": 99909,
+    "macro_f1": 0.3708661786979386,
+    "per_class": [
+      {
+        "abstained": 8716,
+        "f1": 0.7114233014124365,
+        "precision": 0.9150471238219045,
+        "recall": 0.58192791005291,
+        "support": 24192,
+        "token": "NOG"
+      },
+      {
+        "abstained": 5434,
+        "f1": 0.8594576307401934,
+        "precision": 0.9592972414341363,
+        "recall": 0.778440796051995,
+        "support": 31003,
+        "token": "P1F"
+      },
+      {
+        "abstained": 4084,
+        "f1": 0.8552669626303346,
+        "precision": 0.8770626199197628,
+        "recall": 0.8345283144127996,
+        "support": 30126,
+        "token": "P2F"
+      },
+      {
+        "abstained": 632,
+        "f1": 0.006369426751592357,
+        "precision": 1.0,
+        "recall": 0.003194888178913738,
+        "support": 939,
+        "token": "C1F"
+      },
+      {
+        "abstained": 545,
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 968,
+        "token": "C2F"
+      },
+      {
+        "abstained": 573,
+        "f1": 0.33095803642121935,
+        "precision": 0.6852459016393443,
+        "recall": 0.21816283924843424,
+        "support": 958,
+        "token": "TUP"
+      },
+      {
+        "abstained": 503,
+        "f1": 0.3556895252449133,
+        "precision": 0.4354243542435424,
+        "recall": 0.3006369426751592,
+        "support": 785,
+        "token": "TDN"
+      },
+      {
+        "abstained": 390,
+        "f1": 0.3544554455445545,
+        "precision": 0.8443396226415094,
+        "recall": 0.22431077694235588,
+        "support": 798,
+        "token": "TLT"
+      },
+      {
+        "abstained": 431,
+        "f1": 0.463035019455253,
+        "precision": 0.8717948717948718,
+        "recall": 0.3152317880794702,
+        "support": 755,
+        "token": "TRT"
+      },
+      {
+        "abstained": 1113,
+        "f1": 0.44794952681388017,
+        "precision": 0.6670146137787056,
+        "recall": 0.33720316622691293,
+        "support": 1895,
+        "token": "OP2"
+      },
+      {
+        "abstained": 1205,
+        "f1": 0.09679116254602842,
+        "precision": 0.6764705882352942,
+        "recall": 0.05212464589235127,
+        "support": 1765,
+        "token": "2C1"
+      },
+      {
+        "abstained": 929,
+        "f1": 0.1670667306769083,
+        "precision": 0.5631067961165048,
+        "recall": 0.09808342728297632,
+        "support": 1774,
+        "token": "2C2"
+      },
+      {
+        "abstained": 714,
+        "f1": 0.4209994952044422,
+        "precision": 0.6881188118811881,
+        "recall": 0.30327272727272725,
+        "support": 1375,
+        "token": "ZIN"
+      },
+      {
+        "abstained": 703,
+        "f1": 0.20367534456355285,
+        "precision": 0.7964071856287425,
+        "recall": 0.11676909569798069,
+        "support": 1139,
+        "token": "ZOT"
+      },
+      {
+        "abstained": 861,
+        "f1": 0.2898550724637681,
+        "precision": 0.7282913165266106,
+        "recall": 0.18093249826026445,
+        "support": 1437,
+        "token": "GRB"
+      }
+    ],
+    "temperature": 1.5,
+    "threshold": 0.6,
+    "unavailable_labeled": 0
+  },
+  "calibration_sha256": "966d00a4b32fd3479158246b9f92e99d4fb396f1b0377bdfed0c49d7b4eefd0d",
+  "format_version": "validation-diagnosis-v1",
+  "implementation_sha256": "7e954141195dec76383d212c3bf4ff93e6f25162c4857608bb998af8c3d4d466",
+  "largest_three_classes": {
+    "support_fraction": 0.853987128286741,
+    "tokens": [
+      "P1F",
+      "P2F",
+      "NOG"
+    ]
+  },
+  "limitations": [
+    "No parameters or weights changed; no training or search was run.",
+    "Temperature scaling does not improve the underlying argmax classifier.",
+    "Accepted accuracy excludes rejected samples; compare coverage and all-labeled recall alongside it.",
+    "Readiness subsets have different class composition; this is not proof of a causal effect.",
+    "Policy confidence alone omits owner, warmup, release, motion geometry, timing and cooldown.",
+    "Overlapping window endpoints are not statistically independent trials.",
+    "Class weights or resampling probabilities must be computed from TRAINING labels, never these validation supports."
+  ],
+  "per_class_confusions": [
+    {
+      "support": 24192,
+      "top_errors": [
+        {
+          "count": 1419,
+          "fraction_of_true": 0.05865575396825397,
+          "predicted": "P2F"
+        },
+        {
+          "count": 1371,
+          "fraction_of_true": 0.056671626984126984,
+          "predicted": "OP2"
+        },
+        {
+          "count": 825,
+          "fraction_of_true": 0.034102182539682536,
+          "predicted": "P1F"
+        }
+      ],
+      "true": "NOG"
+    },
+    {
+      "support": 31003,
+      "top_errors": [
+        {
+          "count": 1972,
+          "fraction_of_true": 0.06360674773409025,
+          "predicted": "P2F"
+        },
+        {
+          "count": 687,
+          "fraction_of_true": 0.022159145889107505,
+          "predicted": "NOG"
+        },
+        {
+          "count": 254,
+          "fraction_of_true": 0.008192755539786472,
+          "predicted": "2C1"
+        }
+      ],
+      "true": "P1F"
+    },
+    {
+      "support": 30126,
+      "top_errors": [
+        {
+          "count": 1209,
+          "fraction_of_true": 0.040131447918741285,
+          "predicted": "NOG"
+        },
+        {
+          "count": 1177,
+          "fraction_of_true": 0.03906924251477129,
+          "predicted": "P1F"
+        },
+        {
+          "count": 312,
+          "fraction_of_true": 0.010356502688707428,
+          "predicted": "TDN"
+        }
+      ],
+      "true": "P2F"
+    },
+    {
+      "support": 939,
+      "top_errors": [
+        {
+          "count": 437,
+          "fraction_of_true": 0.4653887113951012,
+          "predicted": "P1F"
+        },
+        {
+          "count": 286,
+          "fraction_of_true": 0.3045793397231097,
+          "predicted": "2C1"
+        },
+        {
+          "count": 68,
+          "fraction_of_true": 0.0724174653887114,
+          "predicted": "P2F"
+        }
+      ],
+      "true": "C1F"
+    },
+    {
+      "support": 968,
+      "top_errors": [
+        {
+          "count": 515,
+          "fraction_of_true": 0.5320247933884298,
+          "predicted": "P2F"
+        },
+        {
+          "count": 343,
+          "fraction_of_true": 0.3543388429752066,
+          "predicted": "2C2"
+        },
+        {
+          "count": 46,
+          "fraction_of_true": 0.047520661157024795,
+          "predicted": "NOG"
+        }
+      ],
+      "true": "C2F"
+    },
+    {
+      "support": 958,
+      "top_errors": [
+        {
+          "count": 231,
+          "fraction_of_true": 0.24112734864300625,
+          "predicted": "NOG"
+        },
+        {
+          "count": 107,
+          "fraction_of_true": 0.11169102296450939,
+          "predicted": "OP2"
+        },
+        {
+          "count": 95,
+          "fraction_of_true": 0.09916492693110647,
+          "predicted": "P2F"
+        }
+      ],
+      "true": "TUP"
+    },
+    {
+      "support": 785,
+      "top_errors": [
+        {
+          "count": 209,
+          "fraction_of_true": 0.2662420382165605,
+          "predicted": "NOG"
+        },
+        {
+          "count": 60,
+          "fraction_of_true": 0.07643312101910828,
+          "predicted": "P2F"
+        },
+        {
+          "count": 47,
+          "fraction_of_true": 0.05987261146496815,
+          "predicted": "OP2"
+        }
+      ],
+      "true": "TDN"
+    },
+    {
+      "support": 798,
+      "top_errors": [
+        {
+          "count": 215,
+          "fraction_of_true": 0.2694235588972431,
+          "predicted": "P2F"
+        },
+        {
+          "count": 209,
+          "fraction_of_true": 0.2619047619047619,
+          "predicted": "NOG"
+        },
+        {
+          "count": 23,
+          "fraction_of_true": 0.02882205513784461,
+          "predicted": "P1F"
+        }
+      ],
+      "true": "TLT"
+    },
+    {
+      "support": 755,
+      "top_errors": [
+        {
+          "count": 162,
+          "fraction_of_true": 0.21456953642384105,
+          "predicted": "NOG"
+        },
+        {
+          "count": 82,
+          "fraction_of_true": 0.10860927152317881,
+          "predicted": "TUP"
+        },
+        {
+          "count": 60,
+          "fraction_of_true": 0.07947019867549669,
+          "predicted": "OP2"
+        }
+      ],
+      "true": "TRT"
+    },
+    {
+      "support": 1895,
+      "top_errors": [
+        {
+          "count": 222,
+          "fraction_of_true": 0.11715039577836411,
+          "predicted": "NOG"
+        },
+        {
+          "count": 211,
+          "fraction_of_true": 0.11134564643799472,
+          "predicted": "P2F"
+        },
+        {
+          "count": 87,
+          "fraction_of_true": 0.04591029023746702,
+          "predicted": "GRB"
+        }
+      ],
+      "true": "OP2"
+    },
+    {
+      "support": 1765,
+      "top_errors": [
+        {
+          "count": 767,
+          "fraction_of_true": 0.4345609065155807,
+          "predicted": "P1F"
+        },
+        {
+          "count": 160,
+          "fraction_of_true": 0.0906515580736544,
+          "predicted": "NOG"
+        },
+        {
+          "count": 116,
+          "fraction_of_true": 0.06572237960339944,
+          "predicted": "P2F"
+        }
+      ],
+      "true": "2C1"
+    },
+    {
+      "support": 1774,
+      "top_errors": [
+        {
+          "count": 1071,
+          "fraction_of_true": 0.6037204058624577,
+          "predicted": "P2F"
+        },
+        {
+          "count": 45,
+          "fraction_of_true": 0.02536640360766629,
+          "predicted": "NOG"
+        },
+        {
+          "count": 31,
+          "fraction_of_true": 0.017474633596392335,
+          "predicted": "C2F"
+        }
+      ],
+      "true": "2C2"
+    },
+    {
+      "support": 1375,
+      "top_errors": [
+        {
+          "count": 349,
+          "fraction_of_true": 0.25381818181818183,
+          "predicted": "NOG"
+        },
+        {
+          "count": 207,
+          "fraction_of_true": 0.15054545454545454,
+          "predicted": "P2F"
+        },
+        {
+          "count": 60,
+          "fraction_of_true": 0.04363636363636364,
+          "predicted": "ZOT"
+        }
+      ],
+      "true": "ZIN"
+    },
+    {
+      "support": 1139,
+      "top_errors": [
+        {
+          "count": 272,
+          "fraction_of_true": 0.23880597014925373,
+          "predicted": "P2F"
+        },
+        {
+          "count": 263,
+          "fraction_of_true": 0.2309043020193152,
+          "predicted": "NOG"
+        },
+        {
+          "count": 185,
+          "fraction_of_true": 0.16242317822651448,
+          "predicted": "ZIN"
+        }
+      ],
+      "true": "ZOT"
+    },
+    {
+      "support": 1437,
+      "top_errors": [
+        {
+          "count": 467,
+          "fraction_of_true": 0.32498260264439804,
+          "predicted": "OP2"
+        },
+        {
+          "count": 297,
+          "fraction_of_true": 0.20668058455114824,
+          "predicted": "NOG"
+        },
+        {
+          "count": 59,
+          "fraction_of_true": 0.04105775922059847,
+          "predicted": "TDN"
+        }
+      ],
+      "true": "GRB"
+    }
+  ],
+  "policy_confidence_only": {
+    "abstained_labeled": 42243,
+    "accepted_accuracy": 0.9493635764575313,
+    "accepted_errors": 2920,
+    "accuracy_all_labeled": 0.5479586423645517,
+    "balanced_accuracy": 0.17303587723371747,
+    "coverage": 0.577185238567096,
+    "labeled_endpoints": 99909,
+    "macro_f1": 0.23434645546755276,
+    "per_class": [
+      {
+        "abstained": 13069,
+        "f1": 0.6003852254702017,
+        "precision": 0.9537437005039597,
+        "recall": 0.4380787037037037,
+        "support": 24192,
+        "token": "NOG"
+      },
+      {
+        "abstained": 9634,
+        "f1": 0.7931398720927999,
+        "precision": 0.9802050697806892,
+        "recall": 0.6660323194529562,
+        "support": 31003,
+        "token": "P1F"
+      },
+      {
+        "abstained": 7050,
+        "f1": 0.8318029361631936,
+        "precision": 0.9286678944137507,
+        "recall": 0.7532364070902211,
+        "support": 30126,
+        "token": "P2F"
+      },
+      {
+        "abstained": 825,
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 939,
+        "token": "C1F"
+      },
+      {
+        "abstained": 848,
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 968,
+        "token": "C2F"
+      },
+      {
+        "abstained": 781,
+        "f1": 0.20257826887661143,
+        "precision": 0.859375,
+        "recall": 0.11482254697286012,
+        "support": 958,
+        "token": "TUP"
+      },
+      {
+        "abstained": 654,
+        "f1": 0.23410696266397577,
+        "precision": 0.5631067961165048,
+        "recall": 0.14777070063694267,
+        "support": 785,
+        "token": "TDN"
+      },
+      {
+        "abstained": 620,
+        "f1": 0.1672394043528064,
+        "precision": 0.9733333333333334,
+        "recall": 0.09147869674185463,
+        "support": 798,
+        "token": "TLT"
+      },
+      {
+        "abstained": 628,
+        "f1": 0.2101534828807556,
+        "precision": 0.967391304347826,
+        "recall": 0.11788079470198676,
+        "support": 755,
+        "token": "TRT"
+      },
+      {
+        "abstained": 1630,
+        "f1": 0.17814508723599634,
+        "precision": 0.6855123674911661,
+        "recall": 0.10237467018469656,
+        "support": 1895,
+        "token": "OP2"
+      },
+      {
+        "abstained": 1559,
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 1765,
+        "token": "2C1"
+      },
+      {
+        "abstained": 1556,
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 1774,
+        "token": "2C2"
+      },
+      {
+        "abstained": 1139,
+        "f1": 0.1938382541720154,
+        "precision": 0.825136612021858,
+        "recall": 0.10981818181818181,
+        "support": 1375,
+        "token": "ZIN"
+      },
+      {
+        "abstained": 996,
+        "f1": 0.024284475281873375,
+        "precision": 1.0,
+        "recall": 0.012291483757682178,
+        "support": 1139,
+        "token": "ZOT"
+      },
+      {
+        "abstained": 1254,
+        "f1": 0.07952286282306163,
+        "precision": 0.8333333333333334,
+        "recall": 0.04175365344467641,
+        "support": 1437,
+        "token": "GRB"
+      }
+    ],
+    "scope": "confidence filter only, NOT full gesture-policy events",
+    "temperature": 1.5,
+    "threshold": 0.8,
+    "unavailable_labeled": 0
+  },
+  "primary": {
+    "abstained_labeled": 0,
+    "accepted_accuracy": 0.788537569187961,
+    "accepted_errors": 21127,
+    "accuracy_all_labeled": 0.788537569187961,
+    "balanced_accuracy": 0.4555063959964309,
+    "coverage": 1.0,
+    "labeled_endpoints": 99909,
+    "macro_f1": 0.4652229245911513,
+    "per_class": [
+      {
+        "abstained": 0,
+        "f1": 0.7959556480734101,
+        "precision": 0.8186664336275452,
+        "recall": 0.7744708994708994,
+        "support": 24192,
+        "token": "NOG"
+      },
+      {
+        "abstained": 0,
+        "f1": 0.892139175257732,
+        "precision": 0.8910770022846478,
+        "recall": 0.8932038834951457,
+        "support": 31003,
+        "token": "P1F"
+      },
+      {
+        "abstained": 0,
+        "f1": 0.8495625532990114,
+        "precision": 0.8102783467887698,
+        "recall": 0.892850029874527,
+        "support": 30126,
+        "token": "P2F"
+      },
+      {
+        "abstained": 0,
+        "f1": 0.06990622335890878,
+        "precision": 0.1752136752136752,
+        "recall": 0.043663471778487756,
+        "support": 939,
+        "token": "C1F"
+      },
+      {
+        "abstained": 0,
+        "f1": 0.05945945945945946,
+        "precision": 0.2323943661971831,
+        "recall": 0.03409090909090909,
+        "support": 968,
+        "token": "C2F"
+      },
+      {
+        "abstained": 0,
+        "f1": 0.4039301310043668,
+        "precision": 0.4233409610983982,
+        "recall": 0.3862212943632568,
+        "support": 958,
+        "token": "TUP"
+      },
+      {
+        "abstained": 0,
+        "f1": 0.3901415836392239,
+        "precision": 0.3315508021390374,
+        "recall": 0.47388535031847134,
+        "support": 785,
+        "token": "TDN"
+      },
+      {
+        "abstained": 0,
+        "f1": 0.4387838948233361,
+        "precision": 0.6372315035799523,
+        "recall": 0.33458646616541354,
+        "support": 798,
+        "token": "TLT"
+      },
+      {
+        "abstained": 0,
+        "f1": 0.5278195488721805,
+        "precision": 0.6104347826086957,
+        "recall": 0.4649006622516556,
+        "support": 755,
+        "token": "TRT"
+      },
+      {
+        "abstained": 0,
+        "f1": 0.4521939068787124,
+        "precision": 0.35499398315282793,
+        "recall": 0.6226912928759895,
+        "support": 1895,
+        "token": "OP2"
+      },
+      {
+        "abstained": 0,
+        "f1": 0.4159351789331533,
+        "precision": 0.5146198830409356,
+        "recall": 0.3490084985835694,
+        "support": 1765,
+        "token": "2C1"
+      },
+      {
+        "abstained": 0,
+        "f1": 0.3729032258064517,
+        "precision": 0.4358974358974359,
+        "recall": 0.3258173618940248,
+        "support": 1774,
+        "token": "2C2"
+      },
+      {
+        "abstained": 0,
+        "f1": 0.4598630989421282,
+        "precision": 0.40184883088635126,
+        "recall": 0.5374545454545454,
+        "support": 1375,
+        "token": "ZIN"
+      },
+      {
+        "abstained": 0,
+        "f1": 0.4221967963386728,
+        "precision": 0.6059113300492611,
+        "recall": 0.32396839332748023,
+        "support": 1139,
+        "token": "ZOT"
+      },
+      {
+        "abstained": 0,
+        "f1": 0.4275534441805226,
+        "precision": 0.49586776859504134,
+        "recall": 0.3757828810020877,
+        "support": 1437,
+        "token": "GRB"
+      }
+    ],
+    "temperature": 1.0,
+    "threshold": 0.0,
+    "unavailable_labeled": 0
+  },
+  "readiness_diagnostics": {
+    "not_ready": {
+      "abstained_labeled": 0,
+      "accepted_accuracy": 0.7253562305727388,
+      "accepted_errors": 8924,
+      "accuracy_all_labeled": 0.7253562305727388,
+      "balanced_accuracy": 0.42270307889863684,
+      "coverage": 1.0,
+      "labeled_endpoints": 32493,
+      "macro_f1": 0.42971695573447855,
+      "per_class": [
+        {
+          "abstained": 0,
+          "f1": 0.725731691166733,
+          "precision": 0.7116883116883117,
+          "recall": 0.740340448527425,
+          "support": 7402,
+          "token": "NOG"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.8079682154287606,
+          "precision": 0.7744631333968053,
+          "recall": 0.8445034029299804,
+          "support": 8669,
+          "token": "P1F"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.8016646006729237,
+          "precision": 0.8236899563318777,
+          "recall": 0.7807864780958952,
+          "support": 11596,
+          "token": "P2F"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.11255411255411256,
+          "precision": 0.16149068322981366,
+          "recall": 0.08637873754152824,
+          "support": 301,
+          "token": "C1F"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.07957559681697612,
+          "precision": 0.23809523809523808,
+          "recall": 0.04777070063694268,
+          "support": 314,
+          "token": "C2F"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.34405940594059403,
+          "precision": 0.40173410404624277,
+          "recall": 0.3008658008658009,
+          "support": 462,
+          "token": "TUP"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.3437990580847724,
+          "precision": 0.26322115384615385,
+          "recall": 0.49547511312217196,
+          "support": 442,
+          "token": "TDN"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.3443223443223443,
+          "precision": 0.5562130177514792,
+          "recall": 0.2493368700265252,
+          "support": 377,
+          "token": "TLT"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.4777777777777778,
+          "precision": 0.6013986013986014,
+          "recall": 0.39631336405529954,
+          "support": 217,
+          "token": "TRT"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.4537205081669692,
+          "precision": 0.41118421052631576,
+          "recall": 0.5060728744939271,
+          "support": 494,
+          "token": "OP2"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.4272211720226842,
+          "precision": 0.47478991596638653,
+          "recall": 0.38831615120274915,
+          "support": 582,
+          "token": "2C1"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.2607683352735739,
+          "precision": 0.27053140096618356,
+          "recall": 0.251685393258427,
+          "support": 445,
+          "token": "2C2"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.4649532710280374,
+          "precision": 0.40447154471544716,
+          "recall": 0.5467032967032966,
+          "support": 364,
+          "token": "ZIN"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.26865671641791045,
+          "precision": 0.5844155844155844,
+          "recall": 0.1744186046511628,
+          "support": 258,
+          "token": "ZOT"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.5329815303430079,
+          "precision": 0.5343915343915344,
+          "recall": 0.531578947368421,
+          "support": 570,
+          "token": "GRB"
+        }
+      ],
+      "temperature": 1.0,
+      "threshold": 0.0,
+      "unavailable_labeled": 0
+    },
+    "ready": {
+      "abstained_labeled": 0,
+      "accepted_accuracy": 0.8189895573751038,
+      "accepted_errors": 12203,
+      "accuracy_all_labeled": 0.8189895573751038,
+      "balanced_accuracy": 0.47001902042784055,
+      "coverage": 1.0,
+      "labeled_endpoints": 67416,
+      "macro_f1": 0.4836811602642231,
+      "per_class": [
+        {
+          "abstained": 0,
+          "f1": 0.8291218413810357,
+          "precision": 0.8729092585275912,
+          "recall": 0.7895175699821322,
+          "support": 16790,
+          "token": "NOG"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.9268392556531234,
+          "precision": 0.942055123936367,
+          "recall": 0.9121071012805588,
+          "support": 22334,
+          "token": "P1F"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.8761231403741346,
+          "precision": 0.8036389839668528,
+          "recall": 0.9629789530491095,
+          "support": 18530,
+          "token": "P2F"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.042194092827004225,
+          "precision": 0.2054794520547945,
+          "recall": 0.023510971786833857,
+          "support": 638,
+          "token": "C1F"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.04911323328785812,
+          "precision": 0.22784810126582278,
+          "recall": 0.027522935779816515,
+          "support": 654,
+          "token": "C2F"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.451171875,
+          "precision": 0.4375,
+          "recall": 0.4657258064516129,
+          "support": 496,
+          "token": "TUP"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.48341232227488157,
+          "precision": 0.5275862068965518,
+          "recall": 0.446064139941691,
+          "support": 343,
+          "token": "TDN"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.5156482861400894,
+          "precision": 0.692,
+          "recall": 0.41092636579572445,
+          "support": 421,
+          "token": "TLT"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.5463917525773196,
+          "precision": 0.6134259259259259,
+          "recall": 0.49256505576208176,
+          "support": 538,
+          "token": "TRT"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.4517852805440855,
+          "precision": 0.34241531664212077,
+          "recall": 0.6638115631691649,
+          "support": 1401,
+          "token": "OP2"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.40966386554621853,
+          "precision": 0.5409153952843273,
+          "recall": 0.32967032967032966,
+          "support": 1183,
+          "token": "2C1"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.41588576528335564,
+          "precision": 0.5109649122807017,
+          "recall": 0.3506395786305493,
+          "support": 1329,
+          "token": "2C2"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.4580152671755725,
+          "precision": 0.40089086859688194,
+          "recall": 0.5341246290801187,
+          "support": 1011,
+          "token": "ZIN"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.4585987261146497,
+          "precision": 0.6090225563909775,
+          "recall": 0.3677639046538025,
+          "support": 881,
+          "token": "ZOT"
+        },
+        {
+          "abstained": 0,
+          "f1": 0.3412526997840173,
+          "precision": 0.4540229885057471,
+          "recall": 0.27335640138408307,
+          "support": 867,
+          "token": "GRB"
+        }
+      ],
+      "temperature": 1.0,
+      "threshold": 0.0,
+      "unavailable_labeled": 0
+    },
+    "scope": "different subsets; MUST NOT replace the primary all-labeled results"
+  },
+  "scope": "fixed validation cache endpoints; not action events, independent clips or test performance",
+  "score_manifest_sha256": "61cccac32e0b1049f39a9f748901d7ed7fe64662e105068cecd250c36cb23698",
+  "source": {
+    "cache_index_sha256": "d3e3ae80a9af191d9e365da68324e8c0b145a35f2b69f623a8588eb089f9fe85",
+    "config_sha256": "c402769a53a6b6b728c9de2f192622b14212db383b33dc22a4835abdd6db0d81",
+    "data_synthetic": false,
+    "dataset_sha256": "9c440be3d48529c2eee3d17242684ea5694a2c56a747f8baa05fcc09acb41e53",
+    "endpoint_sha256": "159872fc56ef3e5ee807066284ef5267a384267159bffddd45873a2198fa016f",
+    "model_sha256": "1c3e0253b5a6f543df3f7472a4a48ab9f6ebe35aa240807beb787cd76a84e2da",
+    "model_synthetic": false,
+    "scoring_policy": "all_cache_endpoints",
+    "split": "val",
+    "split_sha256": "20425aa8e2662f464ca5fc2b3df8b57a23c37033fc93b006b8ddf6f18dd462e4",
+    "stats_sha256": "6cd93cca7726adbd684bbbbee9795c64999a3a7eab2bccd899b2937b3ce38217",
+    "vocabulary_version": "ipn-hands-v1"
+  },
+  "synthetic": false
+}
