@@ -32,7 +32,7 @@ def ws(tmp_path, monkeypatch):
             None,
             {
                 "synthetic": False,
-                "train": {"supervised": 30, "class_counts": [2] * 15},
+                "train": {"endpoints": 40, "supervised": 30, "class_counts": [2] * 15},
                 "val": {"supervised": 15},
             },
         ),
@@ -120,4 +120,111 @@ def test_dry_run_with_overrides_never_enters_dependency_or_training_execution(
     )
     assert any("lr=0.0003" in m for m in messages)
     assert any("未导入训练器" in m for m in messages)
+    assert not ws.runs.exists()
+
+
+def test_balancing_and_scheduler_are_explicit_run_local_overrides(ws):
+    before = ws.settings.model_dump()
+    value = config(
+        ws,
+        [
+            "--class-weighting",
+            "sqrt_inverse",
+            "--scheduler",
+            "plateau",
+            "--lr-patience",
+            "0",
+            "--lr-factor",
+            ".25",
+            "--min-learning-rate",
+            ".00001",
+        ],
+    )
+    assert value.class_weighting == "sqrt_inverse" and value.scheduler == "plateau"
+    assert (value.lr_patience, value.lr_factor, value.min_learning_rate) == (
+        0,
+        0.25,
+        0.00001,
+    )
+    assert ws.settings.model_dump() == before and not ws.runs.exists()
+
+
+def test_balancing_and_scheduler_can_come_from_workspace(ws):
+    updated = ws.settings.model_copy(
+        update={
+            "train": ws.settings.train.model_copy(
+                update={
+                    "class_weighting": "sqrt_inverse",
+                    "scheduler": "plateau",
+                    "lr_patience": 3,
+                }
+            )
+        }
+    )
+    value = config(Workspace(ws.root, updated), [])
+    assert (
+        value.class_weighting == "sqrt_inverse"
+        and value.scheduler == "plateau"
+        and value.lr_patience == 3
+    )
+
+
+@pytest.mark.parametrize(
+    "flags",
+    [
+        ["--scheduler", "plateau", "--lr-patience", "-1"],
+        ["--scheduler", "plateau", "--lr-factor", "nan"],
+        ["--scheduler", "plateau", "--min-learning-rate", ".1"],
+        ["--scheduler", "plateau", "--patience", "3"],
+    ],
+)
+def test_invalid_scheduler_fails_before_training(ws, flags):
+    with pytest.raises(ValueError):
+        config(ws, flags)
+    assert not ws.runs.exists()
+
+
+@pytest.mark.parametrize(
+    "flags", [["--class-weighting", "sqrt_inverse"], ["--scheduler", "plateau"], ["--sampling", "supervised_uniform"]]
+)
+def test_resume_rejects_objective_and_scheduler_overrides(flags):
+    with pytest.raises(SystemExit):
+        parser().parse_args(["resume", *flags])
+
+
+def test_weighting_dry_run_reports_counts_without_creating_run(ws, monkeypatch):
+    monkeypatch.setattr(
+        training, "ensure_training", lambda *a, **k: pytest.fail("must not execute")
+    )
+    args = parser().parse_args(
+        [
+            "train",
+            "--class-weighting",
+            "sqrt_inverse",
+            "--scheduler",
+            "plateau",
+            "--dry-run",
+        ]
+    )
+    messages = []
+    assert training.run_train(ws, args, [], emit=messages.append) == 0
+    assert any("固定类别权重" in message for message in messages)
+    assert any("不加权评估" in message for message in messages)
+    assert not ws.runs.exists()
+
+
+def test_sampling_override_and_local_setting_are_explicit_and_run_local(ws, monkeypatch):
+    original = ws.settings.model_dump()
+    assert config(ws, []).sampling == "uniform"
+    assert config(ws, ["--sampling", "supervised_uniform"]).sampling == "supervised_uniform"
+    local = ws.settings.model_copy(update={"train": ws.settings.train.model_copy(update={"sampling": "supervised_uniform"})})
+    assert config(Workspace(ws.root, local), []).sampling == "supervised_uniform"
+    assert config(Workspace(ws.root, local), ["--sampling", "uniform"]).sampling == "uniform"
+    monkeypatch.setattr(training, "ensure_training", lambda *a, **k: pytest.fail("must not execute"))
+    args = parser().parse_args(["train", "--sampling", "supervised_uniform", "--batch-size", "8", "--dry-run"])
+    messages = []
+    assert training.run_train(ws, args, [], emit=messages.append) == 0
+    assert any("每轮30个端点、4个batch" in m for m in messages)
+    assert any("跳过10个无标签" in m and "保留窗口内历史帧" in m for m in messages)
+    assert ws.settings.model_dump() == original
     assert not ws.runs.exists()

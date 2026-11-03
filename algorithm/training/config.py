@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Annotated, Literal
 
-from pydantic import Field
+from pydantic import Field, model_validator
 import yaml
 
 from shared.config import ConfigModel, UniqueKeyLoader
@@ -26,10 +26,25 @@ class TrainConfig(ConfigModel):
     seed: Annotated[int, Field(strict=True, ge=0, le=2**32 - 1)] = 42
     device: Annotated[str, Field(pattern=r"^(auto|cpu|cuda(:[0-9]+)?|mps)$")] = "cpu"
     threads: Count = 1
-    sampling: Literal["uniform"] = "uniform"
-    scheduler: Literal["constant"] = "constant"
+    sampling: Literal["uniform", "supervised_uniform"] = "uniform"
+    class_weighting: Literal["none", "sqrt_inverse"] = "none"
+    scheduler: Literal["constant", "plateau"] = "constant"
+    lr_patience: Annotated[int, Field(strict=True, ge=0)] = 2
+    lr_factor: Annotated[float, Field(gt=0, lt=1, allow_inf_nan=False)] = 0.5
+    min_learning_rate: Positive = 0.000001
     checkpoint_metric: Literal["val_macro_f1"] = "val_macro_f1"
     shuffle_labels_diagnostic: bool = False
+
+    @model_validator(mode="after")
+    def scheduler_budget(self):
+        if self.scheduler == "plateau":
+            if self.min_learning_rate > self.learning_rate:
+                raise ValueError("min_learning_rate must not exceed learning_rate")
+            if self.lr_patience + 1 >= self.patience:
+                raise ValueError(
+                    "patience must allow an epoch after the first LR reduction"
+                )
+        return self
 
 
 def load_train_config(path=None):

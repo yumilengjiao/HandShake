@@ -54,6 +54,8 @@ uv run export             # 导出最近模型
 
 训练结果自动保存到 `artifacts/runs/` 的独立目录，包括最佳权重、最近 checkpoint 和指标，无需手动指定输出路径。
 
+可选改进：`--class-weighting sqrt_inverse`、`--scheduler plateau`、`--sampling supervised_uniform`；默认仍保留原基线。类别不平衡诊断、独立对照命令及验证边界见[训练改进说明](docs/training_improvements.md)，目前没有改进版的真实重训成绩。
+
 ### 界面与检查
 
 ```bash
@@ -89,7 +91,7 @@ uv run hs            # 查看全部命令
 uv run train --help  # 查看单条命令帮助
 ```
 
-详细操作与训练机交接见[快速开始](docs/quickstart.md)。
+详细操作与训练机交接见[快速开始](docs/quickstart.md)；所有日常命令、高级工具和 `scripts/*.py` 的用途与参数见[命令参考](docs/cli_reference.md)。
 
 ## 课程报告与交付模型
 

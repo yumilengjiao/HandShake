@@ -231,12 +231,13 @@ def test_indexing_budget_and_immutable_cache(imported, tmp_path):
 
 
 @pytest.mark.parametrize("kind", ["mlp", "tcn"])
-def test_compact_training_resume_and_model_export(imported, tmp_path, kind):
+@pytest.mark.parametrize("sampling", ["uniform", "supervised_uniform"])
+def test_compact_training_resume_and_model_export(imported, tmp_path, kind, sampling):
     from algorithm.bundle import export_bundle, load_bundle
 
     build(imported, tmp_path / "train")
     build(imported, tmp_path / "val", split="val", stats=tmp_path / "train/stats.json")
-    config = TrainConfig(model_type=kind, max_epochs=3, batch_size=4, patience=10)
+    config = TrainConfig(model_type=kind, max_epochs=3, batch_size=4, patience=10, sampling=sampling)
     full, resumed = tmp_path / "full", tmp_path / "resumed"
     train(tmp_path / "train", tmp_path / "val", full, config=config)
     train(
@@ -267,6 +268,14 @@ def test_compact_training_resume_and_model_export(imported, tmp_path, kind):
     )
     a, b = [torch.load(root / "last.pt", weights_only=True) for root in (full, resumed)]
     assert a["history"] == b["history"]
+    assert torch.equal(a["rng"]["sampler"], b["rng"]["sampler"])
+    for row in a["history"]:
+        assert row["supervised"] == a["identity"]["data"]["train"]["supervised"]
+        assert row["validation"]["samples"] == a["identity"]["data"]["val"]["supervised"]
+        assert row["sampling"] == sampling
+        if sampling == "supervised_uniform":
+            assert row["unsupervised_sampled"] == row["skipped_batches"] == 0
+        assert row["batches_total"] == (row["sampled_endpoints"] + config.batch_size - 1) // config.batch_size
     for key in a["state_dict"]:
         torch.testing.assert_close(
             a["state_dict"][key], b["state_dict"][key], rtol=0, atol=0

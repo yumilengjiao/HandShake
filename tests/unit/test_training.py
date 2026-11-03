@@ -1,5 +1,4 @@
 import json
-from pathlib import Path
 import subprocess
 import sys
 
@@ -42,9 +41,12 @@ def test_metrics_fixed_classes_and_hand_computed_counts():
 
 
 @pytest.mark.parametrize("model", ["mlp", "tcn"])
-def test_independent_process_epoch_resume_matches_uninterrupted_exactly(caches, tmp_path, model):
+@pytest.mark.parametrize("balanced_plateau", [False, True])
+@pytest.mark.parametrize("sampling", ["uniform", "supervised_uniform"])
+def test_independent_process_epoch_resume_matches_uninterrupted_exactly(caches, tmp_path, model, balanced_plateau, sampling):
     cfg = tmp_path / "config.yaml"
-    cfg.write_text(yaml.safe_dump(TrainConfig(model_type=model, max_epochs=3, batch_size=4, patience=10).model_dump()))
+    policy = dict(class_weighting="sqrt_inverse", scheduler="plateau", lr_patience=0, min_delta=1.0) if balanced_plateau else {}
+    cfg.write_text(yaml.safe_dump(TrainConfig(model_type=model, max_epochs=3, batch_size=4, patience=10, sampling=sampling, **policy).model_dump()))
     common = [sys.executable, "-m", "backend.cli", "train", "--train-cache", str(caches[0]), "--val-cache", str(caches[1]), "--training-config", str(cfg)]
     full, interrupted = tmp_path / "full", tmp_path / "interrupted"
     for command in (common + ["--output", str(full)],
@@ -55,6 +57,23 @@ def test_independent_process_epoch_resume_matches_uninterrupted_exactly(caches, 
     a, b = [torch.load(root / "last.pt", weights_only=True) for root in (full, interrupted)]
     assert a["history"] == b["history"]
     assert a["global_step"] == b["global_step"]
+    assert a["scheduler"] == b["scheduler"]
+    assert a["identity"]["sampling"] == b["identity"]["sampling"]
+    for row in a["history"]:
+        assert row["sampling"] == sampling
+        assert row["supervised"] == 10
+        assert row["sampled_endpoints"] == (10 if sampling == "supervised_uniform" else 12)
+        assert row["unsupervised_sampled"] == (0 if sampling == "supervised_uniform" else 2)
+        assert row["optimizer_steps"] == 3
+    if balanced_plateau:
+        assert [row["learning_rate"] for row in a["history"]] == [.001, .001, .0005]
+        assert a["history"][-1]["next_learning_rate"] == .00025
+        for row in a["history"]:
+            assert all(batch["learning_rate"] == row["learning_rate"] for batch in row["batches"])
+        from algorithm.training.balancing import class_weights_from_counts
+        identity = a["identity"]
+        assert identity["objective"]["class_weights"] == class_weights_from_counts(identity["data"]["train"]["class_counts"], "sqrt_inverse")
+        assert a["history"][0]["train_loss_kind"] == "sqrt_inverse_weighted_ce"
     for key in a["state_dict"]:
         assert torch.equal(a["state_dict"][key], b["state_dict"][key]), key
         assert torch.equal(a["best_state_dict"][key], b["best_state_dict"][key])
@@ -70,6 +89,9 @@ def test_all_masked_batches_skip_updates_and_early_ties_keep_first(caches, tmp_p
     checkpoint = torch.load(tmp_path / "run/last.pt", weights_only=True)
     assert result["early_stopped"] and result["best_epoch"] == 1 and result["epochs"] == 2
     assert checkpoint["history"][0]["skipped_batches"] == 2
+    assert checkpoint["history"][0]["sampled_endpoints"] == 12
+    assert checkpoint["history"][0]["unsupervised_sampled"] == 2
+    assert checkpoint["history"][0]["optimizer_steps"] == 10
     assert checkpoint["global_step"] == 20
     with pytest.raises(FileExistsError):
         train(*caches, tmp_path / "run", config=cfg)
@@ -130,3 +152,87 @@ def test_public_class_ids_are_not_silently_mapped_into_legacy_five_classes(cache
     with pytest.raises(ValueError, match="labels do not match vocabulary"):
         train(*caches, tmp_path / "must-not-train")
     assert not (tmp_path / "must-not-train").exists()
+
+
+def test_weighted_training_keeps_validation_unweighted_and_all_labels(caches, tmp_path):
+    from algorithm.training.trainer import _evaluate
+    from algorithm.model_config import build_model
+    from shared.classes import vocabulary_for
+    cfg = TrainConfig(model_type="mlp", max_epochs=1, class_weighting="sqrt_inverse")
+    result = train(*caches, tmp_path / "weighted", config=cfg)
+    checkpoint = torch.load(tmp_path / "weighted/last.pt", weights_only=True)
+    _, validation, provenance = load_training_inputs(*caches)
+    model = build_model("mlp", vocabulary=vocabulary_for(provenance["vocabulary_version"]))
+    model.load_state_dict(checkpoint["state_dict"])
+    model.eval()
+    with torch.no_grad():
+        logits = model(torch.from_numpy(validation["x"][:, -1]).float())
+        mask = validation["class_valid"]
+        expected = torch.nn.functional.cross_entropy(logits[mask], torch.from_numpy(validation["y"][mask]).long()).item()
+    actual = checkpoint["history"][0]["validation"]
+    assert actual["samples"] == int(mask.sum())
+    assert actual["loss"] == pytest.approx(expected)
+    assert _evaluate(model, validation, "mlp", 3)["loss"] == pytest.approx(expected)
+    assert not result["final_test_used"]
+    from algorithm.bundle import export_bundle, load_bundle
+    receipt = export_bundle(tmp_path / "weighted", caches[0] / "stats.json", tmp_path / "bundle", allow_synthetic=True)
+    bundle = load_bundle(tmp_path / "bundle", expected_manifest_sha256=receipt["manifest_sha256"])
+    for name, tensor in checkpoint["state_dict"].items():
+        torch.testing.assert_close(bundle.model.state_dict()[name], tensor, rtol=0, atol=0)
+
+
+def test_plateau_restores_lr_after_reduction_and_respects_floor(caches, tmp_path):
+    cfg = TrainConfig(model_type="mlp", max_epochs=5, class_weighting="sqrt_inverse",
+                      scheduler="plateau", lr_patience=0, min_delta=1., min_learning_rate=.0003)
+    root = tmp_path / "plateau"
+    train(*caches, root, config=cfg, stop_after_epoch=3)
+    train(*caches, root, config=cfg, resume=root / "last.pt")
+    history = torch.load(root / "last.pt", weights_only=True)["history"]
+    assert [row["learning_rate"] for row in history] == [.001, .001, .0005, .0003, .0003]
+    assert history[-1]["next_learning_rate"] == .0003
+    assert all(row["validation"]["samples"] == 10 for row in history)
+
+
+@pytest.mark.parametrize("model", ["mlp", "tcn"])
+def test_supervised_sampling_preserves_history_classes_and_validation(caches, tmp_path, monkeypatch, model):
+    from hashlib import sha256
+    from algorithm.training import trainer
+    from algorithm.training.balancing import class_weights_from_counts
+    training, validation, provenance = load_training_inputs(*caches)
+    features = training["x"]
+    original_labels = training["y"].copy()
+    original_mask = training["class_valid"].copy()
+    seen = []
+
+    class ObservedWindows:
+        def __getitem__(self, selected):
+            seen.extend(selected.tolist())
+            # The complete cached history, not a filtered timeline, is passed through.
+            return features[selected]
+
+    training["x"] = ObservedWindows()
+    monkeypatch.setattr(trainer, "load_training_inputs", lambda *a: (training, validation, provenance))
+    root = tmp_path / "supervised"
+    cfg = TrainConfig(model_type=model, max_epochs=1, batch_size=4,
+                      sampling="supervised_uniform", class_weighting="sqrt_inverse")
+    result = train(*caches, root, config=cfg)
+    checkpoint = torch.load(root / "last.pt", weights_only=True)
+    row = checkpoint["history"][0]
+    expected = np.flatnonzero(original_mask)
+    assert sorted(seen) == expected.tolist()
+    assert row["sampled_endpoints"] == row["supervised"] == len(expected)
+    assert row["skipped_batches"] == row["unsupervised_sampled"] == 0
+    assert row["optimizer_steps"] == 3
+    assert [batch["supervised"] for batch in row["batches"]] == [4, 4, 2]
+    np.testing.assert_array_equal(np.sum([batch["class_counts"] for batch in row["batches"]], axis=0), provenance["train"]["class_counts"])
+    np.testing.assert_array_equal(training["y"], original_labels)
+    np.testing.assert_array_equal(training["class_valid"], original_mask)
+    assert row["validation"]["samples"] == provenance["val"]["supervised"]
+    # This fixture includes supervised short/not-ready windows: none may be removed.
+    assert (original_mask & ~training["ready"]).any()
+    identity = result["identity"]
+    assert identity["sampling"]["population_sha256"] == sha256(expected.astype("<i8").tobytes()).hexdigest()
+    assert identity["sampling"]["excluded_unsupervised"] == 2
+    assert identity["objective"]["class_weights"] == class_weights_from_counts(provenance["train"]["class_counts"], "sqrt_inverse")
+    with pytest.raises(ValueError, match="identity"):
+        train(*caches, root, config=cfg.model_copy(update={"sampling": "uniform"}), resume=root / "last.pt")

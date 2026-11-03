@@ -8,13 +8,21 @@ from torch.nn import functional as F
 
 
 def masked_cross_entropy(
-    logits: Tensor, targets: Tensor, class_valid: Tensor
+    logits: Tensor,
+    targets: Tensor,
+    class_valid: Tensor,
+    *,
+    class_weights: Tensor | None = None,
 ) -> Tensor | None:
     """Mean CE on valid labels, or ``None`` to tell a trainer to skip a step.
 
     ``logits`` is [B,C] (or diagnostic [B,T,C]); the other tensors match all
     leading dimensions. Unsupervised targets may contain -1 or other sentinels,
     while every supervised target must be an integer in [0,C).
+
+    Optional fixed [C] weights multiply each supervised CE before taking its
+    arithmetic mean. They are NOT renormalized within a batch. Training derives
+    them from train-only counts with expected weight one; validation stays plain CE.
     """
     if not all(isinstance(value, Tensor) for value in (logits, targets, class_valid)):
         raise ValueError("logits, targets and class_valid must be torch Tensors")
@@ -30,6 +38,20 @@ def masked_cross_entropy(
         raise ValueError("class_valid must have torch.bool dtype")
     if targets.device != logits.device or class_valid.device != logits.device:
         raise ValueError("logits, targets and class_valid must be on the same device")
+    if class_weights is not None:
+        if (
+            not isinstance(class_weights, Tensor)
+            or class_weights.shape != (logits.shape[-1],)
+            or not class_weights.is_floating_point()
+            or class_weights.device != logits.device
+            or class_weights.requires_grad
+            or not torch.isfinite(class_weights).all().item()
+            or (class_weights < 0).any().item()
+            or not (class_weights > 0).any().item()
+        ):
+            raise ValueError(
+                "class_weights must be fixed finite nonnegative [C] weights on the logits device"
+            )
     if not class_valid.any().item():
         return None
     selected = targets[class_valid]
@@ -40,7 +62,15 @@ def masked_cross_entropy(
     supervised_logits = logits[class_valid]
     if supervised_logits.dtype in (torch.float16, torch.bfloat16):
         supervised_logits = supervised_logits.float()
-    loss = F.cross_entropy(supervised_logits, selected)
+    if class_weights is None:
+        loss = F.cross_entropy(supervised_logits, selected)
+    else:
+        weights = class_weights.to(dtype=supervised_logits.dtype)[selected]
+        if (weights <= 0).any().item():
+            raise ValueError("supervised targets must have positive class weights")
+        loss = (
+            F.cross_entropy(supervised_logits, selected, reduction="none") * weights
+        ).mean()
     if not torch.isfinite(loss).item():
         raise ValueError("cross entropy produced a non-finite loss")
     return loss

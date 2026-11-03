@@ -47,6 +47,12 @@ class TrainingSettings(SettingsModel):
     patience: int = Field(default=10, ge=1)
     learning_rate: float = Field(default=0.001, gt=0, allow_inf_nan=False)
     weight_decay: float = Field(default=0.0001, ge=0, allow_inf_nan=False)
+    sampling: Literal["uniform", "supervised_uniform"] = "uniform"
+    class_weighting: Literal["none", "sqrt_inverse"] = "none"
+    scheduler: Literal["constant", "plateau"] = "constant"
+    lr_patience: int = Field(default=2, ge=0)
+    lr_factor: float = Field(default=0.5, gt=0, lt=1, allow_inf_nan=False)
+    min_learning_rate: float = Field(default=0.000001, gt=0, allow_inf_nan=False)
     grad_clip_norm: float = Field(default=1.0, gt=0, allow_inf_nan=False)
     min_delta: float = Field(default=0.0001, ge=0, allow_inf_nan=False)
     seed: int = Field(default=42, ge=0, lt=2**32)

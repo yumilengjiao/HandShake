@@ -11,7 +11,11 @@ grad_clip_norm: 1.0
 seed: 42
 device: cpu
 threads: 1
-sampling: uniform
-scheduler: constant
+sampling: uniform  # opt-in: supervised_uniform (all class_valid endpoints once/epoch)
+class_weighting: none  # opt-in: sqrt_inverse (train-label counts only)
+scheduler: constant  # opt-in: plateau (validation macro-F1)
+lr_patience: 2
+lr_factor: 0.5
+min_learning_rate: 0.000001
 checkpoint_metric: val_macro_f1
 shuffle_labels_diagnostic: false
