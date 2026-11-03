@@ -53,6 +53,7 @@ def _bound_run(ws):
 
 def preflight(ws, args, emit=print):
     receipt = dataset_receipt(ws)
+    from algorithm.training.balancing import class_weights_from_counts
     from algorithm.training.config import TrainConfig
     from algorithm.training.inputs import load_training_inputs
 
@@ -70,6 +71,12 @@ def preflight(ws, args, emit=print):
         patience=selected("patience"),
         learning_rate=selected("learning_rate"),
         weight_decay=selected("weight_decay"),
+        sampling=selected("sampling"),
+        class_weighting=selected("class_weighting"),
+        scheduler=selected("scheduler"),
+        lr_patience=selected("lr_patience"),
+        lr_factor=selected("lr_factor"),
+        min_learning_rate=selected("min_learning_rate"),
         grad_clip_norm=cfg.grad_clip_norm,
         min_delta=cfg.min_delta,
         seed=selected("seed"),
@@ -78,6 +85,8 @@ def preflight(ws, args, emit=print):
     _, _, provenance = load_training_inputs(ws.cache / "train", ws.cache / "val")
     if provenance["synthetic"]:
         raise WorkflowError("默认训练入口禁止合成数据。")
+    counts = provenance["train"]["class_counts"]
+    weights = class_weights_from_counts(counts, config.class_weighting)
     emit(
         f"训练预检通过：{config.model_type.upper()} / device={config.device} / batch={config.batch_size} / 最多{config.max_epochs}轮"
     )
@@ -87,6 +96,35 @@ def preflight(ws, args, emit=print):
     emit(
         f"train={provenance['train']['supervised']}、val={provenance['val']['supervised']} 个有标签端点；不会读取 test 样本。"
     )
+    endpoints = provenance["train"]["endpoints"]
+    sampled = (
+        provenance["train"]["supervised"]
+        if config.sampling == "supervised_uniform"
+        else endpoints
+    )
+    emit(
+        f"训练采样：{config.sampling}；每轮{sampled}个端点、{(sampled + config.batch_size - 1) // config.batch_size}个batch，无放回；验证集不变。"
+    )
+    if config.sampling == "supervised_uniform":
+        emit(
+            f"跳过{endpoints - sampled}个无标签训练端点作为窗口末端，但保留窗口内历史帧；有标签的NOG、短历史和未ready端点仍参与。batch相同时有效监督量和更新节奏改变，不能视为与uniform逐步等价。"
+        )
+    emit(
+        f"训练损失：class_weighting={config.class_weighting}；scheduler={config.scheduler}；验证集仍按全部标签、不加权评估。"
+    )
+    if weights is not None:
+        emit(
+            "训练集固定类别权重（按类别ID）：" + ", ".join(f"{w:.4f}" for w in weights)
+        )
+    positive_counts = [n for n in counts if n]
+    if max(positive_counts) / min(positive_counts) >= 10:
+        emit(
+            f"注意：训练标签最大/最小类比例={max(positive_counts) / min(positive_counts):.2f}；应同时观察Macro-F1、逐类召回与非手势误报，不能只看Accuracy。"
+        )
+    if config.scheduler == "plateau":
+        emit(
+            f"验证Macro-F1连续{config.lr_patience + 1}轮无改善后，学习率乘{config.lr_factor:g}，下限{config.min_learning_rate:g}；不重置早停计数。"
+        )
     if provenance.get("grouping", {}).get("unit") == "source_capture_group":
         emit("评估范围：固定采集组留出；没有独立核实主体身份，不宣称跨人识别成绩。")
     absent = [
@@ -139,6 +177,11 @@ def run_train(ws, args, arguments, emit=print):
     def progress(row):
         emit(
             f"Epoch {row['epoch']}/{config.max_epochs} | loss={row['train_loss']:.5f} | val Macro-F1={row['validation']['macro_f1']:.4f}"
+            + (
+                f" | lr={row['learning_rate']:g} → {row['next_learning_rate']:g}"
+                if "next_learning_rate" in row
+                else ""
+            )
         )
         write_json(ws.latest, pointer)
 

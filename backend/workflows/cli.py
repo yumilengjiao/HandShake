@@ -53,6 +53,12 @@ def parser():
             child.add_argument("--weight-decay", type=float, help="覆盖本次AdamW权重衰减，可为0")
             child.add_argument("--patience", type=positive, help="本次早停耐心轮数")
             child.add_argument("--seed", type=int, help="本次预先指定的随机种子，不用于挑最好结果")
+            child.add_argument("--sampling", choices=["uniform", "supervised_uniform"], help="每轮无放回均匀遍历全部端点或仅有监督端点；验证集不变")
+            child.add_argument("--class-weighting", choices=["none", "sqrt_inverse"], help="仅按训练标签计算平方根逆频率权重；默认不加权")
+            child.add_argument("--scheduler", choices=["constant", "plateau"], help="可选按验证Macro-F1停滞降低学习率")
+            child.add_argument("--lr-patience", type=int, help="降低学习率前容忍的停滞轮数，可为0")
+            child.add_argument("--lr-factor", type=float, help="每次学习率衰减系数，0到1之间")
+            child.add_argument("--min-learning-rate", type=float, help="学习率衰减下限")
             child.add_argument(
                 "--dry-run", action="store_true", help="只校验数据和参数，不开始训练"
             )

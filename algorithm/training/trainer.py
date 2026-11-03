@@ -15,10 +15,12 @@ import yaml
 from algorithm.data.dataset import canonical_digest
 from algorithm.model_config import build_model, load_model_config
 from algorithm.models.losses import masked_cross_entropy
+from algorithm.training.balancing import class_weights_from_counts
 from algorithm.training.config import TrainConfig
 from algorithm.training.devices import device_identity, resolve_device
 from algorithm.training.inputs import load_training_inputs
 from algorithm.training.metrics import metrics_from_confusion
+from algorithm.training.sampling import training_population
 from shared.classes import vocabulary_for
 from shared.features import feature_schema_hash
 
@@ -146,6 +148,15 @@ def train(
     compact = provenance.get("format_version") == "t11-cache-v3"
     if compact and config.batch_size > 1024:
         raise ValueError("compact cache batch size must not exceed 1024")
+    population = training_population(training["class_valid"], config.sampling)
+    weights = class_weights_from_counts(
+        provenance["train"]["class_counts"], config.class_weighting
+    )
+    class_weights = (
+        torch.tensor(weights, dtype=torch.float32, device=device)
+        if weights is not None
+        else None
+    )
     torch.set_num_threads(config.threads)
     torch.use_deterministic_algorithms(True)
     if device.startswith("cuda"):
@@ -167,8 +178,43 @@ def train(
     optimizer = torch.optim.AdamW(
         model.parameters(), lr=config.learning_rate, weight_decay=config.weight_decay
     )
+    scheduler = (
+        torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer,
+            mode="max",
+            factor=config.lr_factor,
+            patience=config.lr_patience,
+            threshold=config.min_delta,
+            threshold_mode="abs",
+            min_lr=config.min_learning_rate,
+            eps=0.0,
+        )
+        if config.scheduler == "plateau"
+        else None
+    )
     identity = dict(
         config=config.model_dump(mode="json"),
+        sampling=dict(
+            strategy=config.sampling,
+            replacement=False,
+            endpoints_per_epoch=len(population),
+            excluded_unsupervised=provenance["train"]["endpoints"] - len(population),
+            population_sha256=sha256(population.tobytes()).hexdigest(),
+            population_source=(
+                "train.class_valid endpoint IDs only; no ready filtering"
+                if config.sampling == "supervised_uniform"
+                else "all train endpoint IDs, including unsupervised rows"
+            ),
+            validation_population="every supervised endpoint, unchanged",
+        ),
+        objective=dict(
+            loss="masked_cross_entropy",
+            class_weighting=config.class_weighting,
+            class_weights=weights,
+            counts_source="train.class_valid endpoints only",
+            normalization="train expected weight one; mean over supervised batch rows",
+            validation_loss="unweighted cross entropy over every supervised endpoint",
+        ),
         data=provenance,
         code_sha256=implementation_hash(),
         schema_sha256=feature_schema_hash(),
@@ -231,6 +277,8 @@ def train(
         run_id = checkpoint["run_id"]
         model.load_state_dict(checkpoint["state_dict"])
         optimizer.load_state_dict(checkpoint["optimizer"])
+        if scheduler is not None:
+            scheduler.load_state_dict(checkpoint["scheduler"])
         _restore_rng(checkpoint["rng"], generator)
         start, global_step = checkpoint["epoch"], checkpoint["global_step"]
         best_score, best_epoch, bad_epochs = (
@@ -256,7 +304,11 @@ def train(
         resume_boundary="completed_epoch",
         determinism=f"{device}, strict deterministic algorithms, one process, no DataLoader workers; resume requires identical code/software/hardware; unsupported accelerator ops fail rather than silently fall back",
         selection=f"validation macro-F1 over all {vocabulary.class_count} classes; strict improvement > min_delta; ties retain earlier epoch",
-        scheduler="constant; no scheduler state",
+        scheduler=(
+            "ReduceLROnPlateau on validation macro-F1; state saved at epoch boundary"
+            if scheduler is not None
+            else "constant; no scheduler state"
+        ),
         final_test_used=False,
     )
     _atomic_json(root / "run_manifest.json", manifest)
@@ -268,7 +320,11 @@ def train(
                 if "_verify" in data:
                     data["_verify"]()
             model.train()
-            order = torch.randperm(len(training["y"]), generator=generator).numpy()
+            epoch_learning_rate = optimizer.param_groups[0]["lr"]
+            order = population[
+                torch.randperm(len(population), generator=generator).numpy()
+            ]
+            epoch_start_step = global_step
             total_loss, supervised, skipped, grad_max = 0.0, 0, 0, 0.0
             batch_metrics = []
 
@@ -291,7 +347,9 @@ def train(
                 ).to(device)
                 optimizer.zero_grad(set_to_none=True)
                 logits = model(x[:, -1] if config.model_type == "mlp" else x)
-                loss = masked_cross_entropy(logits, y, mask)
+                loss = masked_cross_entropy(
+                    logits, y, mask, class_weights=class_weights
+                )
                 valid = int(mask.sum())
                 if loss is None:
                     skipped += 1
@@ -302,7 +360,7 @@ def train(
                             skipped=True,
                             loss=None,
                             gradient_norm=None,
-                            learning_rate=config.learning_rate,
+                            learning_rate=epoch_learning_rate,
                             class_counts=[0] * vocabulary.class_count,
                         )
                     )
@@ -328,7 +386,7 @@ def train(
                         skipped=False,
                         loss=float(loss.detach()),
                         gradient_norm=float(grad),
-                        learning_rate=config.learning_rate,
+                        learning_rate=epoch_learning_rate,
                         class_counts=[
                             int(((y == i) & mask).sum())
                             for i in range(vocabulary.class_count)
@@ -348,15 +406,27 @@ def train(
                 }
             else:
                 bad_epochs += 1
+            if scheduler is not None:
+                scheduler.step(score)
             history.append(
                 dict(
                     epoch=epoch,
                     global_step=global_step,
                     train_loss=total_loss / supervised,
+                    train_loss_kind=(
+                        "sqrt_inverse_weighted_ce"
+                        if weights is not None
+                        else "unweighted_ce"
+                    ),
                     supervised=supervised,
+                    sampling=config.sampling,
+                    sampled_endpoints=len(order),
+                    unsupervised_sampled=len(order) - supervised,
+                    optimizer_steps=global_step - epoch_start_step,
                     skipped_batches=skipped,
                     gradient_norm_max=grad_max,
-                    learning_rate=optimizer.param_groups[0]["lr"],
+                    learning_rate=epoch_learning_rate,
+                    next_learning_rate=optimizer.param_groups[0]["lr"],
                     batches=batch_metrics,
                     validation=metrics,
                     **(
@@ -380,6 +450,7 @@ def train(
                 global_step=global_step,
                 state_dict=model.state_dict(),
                 optimizer=optimizer.state_dict(),
+                scheduler=scheduler.state_dict() if scheduler is not None else None,
                 rng=_rng_state(generator, device),
                 history=history,
                 best_score=best_score,

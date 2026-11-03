@@ -1,0 +1,171 @@
+{
+  "format_version": "training-revision-verification-v1",
+  "verified_at_utc": "2026-11-03T07:46:17.345315+00:00",
+  "scope": "optional train-only sqrt-inverse CE, validation plateau decay, supervised-uniform endpoint sampling",
+  "environment": {
+    "python": "3.12.15",
+    "torch": "2.15.0+cpu",
+    "numpy": "1.26.4",
+    "platform": "Linux-7.2.11-arch1-1-x86_64-with-glibc2.44",
+    "accelerator_training_qualified": false
+  },
+  "implementation_sha256": "254ce8fa571138d83c0eda99bcce47b856acbbd8f52bcc4a1af8a42ef57fc9ed",
+  "tests": [
+    {
+      "scope": "sampling_and_training_software",
+      "command": ".venv/bin/python -m pytest tests/unit/test_training_sampling.py tests/unit/test_training_overrides.py tests/unit/test_training_balancing.py tests/unit/test_model_losses.py tests/unit/test_training.py tests/integration/test_stream_cache.py",
+      "tests": 143,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 143,
+      "deselected": 0,
+      "warnings": 0,
+      "junit_sha256": "88faab2c5f00bb0a46a709999c557cca0fd317323ed3f9364107454823d45908"
+    },
+    {
+      "scope": "non_training_regression",
+      "command": "HANDSHAKE_NO_TRAINING=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/python -m pytest --ignore=tests/unit/test_training.py --ignore=tests/unit/test_model_losses.py --ignore=tests/unit/test_mlp.py --ignore=tests/unit/test_tcn_causality.py --ignore=tests/integration/test_model_bundle.py --ignore=tests/integration/test_accelerator_training.py -k 'not test_public_import_to_deep_training_and_resume and not test_compact_training_resume_and_model_export'",
+      "tests": 946,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 946,
+      "deselected": 6,
+      "warnings": 13,
+      "junit_sha256": "72d5ba443ba348e121bee89f1da86ceefe4bd0b766c8cff35a7cefd0f6c6b0cd"
+    }
+  ],
+  "test_sets_overlap_do_not_sum": true,
+  "real_cache_preflight": {
+    "format_version": "training-sampling-preflight-v1",
+    "synthetic_training_results": false,
+    "real_training_started": false,
+    "test_samples_read": false,
+    "torch_imported": false,
+    "trainer_imported": false,
+    "provenance": {
+      "train_index_sha256": "648910238bfd631ba3b589b512652c40fedc12b21464633702c9fbdcb5c917bc",
+      "val_index_sha256": "a20557f93a0b4850294983483b37923f4b670418c5d12348ae49802ca88026d5",
+      "format_version": "t11-cache-v3",
+      "dataset_sha256": "9c440be3d48529c2eee3d17242684ea5694a2c56a747f8baa05fcc09acb41e53",
+      "split_sha256": "20425aa8e2662f464ca5fc2b3df8b57a23c37033fc93b006b8ddf6f18dd462e4",
+      "stats_sha256": "6cd93cca7726adbd684bbbbee9795c64999a3a7eab2bccd899b2937b3ce38217",
+      "config_sha256": "c402769a53a6b6b728c9de2f192622b14212db383b33dc22a4835abdd6db0d81",
+      "synthetic": false,
+      "stride": 1,
+      "vocabulary_version": "ipn-hands-v1",
+      "classes_sha256": "b5f55c57930727716b9cacf516bf8aab6b935f6c65ced46db3ef592fe0dff466",
+      "grouping": {
+        "unit": "source_capture_group",
+        "subject_identity_verified": false,
+        "legacy_subject_id_field": "capture-group namespace, NOT verified person identifiers"
+      },
+      "train": {
+        "endpoints": 459704,
+        "supervised": 334604,
+        "class_counts": [
+          66650,
+          112317,
+          107997,
+          3145,
+          2993,
+          3286,
+          2507,
+          2956,
+          2856,
+          5449,
+          4921,
+          5306,
+          4549,
+          3876,
+          5796
+        ],
+        "coverage": {
+          "selected_endpoints": 465165,
+          "represented": 459704,
+          "ready": 224726,
+          "ready_coverage": 0.4831102941966829,
+          "unprocessed_frames": 0
+        },
+        "endpoint_sha256": "21d2a0b128d9baf0c8e455f5bf7985f044af3158c5688bbe9d0e7e92ef2e0f09"
+      },
+      "val": {
+        "endpoints": 131189,
+        "supervised": 99909,
+        "class_counts": [
+          24192,
+          31003,
+          30126,
+          939,
+          968,
+          958,
+          785,
+          798,
+          755,
+          1895,
+          1765,
+          1774,
+          1375,
+          1139,
+          1437
+        ],
+        "coverage": {
+          "selected_endpoints": 132119,
+          "represented": 131189,
+          "ready": 70069,
+          "ready_coverage": 0.530347641141698,
+          "unprocessed_frames": 0
+        },
+        "endpoint_sha256": "d093e6e5e2ff69c34cecd14738580b2c0db5d0c4c080e95a72ae3f9db91036bb"
+      }
+    },
+    "population_sha256": "979f21c5d501b84be0eeb8cea0c8480188df5b2ef8641fddfb734be7aec8cbea",
+    "supervised_short_history_preserved": 85795,
+    "supervised_not_ready_preserved": 114600,
+    "cache_and_old_model_unchanged": true,
+    "batch_size": 64,
+    "uniform_batches_per_epoch": 7183,
+    "supervised_uniform_batches_per_epoch": 5229,
+    "forward_endpoint_reduction_fraction": 0.2721316325287576,
+    "uniform_supervised_per_batch_mean": 46.58276486147849,
+    "supervised_uniform_supervised_per_batch_mean": 63.99005545993498
+  },
+  "guarded_file_count": 21,
+  "guarded_file_sha256": {
+    "artifacts/runs/20261102T174832Z-tcn-af17e513/epochs.jsonl": "2b51ba0adb061833fc75e178a2a2c1c1fe503d2b850f6d68db9f9a4993a07aed",
+    "artifacts/runs/20261102T174832Z-tcn-af17e513/best.pt": "449a7e8ad1e7eb8ed4f7236913661883155512f870ed188450ccb73efa3b5723",
+    "artifacts/runs/20261102T174832Z-tcn-af17e513/last.pt": "42153c610f5439a44265ac82a09e5abe3bc0799b2c5febb1119ec93980a265e6",
+    "data/cache/ipn-hands/train/inventory.jsonl.gz": "462f87177e50d364d187b2163e59c2a54bf896d06fcd8ef046d2336f9c5dc852",
+    "data/cache/ipn-hands/train/steps.bin": "0173c499b1493f42de51912f5dca149e524d5490af7be7b12a0399256466537a",
+    "data/cache/ipn-hands/train/endpoints.bin": "1e89cd980b81a3770bc42784d580dcba0aaa9b528af7830a8bd66364d5887aae",
+    "data/cache/ipn-hands/train/stats.json": "fab04123085c8a9e6928ad46014c6fb9c1cf92752d17f6a193502da8aa5d137e",
+    "data/cache/ipn-hands/train/split_manifest.json": "116d81574e8c61c4735f6d123af468469f440d82ae89d0be4829766e84caf47c",
+    "data/cache/ipn-hands/train/features.f32": "db6ff7f273b99a4288f2ddf74fcf9cd6b9339d65446ba466b08b57deb3e4c99f",
+    "data/cache/ipn-hands/train/groups.json": "069feae8d1a48679d217253375770fd305f4503fb74c7dca67e2218cc5984c5c",
+    "data/cache/ipn-hands/train/index.json": "13e3c80c8b5cc9946836a3d507b3b1f8eb5f2ae0daac102e3b138c48d65741e1",
+    "data/cache/ipn-hands/train/classes.json": "21896d6a1f9f1221e742d33d18d987c4cb6af24835a70ee6897afe8b20602534",
+    "data/cache/ipn-hands/val/inventory.jsonl.gz": "dbc6b40b28e0c3fd4f4803cb6f668606f287d119de66a3a0758a80d0acde3a55",
+    "data/cache/ipn-hands/val/steps.bin": "9d3f4acbc0303da65d163e084fe9d906a8caae08d316901479ffb8770a7e647c",
+    "data/cache/ipn-hands/val/endpoints.bin": "87ee0a3bb004d215e4b9d740db1a22321d30fc5109248a178af9c8e5de0f6c22",
+    "data/cache/ipn-hands/val/stats.json": "fab04123085c8a9e6928ad46014c6fb9c1cf92752d17f6a193502da8aa5d137e",
+    "data/cache/ipn-hands/val/split_manifest.json": "116d81574e8c61c4735f6d123af468469f440d82ae89d0be4829766e84caf47c",
+    "data/cache/ipn-hands/val/features.f32": "0cf5b3bdff3e12f49e2348364df0108eaa0cba56a911eed19fee7391e89e9da8",
+    "data/cache/ipn-hands/val/groups.json": "171efca5cc9bdf0da827d7c8a6ba5bfcda8044e7a0f07a8fa10108f81ae48ec6",
+    "data/cache/ipn-hands/val/index.json": "0ebdc9aca4067ca564b7973c030bf12171d38cf2971d87d10569306d64fbd254",
+    "data/cache/ipn-hands/val/classes.json": "21896d6a1f9f1221e742d33d18d987c4cb6af24835a70ee6897afe8b20602534"
+  },
+  "existing_run_directories_unchanged": true,
+  "latest_pointer_existed_before": false,
+  "latest_pointer_exists_after": false,
+  "real_training_run_started": false,
+  "new_real_validation_scores": null,
+  "limitations": [
+    "CPU synthetic software tests and real train/val read-only checks only; no real retraining, wall-clock speedup, camera or application-control claim.",
+    "Final test samples were not read; final test scores were not used.",
+    "Historical run and local cache index/endpoint hashes differ; strict ablations must rerun baseline and candidate on the same frozen cache.",
+    "Changing sampling changes batch composition/dropout RNG consumption/update count; same epochs are not the same number of optimizer steps.",
+    "Default unweighted CE, uniform sampling and constant learning rate remain unchanged.",
+    "JUnit outputs are local temporary artifacts; this summary records their SHA256 and reproducible commands."
+  ]
+}
