@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-03",
+  "scope": "Real TCN calibrated v2 staging kit, no training, camera, install or external input",
+  "kit_manifest_sha256": "34b8f10e71f87be098b0bc536ff4347a6e3900f16266579134c674413df01622",
+  "tar_sha256": "39c0a6767f7904baa8567573261baeb4eec4d215e05e9ba5ec00a3dd669abe8e",
+  "kit_files": 32,
+  "kit_bytes": 24089912,
+  "core_build_revision_short": "70a1ec6",
+  "core_wheel_members": 166,
+  "report_tools_private_assets_in_wheel": false,
+  "kit_integrity_inspection": "passed",
+  "isolated_extracted_wheel_model_calibration_golden_check": "passed using existing local dependencies, not a fresh install",
+  "python_nontraining_regression": {"passed": 901, "deselected": 4, "warnings": 13},
+  "handoff_targeted": {"passed": 43},
+  "flutter_unit_widget": {"passed": 98},
+  "flutter_linux_release_build": "passed",
+  "offline_dependency_resolution": "not_verified",
+  "python_runtime_bundled": false,
+  "second_machine_install": "not_verified",
+  "real_camera_or_external_app_control": "not_verified",
+  "model_only_benchmark": {
+    "input": "synthetic zeros, batch=1",
+    "device": "cpu",
+    "threads": 1,
+    "iterations": 1000,
+    "p50_ms": 0.7649,
+    "p95_ms": 1.287851499999999,
+    "peak_process_rss_bytes": 265596928,
+    "torch": "2.15.0+cpu",
+    "python": "3.12.15",
+    "scope": "forward only, not camera-to-action latency; process RSS includes runtime/loader; concurrent synthetic lifecycle soak was running"
+  }
+}
