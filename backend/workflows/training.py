@@ -57,17 +57,22 @@ def preflight(ws, args, emit=print):
     from algorithm.training.inputs import load_training_inputs
 
     cfg = ws.settings.train
+
+    def selected(name):
+        value = getattr(args, name, None)
+        return getattr(cfg, name) if value is None else value
+
     config = TrainConfig(
         model_type=args.model or cfg.model,
         device=args.device or cfg.device,
         batch_size=args.batch_size or cfg.batch_size,
         max_epochs=args.epochs or cfg.epochs,
-        patience=cfg.patience,
-        learning_rate=cfg.learning_rate,
-        weight_decay=cfg.weight_decay,
+        patience=selected("patience"),
+        learning_rate=selected("learning_rate"),
+        weight_decay=selected("weight_decay"),
         grad_clip_norm=cfg.grad_clip_norm,
         min_delta=cfg.min_delta,
-        seed=cfg.seed,
+        seed=selected("seed"),
         threads=cfg.threads,
     )
     _, _, provenance = load_training_inputs(ws.cache / "train", ws.cache / "val")
@@ -75,6 +80,9 @@ def preflight(ws, args, emit=print):
         raise WorkflowError("默认训练入口禁止合成数据。")
     emit(
         f"训练预检通过：{config.model_type.upper()} / device={config.device} / batch={config.batch_size} / 最多{config.max_epochs}轮"
+    )
+    emit(
+        f"本次参数：lr={config.learning_rate:g} / weight_decay={config.weight_decay:g} / patience={config.patience} / seed={config.seed}；训练时记录到独立run，不修改默认配置。"
     )
     emit(
         f"train={provenance['train']['supervised']}、val={provenance['val']['supervised']} 个有标签端点；不会读取 test 样本。"

@@ -49,6 +49,10 @@ def parser():
             child.add_argument("--device", help="auto / cpu / cuda / cuda:N / mps")
             child.add_argument("--epochs", type=positive)
             child.add_argument("--batch-size", type=positive)
+            child.add_argument("--learning-rate", type=float, help="覆盖本次学习率，不修改共享配置")
+            child.add_argument("--weight-decay", type=float, help="覆盖本次AdamW权重衰减，可为0")
+            child.add_argument("--patience", type=positive, help="本次早停耐心轮数")
+            child.add_argument("--seed", type=int, help="本次预先指定的随机种子，不用于挑最好结果")
             child.add_argument(
                 "--dry-run", action="store_true", help="只校验数据和参数，不开始训练"
             )

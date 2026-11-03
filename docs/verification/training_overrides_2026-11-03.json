@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-03",
+  "scope": "Per-run CLI overrides and validation diagnostics, no neural training or final-test access",
+  "training_override_targeted": {"passed": 47},
+  "validation_diagnostic_targeted": {"passed": 53},
+  "python_nontraining_regression": {"passed": 887, "deselected": 4, "warnings": 13},
+  "flutter_unit_widget": {"passed": 98},
+  "uv_lock_check": "passed; existing dependency versions retained",
+  "real_data_preflight": {
+    "learning_rate": 0.0003,
+    "weight_decay": 0.0001,
+    "seed": 42,
+    "train_labeled": 334604,
+    "val_labeled": 99909,
+    "trained": false,
+    "optimizer_created": false,
+    "new_run_created": false
+  },
+  "new_training_metrics": null,
+  "soak": "A separate non-training synthetic lifecycle soak is running until noon; not counted as passed here."
+}

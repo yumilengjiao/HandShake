@@ -44,6 +44,8 @@ uv run prepare      # 检查分组并构建训练、验证和测试缓存
 uv run train --dry-run    # 训练前检查，不开始训练
 uv run train              # 使用默认配置训练 TCN
 uv run train --model mlp  # 训练 MLP 对照模型
+# 单次参数试验，可先加 --dry-run；不修改默认配置
+uv run train --learning-rate 0.0003 --weight-decay 0.0001 --seed 42 --dry-run
 uv run resume             # 恢复最近一次训练
 uv run evaluate           # 评估最近模型，默认使用验证集
 uv run calibrate          # 生成验证集校准

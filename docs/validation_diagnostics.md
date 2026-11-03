@@ -46,6 +46,18 @@ uv run handshake-evaluate diagnose \
 
 **没有部署这个修正，也不把46.88%改写进主报告**：它是在同一验证集上的探索，只提高约0.36个百分点，却损失总体准确率与非手势召回，左右手势的Precision也下降；没有独立测试或置信区间证明有益。随意强行偏向少数类，并不能代替可靠训练。
 
+## 可复现的短命令调参
+
+新增参数只覆盖本次run，不改`handshake.toml`、Flutter路径或已接收模型；参数会写进训练manifest。下面全部保留`--dry-run`，因此只预检、不训练：
+
+```bash
+uv run train --model mlp --seed 42 --dry-run             # 同数据MLP对照
+uv run train --learning-rate 0.0003 --seed 42 --dry-run  # 只改学习率
+uv run train --weight-decay 0.001 --seed 42 --dry-run    # 只改权重衰减
+```
+
+由训练同学确认后去掉`--dry-run`才会真正训练；其他参数仍取配置文件。也可显式指定`--patience`。种子0与权重衰减0合法，不会被当作“没提供”；NaN/Inf、负衰减、非正学习率及越界种子会拒绝。`resume`不接受这些覆盖项，避免把改变配置的实验伪装为同一次断点续训。
+
 ## 推荐训练同学按顺序做的实验
 
 1. **先跑MLP对照**，保持相同数据、特征和评估端点，检查TCN是否真的从时序中获益。当前未收到MLP正式结果。
