@@ -76,3 +76,7 @@ uv run train --help  # 查看单条命令帮助
 ```
 
 详细操作与训练机交接见[快速开始](docs/quickstart.md)。
+
+## 课程报告与交付模型
+
+[课程报告](docs/report/README.md)提供可编辑 Word、Markdown 和全黑文字 PDF，以及真实 TCN 验证曲线、混淆矩阵和逐类指标。验证准确率为 **78.85%**、Macro-F1 为 **46.52%**；这不是现场手势控制成功率。报告生成工具仅保留本机，不提交 Git。

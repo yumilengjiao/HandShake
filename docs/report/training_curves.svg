@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="495" height="160" preserveAspectRatio="xMinYMin meet" viewBox="0 0 495 160" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="495" height="160"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-160)" style="clip-path: url(#clip)">
+		<g transform="">
+			<text x="35" y="147" style="font-family: CJK; font-size: 8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,294) scale(1,-1)">损失曲线（实线训练 / 虚线验证）</text>
+			<path d="M 35,30 L 230,30 Z" style="stroke: rgb(80%,80%,80%); stroke-linecap: butt; stroke-width: 0.4;"/>
+			<text x="16.3095703125" y="27.0" style="font-family: CJK; font-size: 7px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,54) scale(1,-1)">0.00</text>
+			<path d="M 35,63.333333 L 230,63.333333 Z" style="stroke: rgb(80%,80%,80%); stroke-linecap: butt; stroke-width: 0.4;"/>
+			<text x="16.3095703125" y="60.333333333333336" style="font-family: CJK; font-size: 7px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,120) scale(1,-1)">0.33</text>
+			<path d="M 35,96.666667 L 230,96.666667 Z" style="stroke: rgb(80%,80%,80%); stroke-linecap: butt; stroke-width: 0.4;"/>
+			<text x="16.3095703125" y="93.66666666666667" style="font-family: CJK; font-size: 7px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,187) scale(1,-1)">0.67</text>
+			<path d="M 35,130 L 230,130 Z" style="stroke: rgb(80%,80%,80%); stroke-linecap: butt; stroke-width: 0.4;"/>
+			<text x="16.3095703125" y="127.0" style="font-family: CJK; font-size: 7px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,254) scale(1,-1)">1.00</text>
+			<polyline points="35 79.80958, 52.72727 66.7678, 70.45455 62.76238, 88.18182 60.30923, 105.9091 58.73602, 123.6364 57.23928, 141.3636 56.26784, 159.0909 55.48462, 176.8182 54.70003, 194.5455 54.07875, 212.2727 53.5525, 230 52.9023" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: None; fill-rule: evenodd;"/>
+			<polyline points="35 103.1918, 52.72727 103.8472, 70.45455 103.0439, 88.18182 106.2766, 105.9091 111.979, 123.6364 109.556, 141.3636 108.2184, 159.0909 116.4372, 176.8182 120.7609, 194.5455 118.3062, 212.2727 116.9493, 230 115.1216" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: None; fill-rule: evenodd; stroke-dasharray: 4, 2;"/>
+			<text x="32.9013671875" y="17" style="font-family: CJK; font-size: 7px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,34) scale(1,-1)">1</text>
+			<text x="50.62863991477273" y="17" style="font-family: CJK; font-size: 7px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,34) scale(1,-1)">2</text>
+			<text x="225.802734375" y="17" style="font-family: CJK; font-size: 7px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,34) scale(1,-1)">12</text>
+			<text x="123.203125" y="4" style="font-family: CJK; font-size: 7px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,8) scale(1,-1)">Epoch</text>
+			<text x="289" y="147" style="font-family: CJK; font-size: 8px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,294) scale(1,-1)">验证 Macro-F1</text>
+			<path d="M 289,30 L 484,30 Z" style="stroke: rgb(80%,80%,80%); stroke-linecap: butt; stroke-width: 0.4;"/>
+			<text x="270.3095703125" y="27.0" style="font-family: CJK; font-size: 7px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,54) scale(1,-1)">0.00</text>
+			<path d="M 289,63.333333 L 484,63.333333 Z" style="stroke: rgb(80%,80%,80%); stroke-linecap: butt; stroke-width: 0.4;"/>
+			<text x="270.3095703125" y="60.333333333333336" style="font-family: CJK; font-size: 7px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,120) scale(1,-1)">0.20</text>
+			<path d="M 289,96.666667 L 484,96.666667 Z" style="stroke: rgb(80%,80%,80%); stroke-linecap: butt; stroke-width: 0.4;"/>
+			<text x="270.3095703125" y="93.66666666666667" style="font-family: CJK; font-size: 7px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,187) scale(1,-1)">0.40</text>
+			<path d="M 289,130 L 484,130 Z" style="stroke: rgb(80%,80%,80%); stroke-linecap: butt; stroke-width: 0.4;"/>
+			<text x="270.3095703125" y="127.0" style="font-family: CJK; font-size: 7px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,254) scale(1,-1)">0.60</text>
+			<polyline points="289 99.47704, 306.7273 107.5372, 324.4545 106.2485, 342.1818 106.4208, 359.9091 106.3896, 377.6364 107.5442, 395.3636 107.4636, 413.0909 106.1361, 430.8182 104.4126, 448.5455 106.2325, 466.2727 105.5986, 484 105.9822" style="stroke: rgb(0%,0%,0%); stroke-linecap: butt; stroke-width: 1; fill: None; fill-rule: evenodd;"/>
+			<text x="286.9013671875" y="17" style="font-family: CJK; font-size: 7px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,34) scale(1,-1)">1</text>
+			<text x="304.62863991477275" y="17" style="font-family: CJK; font-size: 7px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,34) scale(1,-1)">2</text>
+			<text x="479.802734375" y="17" style="font-family: CJK; font-size: 7px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,34) scale(1,-1)">12</text>
+			<text x="377.203125" y="4" style="font-family: CJK; font-size: 7px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,8) scale(1,-1)">Epoch</text>
+		</g>
+	</g>
+</svg>

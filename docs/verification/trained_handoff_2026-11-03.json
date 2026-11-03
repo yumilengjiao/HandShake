@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-03",
+  "scope": "User-delivered TCN; offline integrity, score recomputation, validation-only calibration and report. No training, final-test access, camera or OS input injection.",
+  "archive_sha256": "252a1acda938006649f261eb5708257c76d8d002fe65cf43b38ad06e20fc4390",
+  "run": "20261102T174832Z-tcn-af17e513",
+  "manifest_sha256": "1c3e0253b5a6f543df3f7472a4a48ab9f6ebe35aa240807beb787cd76a84e2da",
+  "trust_note": "User-provided archive; embedded hashes check integrity, not independent authenticity.",
+  "checks": {
+    "archive_paths_and_symlinks": "checked before extraction",
+    "best_last_epoch_log_hashes": "matched training manifest",
+    "bundle_runtime_normalization_golden_forward": "passed on local Linux CPU",
+    "all_classification_fields_recomputed_from_scores": "exact match",
+    "local_latest_pointer": "not changed; preparation receipt differs from training machine",
+    "report_tool_tests": {"passed": 23, "committed": false},
+    "pdf": {"pages": 4, "text_runs": 1529, "all_text_black": true, "used_fonts_embedded": true, "visual_review": "four rendered pages reviewed"},
+    "docx": {"editable_tables": 5, "text_elements": 173, "explicit_text_colors_black": true, "word_application_render": "not available on this machine"}
+  },
+  "validation": {
+    "labeled_endpoints": 99909,
+    "accuracy": 0.788537569187961,
+    "macro_f1": 0.4652229245911513,
+    "balanced_accuracy": 0.4555063959964309,
+    "weighted_f1": 0.781249949096739,
+    "grouping": "source_capture_group",
+    "subject_identity_verified": false
+  },
+  "calibration": {
+    "sha256": "966d00a4b32fd3479158246b9f92e99d4fb396f1b0377bdfed0c49d7b4eefd0d",
+    "temperature": 1.5,
+    "threshold": 0.6,
+    "accepted": 73076,
+    "errors": 7143,
+    "status": "selected on validation empirical risk/coverage; not independent test performance",
+    "actions_enabled": false
+  },
+  "unverified": ["MLP comparison", "final test", "real-camera recognition and control", "long-running live stability", "member names and actual contributions"]
+}
