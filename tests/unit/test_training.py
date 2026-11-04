@@ -83,6 +83,24 @@ def test_independent_process_epoch_resume_matches_uninterrupted_exactly(caches, 
     assert manifest["synthetic"] and manifest["best_epoch"] <= 3
 
 
+@pytest.mark.parametrize("variant", ["motion", "dropout35", "motion_dropout35"])
+def test_experimental_variant_epoch_resume_is_exact(caches, tmp_path, variant):
+    cfg = TrainConfig(model_variant=variant, max_epochs=3, batch_size=4, patience=10,
+                      class_weighting="sqrt_inverse")
+    full, paused = tmp_path / "full", tmp_path / "paused"
+    train(*caches, full, config=cfg)
+    train(*caches, paused, config=cfg, stop_after_epoch=1)
+    with pytest.raises(ValueError, match="identity"):
+        train(*caches, paused, config=cfg.model_copy(update={"model_variant": "baseline"}),
+              resume=paused / "last.pt")
+    train(*caches, paused, config=cfg, resume=paused / "last.pt")
+    a, b = [torch.load(p / "last.pt", weights_only=True) for p in (full, paused)]
+    assert a["history"] == b["history"]
+    assert a["identity"]["architecture"]["model_variant"] == variant
+    for name in a["state_dict"]:
+        assert torch.equal(a["state_dict"][name], b["state_dict"][name]), name
+
+
 def test_all_masked_batches_skip_updates_and_early_ties_keep_first(caches, tmp_path):
     cfg = TrainConfig(model_type="mlp", max_epochs=8, batch_size=1, patience=1, min_delta=1.0)
     result = train(*caches, tmp_path / "run", config=cfg)

@@ -119,3 +119,41 @@ def test_export_after_resume_does_not_reuse_stale_best(rig, monkeypatch):
     assert receipt["checkpoint_sha256"] == "b" * 64
     assert old.is_dir() and training.model_directory(root, receipt) == outputs[0]
     assert training.export_run(rig) == receipt and len(outputs) == 1
+
+
+def test_progress_displays_full_denominator_accuracy_and_percentage_f1():
+    row = {
+        "epoch": 6,
+        "train_loss": 0.43239,
+        "validation": {
+            "confusion_matrix": [[3, 1], [2, 4]],
+            "macro_f1": 0.55,
+        },
+        "learning_rate": 0.001,
+        "next_learning_rate": 0.0005,
+    }
+    import copy
+
+    before = copy.deepcopy(row)
+    text = training.epoch_progress_text(row, 80)
+    assert "Epoch 6/80" in text
+    assert "val Accuracy=70.00%" in text
+    assert "val Macro-F1=55.00%" in text
+    assert "lr=0.001 → 0.0005" in text
+    assert row == before
+
+
+def test_progress_handles_old_or_mock_metrics_without_fabricating_accuracy():
+    row = {"epoch": 1, "train_loss": 0.0, "validation": {"macro_f1": 0.25}}
+    text = training.epoch_progress_text(row, 2)
+    assert "val Macro-F1=25.00%" in text
+    assert "Accuracy" not in text and "lr=" not in text
+
+
+def test_progress_handles_empty_confusion_without_dividing_by_zero():
+    row = {
+        "epoch": 1,
+        "train_loss": 0.0,
+        "validation": {"confusion_matrix": [[0, 0], [0, 0]], "macro_f1": 0.0},
+    }
+    assert "Accuracy" not in training.epoch_progress_text(row, 2)

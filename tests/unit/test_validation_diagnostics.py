@@ -151,3 +151,126 @@ def test_cli_writes_immutable_json_and_rejects_final_test(tmp_path):
             ]
         )
     assert not (other / "forbidden.json").exists()
+
+
+def history_cache(monkeypatch, scores, lengths, *, changes=None, verify=lambda: None):
+    """Hand-computable already-verified loader fixture, no tensor allocation."""
+    from algorithm.evaluation.scores import endpoint_digest
+
+    index = {
+        "format_version": "t11-cache-v3",
+        "index_sha256": scores.provenance.cache_index_sha256,
+        "synthetic": scores.provenance.data_synthetic,
+        "files": {
+            "endpoints.bin": {"sha256": "d" * 64},
+            "groups.json": {"sha256": "e" * 64},
+        },
+    }
+    scores.provenance = scores.provenance.model_copy(
+        update={"endpoint_sha256": endpoint_digest(index)}
+    )
+    index.update(changes or {})
+    arrays = {
+        "y": scores.rows["label"].copy(),
+        "class_valid": scores.rows["class_valid"].copy(),
+        "ready": scores.rows["ready"].copy(),
+        "valid_length": np.asarray(lengths),
+        "_verify": verify,
+    }
+    monkeypatch.setattr(
+        "algorithm.data.cache.load_cache", lambda *a, **k: (arrays, index)
+    )
+    return arrays
+
+
+def test_history_separates_padding_from_full_history_quality_failures(monkeypatch):
+    scores = scores_for(
+        [[9, 0, 0, 0, 0], [0, 9, 0, 0, 0], [0] * 5, [0, 9, 0, 0, 0]],
+        [0, 0, 0, -1],
+        ready=[0, 0, 1, 0],
+        available=[1, 1, 0, 1],
+    )
+    history_cache(monkeypatch, scores, [1, 32, 32, 3])
+    before = scores.rows.copy()
+    baseline = diagnose_validation(scores, allow_synthetic=True)
+    result = diagnose_validation(scores, allow_synthetic=True, cache="verified-val")
+    assert result["primary"] == baseline["primary"]
+    parts = result["history_diagnostics"]
+    keys = ("short_history", "full_not_ready", "full_ready")
+    assert sum(parts[k]["labeled_endpoints"] for k in keys) == 3
+    assert [parts[k]["accuracy_all_labeled"] for k in keys] == [1, 0, 0]
+    assert parts["full_ready"]["unavailable_labeled"] == 1
+    assert parts["short_history"]["macro_f1"] == 0.2
+    np.testing.assert_array_equal(scores.rows, before)
+
+
+@pytest.mark.parametrize("field", ["index_sha256", "synthetic", "files"])
+def test_history_rejects_different_cache_inventory(monkeypatch, field):
+    scores = rejection_scores()
+    changed = {
+        "index_sha256": "f" * 64,
+        "synthetic": False,
+        "files": {
+            "endpoints.bin": {"sha256": "f" * 64},
+            "groups.json": {"sha256": "e" * 64},
+        },
+    }
+    history_cache(monkeypatch, scores, [32] * 3, changes={field: changed[field]})
+    with pytest.raises(ValueError, match="exact score inventory"):
+        diagnose_validation(scores, allow_synthetic=True, cache="wrong")
+
+
+@pytest.mark.parametrize("field", ["y", "class_valid", "ready"])
+def test_history_rejects_row_alignment_mismatch(monkeypatch, field):
+    scores = rejection_scores()
+    arrays = history_cache(monkeypatch, scores, [32] * 3)
+    arrays[field][0] = 1 - arrays[field][0]
+    with pytest.raises(ValueError, match="alignment mismatch"):
+        diagnose_validation(scores, allow_synthetic=True, cache="wrong")
+
+
+def test_history_rejects_wrong_count_and_legacy_cache(monkeypatch):
+    scores = rejection_scores()
+    arrays = history_cache(monkeypatch, scores, [32] * 3)
+    arrays["y"] = arrays["y"][:-1]
+    with pytest.raises(ValueError, match="count mismatch"):
+        diagnose_validation(scores, allow_synthetic=True, cache="wrong")
+    history_cache(
+        monkeypatch, scores, [32] * 3, changes={"format_version": "t11-cache-v2"}
+    )
+    with pytest.raises(ValueError, match="compact v3"):
+        diagnose_validation(scores, allow_synthetic=True, cache="legacy")
+
+
+def test_history_preserves_cache_guard_during_subset_passes(monkeypatch):
+    scores = rejection_scores()
+    calls = []
+
+    def verify():
+        calls.append(1)
+        # Initial alignment succeeds; a later subset pass must still check.
+        if len(calls) == 5:
+            raise ValueError("immutable cache changed during use")
+
+    history_cache(monkeypatch, scores, [32] * 3, verify=verify)
+    with pytest.raises(ValueError, match="immutable cache changed"):
+        diagnose_validation(scores, allow_synthetic=True, cache="changed")
+
+
+def test_history_preserves_score_guard_during_subset_passes(monkeypatch):
+    scores = rejection_scores()
+    state = {"cache_checks": 0, "changed": False}
+
+    def verify_cache():
+        state["cache_checks"] += 1
+        if state["cache_checks"] == 5:
+            state["changed"] = True
+
+    def verify_scores():
+        if state["changed"]:
+            raise ValueError("immutable scores changed during evaluation")
+
+    scores.guard = verify_scores
+    history_cache(monkeypatch, scores, [32] * 3, verify=verify_cache)
+    with pytest.raises(ValueError, match="immutable scores changed"):
+        diagnose_validation(scores, allow_synthetic=True, cache="scores-changed")

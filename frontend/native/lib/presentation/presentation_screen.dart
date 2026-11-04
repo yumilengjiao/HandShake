@@ -136,7 +136,7 @@ class PresentationScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 6),
                       const Text(
-                        '方向键不接受长按连发。Esc仅本窗口有效；手势与外部应用控制尚未接入。',
+                        '方向键不接受长按连发。Esc仅本窗口有效；手势控制请切换右上角“手势翻页”，不控制外部应用。',
                         style: TextStyle(
                           color: Color(0xffa6b9bc),
                           fontSize: 11,

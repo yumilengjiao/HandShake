@@ -1,0 +1,75 @@
+{
+  "format_version": "training-review-verification-v1",
+  "date": "2026-11-04",
+  "scope": "Completed overnight train/val experiments and read-only validation history diagnosis; not independent test or camera performance",
+  "overnight": {
+    "phase": "finished_at_deadline",
+    "deadline": "2026-11-04T07:00:00+08:00",
+    "service_result": "success",
+    "active_training_processes_at_review": 0,
+    "selected_run": "20261103T083328Z-tcn-113b3b10",
+    "complete_runs_reverified": 10,
+    "manifest_artifact_hashes_verified": true,
+    "selected_package_golden_and_calibration_verified": true,
+    "latest_pointer_matches_selection": true,
+    "accuracy_all_labeled": 0.7920407570889509,
+    "macro_f1": 0.4913766548010559,
+    "labeled_endpoints": 99909,
+    "seed_scores": {"42": 0.4913766548010559, "43": 0.48984516496302705},
+    "seed_mean_macro_f1": 0.4906109098820415,
+    "seed_sample_stdev_macro_f1": 0.0010829268497884981,
+    "seed_44_completed": false,
+    "confirmation_seeds_used_for_selection": false
+  },
+  "history_diagnosis": {
+    "report": "artifacts/diagnostics/validation-history-20261104-final.json",
+    "report_sha256": "57e6878d6a411a62c690eb6f0a7852ff067efde30b20daf387918c82f6d851be",
+    "implementation_sha256": "937ea9d0ca36e670329c5709ea4190e71778817d66bc3a1aec436e4473331d2b",
+    "score_manifest_sha256": "e22681962c9d9193d511b0f226251cc098f6db6bca93c6d29020200ab8455019",
+    "cache_index_sha256": "a20557f93a0b4850294983483b37923f4b670418c5d12348ae49802ca88026d5",
+    "endpoint_sha256": "d093e6e5e2ff69c34cecd14738580b2c0db5d0c4c080e95a72ae3f9db91036bb",
+    "primary_denominator_unchanged": true,
+    "partition_labeled_endpoints": {"short_history": 25703, "full_not_ready": 6790, "full_ready": 67416},
+    "no_torch_import_in_independent_process": true,
+    "model_checkpoints_logs_pointer_val_cache_and_scores_sha256_unchanged": true
+  },
+  "software_checks": {
+    "command": ".venv/bin/python -m backend.workflows check",
+    "neural_training_guard": "HANDSHAKE_NO_TRAINING=1",
+    "passed": 960,
+    "deselected": 6,
+    "warnings": 13,
+    "warning_scope": "existing synthetic statistics fallbacks and intentional duplicate-wheel fixture",
+    "ruff_check_passed": true,
+    "ruff_format_check_passed": true,
+    "ruff_files": [
+      "algorithm/evaluation/cli.py",
+      "algorithm/evaluation/diagnostics.py",
+      "tests/unit/test_validation_diagnostics.py",
+      "tests/integration/test_history_diagnostics.py"
+    ],
+    "git_diff_check_passed": true
+  },
+  "evidence": {
+    "full_review": "artifacts/diagnostics/overnight-review-20261104.json",
+    "full_review_sha256": "3c6111f055828a4947091edf07a28625bd91b25837dfec0149b4bb657c2d66e3",
+    "overnight_plan_sha256": "597cca78905f7f7ab84b02ffd072e27065876548322fb41699674876fa62dd43",
+    "overnight_status_sha256": "d66d8427afac32c0e7f0bbe012a0a1565dcf0825921e1c29d0f90f096e35b5d0",
+    "overnight_summary_sha256": "4a758c7bd254ef7d1ec5eca5597381359d0b1623abea79eabfde0abc6eeba6a3",
+    "selected_model_manifest_sha256": "8b62ba111ee8ab84b1ecbf56d3fd1f193de825ba03caa22a0446f6c788757311",
+    "selected_calibration_sha256": "805f5842217badef82546a9f795df9a98529350b79bc732eefafe59947e26c26"
+  },
+  "permissions": {
+    "new_neural_training_started_during_review": false,
+    "real_test_samples_read": false,
+    "camera_opened": false,
+    "actions_enabled": false
+  },
+  "limitations": [
+    "Validation inventory was used for model selection, so these are not independent final-test metrics.",
+    "Only two fixed seeds completed; this is not a reliable population uncertainty estimate.",
+    "History/readiness subset class compositions differ and do not prove padding or quality causes the errors.",
+    "Overlapping cache endpoints are not independent action counts.",
+    "No new architecture or feature proposal has been trained or demonstrated to improve scores."
+  ]
+}

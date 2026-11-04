@@ -45,6 +45,18 @@ def config(ws, flags):
     return training.preflight(ws, args, emit=lambda _: None)[0]
 
 
+@pytest.mark.parametrize("variant", ["motion", "dropout35", "motion_dropout35"])
+def test_experimental_variant_override_is_run_local(ws, variant):
+    original = ws.settings.model_dump()
+    value = config(ws, ["--model", "tcn", "--model-variant", variant])
+    assert value.model_variant == variant
+    assert ws.settings.model_dump() == original and not ws.runs.exists()
+    with pytest.raises(ValueError, match="TCN-only"):
+        config(ws, ["--model", "mlp", "--model-variant", variant])
+    with pytest.raises(SystemExit):
+        parser().parse_args(["resume", "--model-variant", variant])
+
+
 def test_unspecified_values_keep_local_settings(ws):
     value = config(ws, [])
     assert (value.learning_rate, value.weight_decay, value.patience, value.seed) == (

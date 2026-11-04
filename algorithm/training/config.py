@@ -15,6 +15,7 @@ Count = Annotated[int, Field(strict=True, gt=0)]
 class TrainConfig(ConfigModel):
     format_version: Literal["trainer-v1"] = "trainer-v1"
     model_type: Literal["mlp", "tcn"] = "tcn"
+    model_variant: Literal["baseline", "motion", "dropout35", "motion_dropout35"] = "baseline"
     optimizer: Literal["AdamW"] = "AdamW"
     learning_rate: Positive = 0.001
     weight_decay: Annotated[float, Field(ge=0, allow_inf_nan=False)] = 0.0001
@@ -37,6 +38,8 @@ class TrainConfig(ConfigModel):
 
     @model_validator(mode="after")
     def scheduler_budget(self):
+        if self.model_type != "tcn" and self.model_variant != "baseline":
+            raise ValueError("experimental model variants are TCN-only")
         if self.scheduler == "plateau":
             if self.min_learning_rate > self.learning_rate:
                 raise ValueError("min_learning_rate must not exceed learning_rate")

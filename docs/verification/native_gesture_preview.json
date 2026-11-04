@@ -1,0 +1,37 @@
+{
+  "scope": "Unified Linux Flutter app: camera/gesture preview and real application-local page backend. No external input integration.",
+  "entry": "uv run app",
+  "startup": "Read and verify already-exported latest model/calibration receipts; no training, re-export, camera opening or automatic control",
+  "verification": {
+    "python_nontraining_passed": 988,
+    "python_nontraining_deselected": 6,
+    "python_existing_warnings": 13,
+    "flutter_unit_widget_passed": 104,
+    "flutter_analyze": "passed",
+    "native_gesture_no_camera_smoke": "passed: real Flutter/Python IPC, default stopped, page visible, stop keys, manual-tab round trip",
+    "native_manual_presentation_regression": "passed: 1 -> 2 -> 3 -> 2 and stop",
+    "linux_release_build": "passed",
+    "normal_app_model_selection": "passed with current exported motion TCN and matching calibration; launcher intercepted before UI",
+    "new_native_bridge_mlp_tcn": "passed: programmatic contract simulation, enable/owner/rewarm, model-policy-local page 1 -> 2, no new page after stop",
+    "new_python_files_ruff": "passed",
+    "git_diff_check": "passed"
+  },
+  "safety_boundaries": [
+    "Old read-only/shadow IPC remains non-executing",
+    "New UI command schema has no navigation, logits or class-input command",
+    "Camera, enable and neutral-owner selection are separate user actions",
+    "Mode switch waits for confirmed camera release; hide/inactive closes camera",
+    "Fresh original surface tokens, model evidence age and parent heartbeat checked separately",
+    "One worker until confirmed release, capacity-one frame slots, bounded private IPC",
+    "Synthetic models cannot acquire live application-local authority",
+    "No OS keyboard injection, recording, uploads or external PPT/WPS control"
+  ],
+  "unverified": [
+    "real-camera gesture success rate",
+    "false activation rate",
+    "live end-to-end latency",
+    "long-duration real capture stability",
+    "non-Linux platforms"
+  ],
+  "evidence_boundary": "Positive gesture execution tests use the existing untrained analytical-network fixtures and in-memory provenance copies only, never exported as real models. This implementation/test work did not open a real camera, train a network or read final-test samples."
+}

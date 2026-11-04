@@ -1,5 +1,7 @@
 # T19阶段一：原生内置演示应用
 
+> 本文为人工演示阶段的历史说明。目前已增加同窗口的[实时手势翻页预览](native_gesture_preview.md)，使用 `uv run app`。原人工演示页和影子页仍保留各自权限边界；真实相机成功率仍未验收。
+
 **分支 `feat/presentation-application`，基于拉取后的master `13839c9`。** 前一轮`feat/public-data-scale`已推送，但尚未合入此基线；本功能不依赖数据分支，也没有在本机训练神经网络。
 
 ![内置演示的原生绘制结果](assets/local-presentation.png)

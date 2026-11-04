@@ -31,7 +31,7 @@ uv run python scripts/train.py --help      # 源码中的兼容脚本
 | `uv run evaluate` | 评估最近模型；必要时先导出模型包 | `--split val/test`，默认val |
 | `uv run calibrate` | 最近模型的验证集温度/拒识校准，不更新网络权重 | 无；只用val |
 | `uv run export` | 导出最近已完成run的最佳模型为推理包 | 无 |
-| `uv run app` | Linux原生预览；默认不开相机、不执行应用动作 | 见第4节 |
+| `uv run app` | 统一Linux应用；读取最新已导出模型，含手势翻页页；默认不开相机、不启用控制 | 见第4节 |
 | `uv run check` | 非训练Python回归 | `--training`启用包含合成训练的完整回归；可用加速器测试也显式启用，无设备时skip |
 
 `train`创建新的随机初始化模型；`resume`才是续训。默认在`artifacts/runs/`保存独立结果。短命令evaluate/calibrate/export依赖`latest.json`，不是自动逐一处理所有历史run。
@@ -43,6 +43,7 @@ uv run python scripts/train.py --help      # 源码中的兼容脚本
 | 参数 | 默认 | 含义/取值 |
 | --- | --- | --- |
 | `--model` | tcn | `tcn`因果时序模型；`mlp`末帧基线 |
+| `--model-variant` | baseline | `baseline`原模型；仅TCN可选`motion/dropout35/motion_dropout35`实验变体，定义与上午队列见[说明](training_morning_experiments.md) |
 | `--device` | auto | `auto/cpu/cuda/cuda:N/mps`；不可用的显式设备报错，不静默换设备 |
 | `--epochs` | 80 | 最多训练轮数；可早停，不保证一定跑满 |
 | `--batch-size` | 64 | 每批窗口末端数量；紧凑缓存最多1024 |
@@ -72,6 +73,8 @@ uv run evaluate
 每轮保存best.pt、last.pt、epochs.jsonl等。中断只恢复最后完整轮次；更改损失、采样、代码、数据或环境须开新run。比较实验时每次训练后先evaluate再开始下一次；最终模型和策略冻结之前不使用test选参数。
 
 ## 4. `uv run app`全部参数
+
+不加参数时，自动读取本机最新已有的完整导出/校准回执；不重新训练、导出或依赖训练缓存。有完整真实模型时默认进入“手势翻页”，同窗口显示摄像头与实际示例页。点击打开相机、启用、选手后才允许手势翻页；详见[统一预览](native_gesture_preview.md)。旧 `--shadow` 仍只显示候选，不获得执行权限。
 
 | 参数 | 含义 |
 | --- | --- |
@@ -127,7 +130,7 @@ normalization是该run的训练归一化stats.json；threads允许1到8；allow-
 | --- | --- | --- |
 | `score` | 指定模型在指定缓存上的CPU前向分数 | 必需`--package --model-sha256 --cache --cache-index-sha256 --split --output`；可选`--batch-size`默认256、`--threads`默认1、`--allow-synthetic` |
 | `classify` | 分数归档生成分类指标 | 必需`--scores --sha256 --output`；可选`--calibration --calibration-sha256` |
-| `diagnose` | 验证错误、类别/ready/历史长度等诊断 | classify全部参数，另有`--allow-synthetic` |
+| `diagnose` | 验证错误、类别/ready/历史长度等诊断 | classify全部参数，另有`--allow-synthetic`、可选`--cache`（与分数匹配的紧凑v3验证缓存） |
 | `calibrate` | 只用验证分数拟合温度与拒识 | 必需`--scores --sha256 --output`；可选`--temperatures --thresholds --max-risk --min-coverage --min-accepted --allow-synthetic` |
 | `events` | 独立事件/时间区间指标 | 必需`--input --sha256 --output` |
 

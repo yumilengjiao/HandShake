@@ -54,25 +54,27 @@ uv run export             # 导出最近模型
 
 训练结果自动保存到 `artifacts/runs/` 的独立目录，包括最佳权重、最近 checkpoint 和指标，无需手动指定输出路径。
 
-可选改进：`--class-weighting sqrt_inverse`、`--scheduler plateau`、`--sampling supervised_uniform`；默认仍保留原基线。类别不平衡诊断、独立对照命令及验证边界见[训练改进说明](docs/training_improvements.md)，目前没有改进版的真实重训成绩。
+可选改进：`--class-weighting sqrt_inverse`、`--scheduler plateau`、`--sampling supervised_uniform`；默认仍保留原基线。类别不平衡及历史对照见[训练改进说明](docs/training_improvements.md)和[夜间复盘](docs/training_overnight_review.md)。
+
+新增显式TCN变体`--model-variant motion/dropout35/motion_dropout35`，默认仍为`baseline`。2026-11-04上午训练已在12:00停止；当前验证F1最高的完整候选为因果运动TCN：**Accuracy 79.38%、Macro-F1 50.57%**。但单击两类召回下降，seed43复验只完成18/20epoch，**尚不能认定稳定提分或所有手势更好**。当前候选、旧模型保留情况及完整限制见[上午最终结果](docs/training_morning_results.md)。
 
 ### 界面与检查
 
 ```bash
-uv run app           # 启动原生预览
-uv run app --model   # 加载最近模型进行只读预览
+uv run app           # 统一原生应用：自动读取最新已导出模型，含实时手势翻页页
+uv run app --model   # 显式使用本机训练工作流选择模型
 # 别人训练的模型无需本机训练数据，见 docs/deadline_desktop_handoff.md
 uv run app --package /path/to/model --sha256 <可信SHA> --verify-only
 uv run check         # 运行非训练回归测试
 ```
 
-界面目前仅提供 Linux 宿主，启动后保持停止，不自动打开相机或执行应用操作。CPU/CUDA/MPS 的实际兼容性以目标机器验证结果为准。
+界面目前仅提供 Linux 宿主，启动后保持停止，不自动打开相机或执行应用操作。已有完整模型与校准时，`uv run app` 默认进入[手势翻页预览](docs/native_gesture_preview.md)：同一窗口内点击“打开相机 → 启用手势 → 选择控制手”，等待预热后，用左右抛动翻动内置示例页。空格停控制，Esc关闭相机；真实相机成功率仍待现场验收。CPU/CUDA/MPS 的实际兼容性以目标机器验证结果为准。
 
 允许进行合成训练测试的机器可运行 `uv run check --training`。
 
-### 实验性手势演示
+### 独立演示兼容入口
 
-新增[本地手势演示播放器](docs/local_gesture_demo.md)，可载入PPT导出的编号图片。它是独立的显式授权入口，**不改变影子模式、不注入系统按键**；真实相机成功率尚未验收。
+日常使用上述统一应用即可。原[本地手势演示播放器](docs/local_gesture_demo.md)仍保留，可载入PPT导出的编号图片。它是独立的显式授权入口，**不改变影子模式、不注入系统按键**；真实相机成功率尚未验收。
 
 ```bash
 uv run --extra training --extra perception --extra demo handshake-demo \
@@ -92,9 +94,3 @@ uv run train --help  # 查看单条命令帮助
 ```
 
 详细操作与训练机交接见[快速开始](docs/quickstart.md)；所有日常命令、高级工具和 `scripts/*.py` 的用途与参数见[命令参考](docs/cli_reference.md)。
-
-## 课程报告与交付模型
-
-[11月3日交付清单](docs/delivery_2026-11-03.md)汇总报告、模型、带校准的本机Linux暂存包、启动方式及测试边界。
-
-[课程报告](docs/report/README.md)提供可编辑 Word、Markdown 和全黑文字 PDF，以及真实 TCN 验证曲线、混淆矩阵和逐类指标。验证准确率为 **78.85%**、Macro-F1 为 **46.52%**；这不是现场手势控制成功率。报告生成工具仅保留本机，不提交 Git。
