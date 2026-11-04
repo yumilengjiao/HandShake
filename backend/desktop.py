@@ -154,8 +154,16 @@ class LatestSnapshot:
 
 
 def serve(
-    input_stream, output_stream, *, session=None, decoder=decode_command, encoder=None
+    input_stream,
+    output_stream,
+    *,
+    session=None,
+    decoder=decode_command,
+    encoder=None,
+    snapshot_interval_s=0.1,
 ):
+    if not 0.02 <= snapshot_interval_s <= 0.1:
+        raise ValueError("preview snapshot interval outside bounded range")
     session = session or PreviewSession()
     encoder = encoder or (lambda value: value.model_dump_json().encode() + b"\n")
     mailbox = LatestSnapshot()
@@ -193,7 +201,7 @@ def serve(
     reader.start()
     try:
         while not session.closed:
-            time.sleep(0.1)
+            time.sleep(snapshot_interval_s)
             mailbox.put(session.snapshot())
     except KeyboardInterrupt:
         session.fail("shutdown")

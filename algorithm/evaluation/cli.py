@@ -116,6 +116,10 @@ def main(argv=None):
             command.add_argument("--calibration-sha256")
             if name == "diagnose":
                 command.add_argument("--allow-synthetic", action="store_true")
+                command.add_argument(
+                    "--cache",
+                    help="optional matching compact validation cache for history/readiness error subsets",
+                )
         else:
             command.add_argument("--temperatures", type=float, nargs="+")
             command.add_argument("--thresholds", type=float, nargs="+")
@@ -180,7 +184,10 @@ def main(argv=None):
                     from algorithm.evaluation.diagnostics import diagnose_validation
 
                     report = diagnose_validation(
-                        scores, calibration, allow_synthetic=args.allow_synthetic
+                        scores,
+                        calibration,
+                        allow_synthetic=args.allow_synthetic,
+                        cache=args.cache,
                     )
                     report["implementation_sha256"] = implementation_digest()
                 else:

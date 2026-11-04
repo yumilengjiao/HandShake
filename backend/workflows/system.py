@@ -1,4 +1,4 @@
-"""Human-readable environment/status checks and explicit, non-executing desktop launch."""
+"""Environment checks and native launch; cameras and local control remain opt-in."""
 
 import importlib.metadata
 import importlib.util
@@ -117,6 +117,28 @@ def launch_app(ws, *, model=False, package=None, sha256=None, calibration=None,
         )
     selected_package = ws.path(package) if package else None
     selected_calibration = ws.path(calibration) if calibration else None
+    auto_selected = False
+    if not model and not package and not verify_only and ws.latest.is_file():
+        # Use already-exported receipts only. No training cache, re-export, model
+        # selection or mutation of latest.json belongs to opening the application.
+        from backend.workflows.deployment import handoff_assets
+
+        pointer = read_json(ws.latest)
+        if pointer.get("format_version") != "workflow-run-v1" or not isinstance(pointer.get("run"), str):
+            raise WorkflowError("最新模型指针格式不正确。")
+        root = (ws.runs / pointer["run"]).resolve()
+        if root == ws.runs.resolve() or not root.is_relative_to(ws.runs.resolve()) or not root.is_dir():
+            raise WorkflowError("最新模型目录不存在或越出 runs 目录。")
+        if (root / "export.json").is_file() and (root / "calibration-receipt.json").is_file():
+            assets = handoff_assets(root)
+            selected_package, sha256 = assets["package"], assets["sha256"]
+            selected_calibration, calibration_sha256 = assets["calibration"], assets["calibration_sha256"]
+            if not perception.is_file():
+                raise WorkflowError("手势翻页缺少感知资产。", "先按感知安装说明准备 hand_landmarker.task。")
+            auto_selected = True
+            emit(f"使用最新已导出模型：{root.name}；不训练、不重新导出。")
+        else:
+            emit("最新训练尚无完整模型/校准交接；界面可打开，手势翻页暂不可用。")
     if model:
         from backend.workflows.training import _bound_run, export_run, model_directory
 
@@ -148,11 +170,11 @@ def launch_app(ws, *, model=False, package=None, sha256=None, calibration=None,
                 )
             selected_calibration = calibration
             calibration_sha256 = binding["sha256"]
-    if package or shadow or verify_only:
+    if package or shadow or verify_only or auto_selected:
         from backend.workflows.deployment import verify_assets
 
         verify_assets(selected_package, sha256, calibration=selected_calibration,
-                      calibration_sha256=calibration_sha256, shadow=shadow,
+                      calibration_sha256=calibration_sha256, shadow=shadow or auto_selected,
                       allow_synthetic=allow_synthetic, emit=emit)
     if verify_only:
         emit("只读交接校验完成；未启动Flutter、相机、训练器或应用操作。")
@@ -168,7 +190,7 @@ def launch_app(ws, *, model=False, package=None, sha256=None, calibration=None,
         args.append("--allow-synthetic-model")
     from backend.native_launcher import main
 
-    emit("启动原生预览；保持停止。相机只能由窗口中的明确操作打开，模型不会控制应用。")
+    emit("启动统一原生应用；默认停止。在“手势翻页”页明确打开相机、启用并选择控制手后，才允许翻动本应用示例页。")
     return main(args, project_root=ws.root)
 
 

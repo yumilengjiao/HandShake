@@ -53,7 +53,96 @@ def _summary(result, tokens):
     }
 
 
-def diagnose_validation(scores, calibration=None, *, allow_synthetic=False):
+class _HistoryView:
+    """Aligned endpoint subsets, with both immutable-input guards preserved."""
+
+    def __init__(self, scores, lengths, ready, verify, subset):
+        self.scores, self.lengths, self.ready = scores, lengths, ready
+        self.verify, self.subset, self.classes = verify, subset, scores.classes
+
+    def batches(self):
+        cursor = 0
+        self.verify()
+        for batch in self.scores.batches():
+            self.verify()
+            stop = cursor + len(batch)
+            lengths, ready = self.lengths[cursor:stop], self.ready[cursor:stop]
+            if self.subset == "short_history":
+                mask = lengths < 32
+            elif self.subset == "full_not_ready":
+                mask = (lengths == 32) & ~ready.astype(bool)
+            else:
+                mask = (lengths == 32) & ready.astype(bool)
+            yield batch[mask]
+            cursor = stop
+        self.verify()
+
+
+def _diagnose_history(scores, cache):
+    """Join verified compact validation metadata, never infer length from ready."""
+    import numpy as np
+
+    from algorithm.data.cache import load_cache
+    from algorithm.evaluation.scores import endpoint_digest
+
+    source = scores.provenance
+    arrays, index = load_cache(
+        cache,
+        expected_dataset_sha256=source.dataset_sha256,
+        expected_split_sha256=source.split_sha256,
+        expected_stats_sha256=source.stats_sha256,
+        expected_config_sha256=source.config_sha256,
+        expected_split="val",
+        expected_vocabulary=vocabulary_for(source.vocabulary_version),
+    )
+    if index["format_version"] != "t11-cache-v3":
+        raise ValueError("history diagnosis requires a compact v3 validation cache")
+    if (
+        index["index_sha256"] != source.cache_index_sha256
+        or endpoint_digest(index) != source.endpoint_sha256
+        or index["synthetic"] is not source.data_synthetic
+        or source.data_synthetic is not source.model_synthetic
+    ):
+        raise ValueError("history cache must match the exact score inventory")
+    verify = arrays["_verify"]
+    verify()
+    if len(arrays["y"]) != len(scores.rows):
+        raise ValueError("history cache/score endpoint count mismatch")
+    cursor = 0
+    for batch in scores.batches():
+        verify()
+        stop = cursor + len(batch)
+        for score_field, cache_field in (
+            ("label", "y"),
+            ("class_valid", "class_valid"),
+            ("ready", "ready"),
+        ):
+            if not np.array_equal(batch[score_field], arrays[cache_field][cursor:stop]):
+                raise ValueError("history cache/score endpoint alignment mismatch")
+        cursor = stop
+    verify()
+    tokens = vocabulary_for(source.vocabulary_version).tokens
+    report = {
+        "cache_index_sha256": index["index_sha256"],
+        "endpoint_sha256": source.endpoint_sha256,
+        "window_frames": 32,
+        "scope": "disjoint history/readiness subsets; MUST NOT replace primary all-labeled results",
+        "limitations": [
+            "Full history is not the same as ready; quality failures can persist after 32 frames.",
+            "Subset class compositions differ; this does not establish a causal effect of padding.",
+            "These are correlated cache endpoints, not independent source action counts.",
+            "No labels, windows, predictions or training parameters are changed.",
+        ],
+    }
+    for subset in ("short_history", "full_not_ready", "full_ready"):
+        view = _HistoryView(
+            scores, arrays["valid_length"], arrays["ready"], verify, subset
+        )
+        report[subset] = _summary(evaluate_classification(view), tokens)
+    return report
+
+
+def diagnose_validation(scores, calibration=None, *, allow_synthetic=False, cache=None):
     if scores.provenance.split != "val":
         raise ValueError(
             "diagnosis is validation-only; do not tune from final-test errors"
@@ -157,4 +246,6 @@ def diagnose_validation(scores, calibration=None, *, allow_synthetic=False):
             report["limitations"].append(
                 "Calibration constraints were infeasible; no rejection/policy success is claimed."
             )
+    if cache is not None:
+        report["history_diagnostics"] = _diagnose_history(scores, cache)
     return report

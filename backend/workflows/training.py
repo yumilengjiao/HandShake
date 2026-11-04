@@ -65,6 +65,7 @@ def preflight(ws, args, emit=print):
 
     config = TrainConfig(
         model_type=args.model or cfg.model,
+        model_variant=selected("model_variant"),
         device=args.device or cfg.device,
         batch_size=args.batch_size or cfg.batch_size,
         max_epochs=args.epochs or cfg.epochs,
@@ -91,7 +92,7 @@ def preflight(ws, args, emit=print):
         f"训练预检通过：{config.model_type.upper()} / device={config.device} / batch={config.batch_size} / 最多{config.max_epochs}轮"
     )
     emit(
-        f"本次参数：lr={config.learning_rate:g} / weight_decay={config.weight_decay:g} / patience={config.patience} / seed={config.seed}；训练时记录到独立run，不修改默认配置。"
+        f"本次参数：variant={config.model_variant} / lr={config.learning_rate:g} / weight_decay={config.weight_decay:g} / patience={config.patience} / seed={config.seed}；训练时记录到独立run，不修改默认配置。"
     )
     emit(
         f"train={provenance['train']['supervised']}、val={provenance['val']['supervised']} 个有标签端点；不会读取 test 样本。"
@@ -135,6 +136,22 @@ def preflight(ws, args, emit=print):
     return config, receipt
 
 
+def epoch_progress_text(row, max_epochs):
+    """Display metrics only; never change stored scores or checkpoint selection."""
+    metrics = row["validation"]
+    text = f"Epoch {row['epoch']}/{max_epochs} | loss={row['train_loss']:.5f}"
+    matrix = metrics.get("confusion_matrix")
+    if matrix is not None:
+        total = sum(map(sum, matrix))
+        if total:
+            correct = sum(values[i] for i, values in enumerate(matrix))
+            text += f" | val Accuracy={correct / total:.2%}"
+    text += f" | val Macro-F1={metrics['macro_f1']:.2%}"
+    if "next_learning_rate" in row:
+        text += f" | lr={row['learning_rate']:g} → {row['next_learning_rate']:g}"
+    return text
+
+
 def run_train(ws, args, arguments, emit=print):
     if args.command == "resume":
         root, receipt = _bound_run(ws)
@@ -175,14 +192,7 @@ def run_train(ws, args, arguments, emit=print):
     }
 
     def progress(row):
-        emit(
-            f"Epoch {row['epoch']}/{config.max_epochs} | loss={row['train_loss']:.5f} | val Macro-F1={row['validation']['macro_f1']:.4f}"
-            + (
-                f" | lr={row['learning_rate']:g} → {row['next_learning_rate']:g}"
-                if "next_learning_rate" in row
-                else ""
-            )
-        )
+        emit(epoch_progress_text(row, config.max_epochs))
         write_json(ws.latest, pointer)
 
     with operation_lock(ws.runs, "train"):
@@ -200,7 +210,7 @@ def run_train(ws, args, arguments, emit=print):
                 write_json(root / "workflow.json", pointer)
                 write_json(ws.latest, pointer)
     emit(
-        f"训练结束：{report['status']}；最佳 epoch={report['best_epoch']}，val Macro-F1={report['best_val_macro_f1']:.4f}"
+        f"训练结束：{report['status']}；最佳 epoch={report['best_epoch']}，val Macro-F1={report['best_val_macro_f1']:.2%}"
     )
     if ws.settings.train.auto_export:
         export_run(ws, emit, bound=(root, receipt))

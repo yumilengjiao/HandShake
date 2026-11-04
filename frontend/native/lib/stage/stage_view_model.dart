@@ -306,6 +306,33 @@ class StageViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Mode changes must not open another camera before this core confirms release.
+  Future<bool> stopAndWait() async {
+    if (latest?.state == 'stopped' && !stopPending) return true;
+    if (link == LinkState.disconnected) return _repository == null;
+    final result = Completer<bool>();
+    void check() {
+      if (result.isCompleted) return;
+      if (latest?.state == 'stopped' && !stopPending) {
+        result.complete(true);
+      } else if (link == LinkState.disconnected) {
+        result.complete(false);
+      }
+    }
+
+    addListener(check);
+    stop();
+    check();
+    try {
+      return await result.future.timeout(
+        const Duration(seconds: 3),
+        onTimeout: () => false,
+      );
+    } finally {
+      removeListener(check);
+    }
+  }
+
   void _armIntentDeadline() {
     _intentDeadline?.cancel();
     _intentDeadline = Timer(const Duration(seconds: 2), _disconnect);

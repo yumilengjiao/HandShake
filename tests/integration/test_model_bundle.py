@@ -28,10 +28,17 @@ from tests.integration.test_feature_dataset import example_records, normalizer_f
 
 
 @pytest.fixture(
-    scope="module", params=[("mlp", PROTOCOL_VERSION), ("tcn", IPN_HANDS_VERSION)]
+    scope="module",
+    params=[
+        ("mlp", PROTOCOL_VERSION, "baseline"),
+        ("tcn", IPN_HANDS_VERSION, "baseline"),
+        ("tcn", IPN_HANDS_VERSION, "motion"),
+        ("tcn", IPN_HANDS_VERSION, "dropout35"),
+        ("tcn", IPN_HANDS_VERSION, "motion_dropout35"),
+    ],
 )
 def trained(request, tmp_path_factory):
-    kind, version = request.param
+    kind, version, variant = request.param
     root = tmp_path_factory.mktemp("model-bundle")
     vocabulary = vocabulary_for(version)
     records = [
@@ -63,7 +70,7 @@ def trained(request, tmp_path_factory):
         root / "train",
         root / "val",
         root / "run",
-        config=TrainConfig(model_type=kind, max_epochs=2, batch_size=16),
+        config=TrainConfig(model_type=kind, model_variant=variant, max_epochs=2, batch_size=16),
     )
     receipt = export_bundle(
         root / "run", root / "train/stats.json", root / "bundle", allow_synthetic=True

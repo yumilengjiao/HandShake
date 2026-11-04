@@ -262,6 +262,17 @@ class ModelPresentationSession:
                 if self._cancelled(context, generation):
                     self._last_notice = self._eligible_track = None
                     return ModelStep("model_health_or_surface_expired")
+                if (
+                    notice.reason == "not_processed"
+                    and frame.status.drop_or_error_reason == "latest_frame_replaced"
+                ):
+                    # Capture's bounded drop ledger advances the classifier health
+                    # clock only. It is not a completed perception/model result:
+                    # do not overwrite the last displayed result, consume explicit
+                    # owner consent or pass it off as failed rewarm evidence.
+                    # Both ticks above still enforce evidence age; nothing here
+                    # renews last_good_ns, warmup progress or a surface lease.
+                    return ModelStep("capture_frame_skipped", notice)
                 self._last_notice = notice
                 self._eligible_track = None
                 if self.host.warmup is not None:
@@ -272,7 +283,12 @@ class ModelPresentationSession:
                 if notice.state != "predicted":
                     if context.owner_track_id is not None:
                         self.host.stop("model_result_unavailable:" + notice.reason)
-                    self.reason = notice.reason
+                    self.reason = (
+                        "perception_not_processed:"
+                        + (frame.status.drop_or_error_reason or "unknown")[:240]
+                        if notice.reason == "not_processed"
+                        else notice.reason
+                    )
                     return ModelStep(self.reason, notice)
                 if not isinstance(prediction, SourceClassification):
                     raise ValueError("same-call typed source prediction missing")
@@ -283,20 +299,32 @@ class ModelPresentationSession:
                 import numpy as np
 
                 probabilities = np.exp(lp)
-                if (
-                    int(probabilities.argmax()) == 0
+                winner = int(probabilities.argmax())
+                confident_nog = (
+                    winner == 0
                     and int(np.count_nonzero(probabilities == probabilities[0])) == 1
                     and probabilities[0]
                     >= max(
                         self.host.engine.policy.class_on,
                         self.host.engine.calibration.threshold,
                     )
-                    and geometry.visible_tracks == (prediction.track_id,)
-                    and geometry.quality_valid
-                    and not geometry.ambiguous
-                    and geometry.neutral
+                )
+                if (
+                    geometry.visible_tracks != (prediction.track_id,)
+                    or geometry.ambiguous
                 ):
+                    owner_reason = "owner_requires_unique_visible_hand"
+                elif not geometry.quality_valid:
+                    owner_reason = "owner_requires_valid_hand"
+                elif not geometry.neutral:
+                    owner_reason = "owner_requires_neutral_pose"
+                elif winner != 0:
+                    owner_reason = "owner_requires_nog"
+                elif not confident_nog:
+                    owner_reason = "owner_requires_confident_nog"
+                else:
                     self._eligible_track = prediction.track_id
+                    owner_reason = "waiting_explicit_owner"
                 if request is not None:
                     epoch, track, minimum_frame, expires = request
                     if (
@@ -314,7 +342,9 @@ class ModelPresentationSession:
                 if event is not None and self.synthetic and not event.synthetic:
                     event = event.model_copy(update={"synthetic": True})
                 self.reason = (
-                    "shadow_candidate"
+                    owner_reason
+                    if self.host.engine.state == "WAIT_OWNER"
+                    else "shadow_candidate"
                     if event is not None and self.host.execution == "shadow"
                     else self.host.reason
                 )

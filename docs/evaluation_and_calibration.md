@@ -83,6 +83,14 @@
 
 分类指标：固定类序的 C×(C+1) 计数/真实类归一化混淆矩阵（最后列为拒绝/无输出）、每类P/R/F1/support、固定全类Macro-F1/Balanced Accuracy、缺席类、覆盖率、selective risk、NLL/Brier/ECE及可靠性分箱。无样本时概率/风险指标为null；零support类保留且F1/recall为0。NLL/Brier/ECE只在有分数标签样本上计算，报告明确作用域。
 
+## 验证错误与历史长度诊断（后续扩展）
+
+`diagnose`仅接受已验证的val分数，必需`--scores --sha256 --output`；可选匹配的`--calibration --calibration-sha256`及`--allow-synthetic`。不训练、不导入torch、不运行阈值搜索，输出不可覆盖。
+
+新增可选`--cache <匹配的紧凑v3验证缓存>`：校验索引、端点身份、数据/split/归一化/配置/词表及逐行label/class_valid/ready后，分别报告短历史（1–31帧）、完整32帧但未ready、完整32帧且ready。三种子集互斥且保留全部标签主分母；不能用其中成绩替代主指标。缓存和分数的不可变guard在每批和最后继续检查，不重新物化全量窗口。省略`--cache`兼容旧诊断；旧密集缓存不猜测长度，test不能用于此诊断。
+
+本机实测、单行复跑命令与限制见[夜间训练复盘](training_overnight_review.md)。本文其余T15验收数字保留原阶段历史口径。
+
 ## 事件输入与评估
 
 输入契约见 `algorithm/evaluation/event_contracts.py`，小型完整示例见 [`events.synthetic.json`](../tests/fixtures/evaluation/events.synthetic.json)。**这是人为设定的20分钟轨迹，不是20分钟实机录制证据。**

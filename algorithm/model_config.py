@@ -47,12 +47,52 @@ def load_model_config(model_type: str, path: str | Path | None = None) -> MLPCon
     return config
 
 
-def build_model(model_type: str, path: str | Path | None = None, *, vocabulary: ClassVocabulary | None = None):
+MODEL_VARIANTS = ("baseline", "motion", "dropout35", "motion_dropout35")
+
+
+def variant_config(model_type, path=None, *, variant="baseline"):
+    """Experimental variants are explicit; packaged baseline defaults stay intact."""
     config = load_model_config(model_type, path)
+    if variant not in MODEL_VARIANTS or (variant != "baseline" and model_type != "tcn"):
+        raise ValueError("experimental model variants are TCN-only")
+    if variant in {"dropout35", "motion_dropout35"}:
+        config = config.model_copy(update={"dropout": 0.35})
+    return config
+
+
+def model_architecture(model_type, *, vocabulary=None, variant="baseline"):
+    config = variant_config(model_type, variant=variant)
+    vocabulary = vocabulary or vocabulary_for()
+    architecture = config.model_dump(mode="json") | {
+        "vocabulary_version": vocabulary.vocabulary_version,
+        "num_classes": vocabulary.class_count,
+    }
+    if variant != "baseline":
+        architecture["model_variant"] = variant
+    if variant in {"motion", "motion_dropout35"}:
+        architecture["motion_branch"] = {
+            "format_version": "causal-motion-contrast-v1",
+            "scales": [4, 8, 16],
+            "geometry_channels": 69,
+            "hidden_channels": 64,
+            "presence_mask": "any_positive_keypoint_mask_73_to_93",
+            "fusion": "zero_initialized_additive_class_logits",
+        }
+    return architecture
+
+
+def build_model(model_type: str, path: str | Path | None = None, *, vocabulary: ClassVocabulary | None = None,
+                variant="baseline"):
+    config = variant_config(model_type, path, variant=variant)
     vocabulary = vocabulary or vocabulary_for()
     if isinstance(config, MLPConfig):
         from algorithm.models.mlp import GestureMLP
         return GestureMLP(input_dim=config.input_dim, hidden_dims=config.hidden_dims, dropout=config.dropout, vocabulary=vocabulary)
-    from algorithm.models.tcn import GestureTCN
-    return GestureTCN(input_dim=config.input_dim, channels=config.channels, kernel_size=config.kernel_size,
-                      dilations=config.dilations, dropout=config.dropout, window_size=config.window_size, vocabulary=vocabulary)
+    if variant in {"motion", "motion_dropout35"}:
+        from algorithm.models.motion_tcn import MotionGestureTCN
+        model_class = MotionGestureTCN
+    else:
+        from algorithm.models.tcn import GestureTCN
+        model_class = GestureTCN
+    return model_class(input_dim=config.input_dim, channels=config.channels, kernel_size=config.kernel_size,
+                       dilations=config.dilations, dropout=config.dropout, window_size=config.window_size, vocabulary=vocabulary)

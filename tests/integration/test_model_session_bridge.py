@@ -6,6 +6,8 @@ import pytest
 
 from backend.interaction.model_session import ModelPresentationSession
 from backend.interaction.public_replay import ReplayClock, acknowledge, synthetic_input
+from shared.contracts import PerceptionStatus
+from shared.observations import ObservationFrame
 from tests.integration.model_bridge_fixture import fixture_bundle
 
 
@@ -31,6 +33,18 @@ class Harness:
             assert result.ticket.future.result(timeout=2).accepted
         if ack:
             assert acknowledge(self.session.host)
+        return result
+
+    def drop(self, *, dt=15_000_000, reason="latest_frame_replaced"):
+        frame = self.frame(dt=dt)
+        result = self.session.process(
+            ObservationFrame(
+                frame.info,
+                frame.info.status(PerceptionStatus.NOT_PROCESSED, reason=reason),
+            )
+        )
+        assert result.event is None and result.ticket is None
+        assert acknowledge(self.session.host)
         return result
 
     def enable(self):
@@ -91,6 +105,100 @@ def setup(request, tmp_path):
     yield Harness(session, clock)
     session.close()
     assert session.host.dispatcher.wait_released()
+
+
+def test_capture_drops_do_not_flicker_eligibility_consume_owner_or_abort_rewarm(setup):
+    h = setup
+    h.enable()
+    for _ in range(32):
+        h.step(dt=15_000_000)
+        before = h.session.snapshot()
+        h.drop()
+        after = h.session.snapshot()
+        assert after["classification"] == before["classification"]
+        assert after["bridge_reason"] == before["bridge_reason"]
+    assert after["eligible_owner"] == "operator"
+    assert h.request()
+    h.drop()
+    assert h.session.snapshot()["owner_request_pending"]
+    h.step(dt=15_000_000)
+    assert h.session.controller.snapshot().owner_track_id == "operator"
+    for i in range(32):
+        warm = h.session.host.warmup
+        h.drop()
+        assert h.session.host.warmup == warm
+        assert h.session.controller.snapshot().enabled
+        result = h.step(dt=15_000_000)
+        assert result.event is None
+        assert result.notice.window_length == i + 1
+    assert h.session.host.warmup is None
+    for _ in range(15):
+        h.drop()
+        h.step(dt=15_000_000)
+    assert h.session.host.engine.state == "ACTIVE"
+    assert h.session.host.backend.page == 1
+
+
+def test_only_capture_drop_ledger_preserves_result_not_perception_failure(setup):
+    h = setup
+    h.enable()
+    for _ in range(32):
+        h.step()
+    assert h.session.snapshot()["eligible_owner"] == "operator"
+    h.drop(reason="model_not_loaded")
+    value = h.session.snapshot()
+    assert value["eligible_owner"] is None
+    assert value["classification"]["reason"] == "not_processed"
+    assert "model_not_loaded" in value["bridge_reason"]
+    assert not h.request()
+
+
+def test_capture_drops_never_refresh_prediction_age_or_warmup_progress(setup):
+    h = setup
+    h.enable()
+    for _ in range(32):
+        h.step()
+    source = h.session.snapshot()["classification"]["source_timestamp_ns"]
+    for _ in range(10):
+        h.drop()
+    assert h.session.snapshot()["classification"]["source_timestamp_ns"] == source
+    h.drop()
+    assert h.session.snapshot()["eligible_owner"] is None
+    assert not h.request()
+    h.step()
+    assert h.request()
+    h.step()
+    warm = h.session.host.warmup
+    for _ in range(10):
+        h.drop()
+    assert h.session.host.warmup == warm
+    h.drop()
+    assert h.session.host.warmup is None
+    assert h.session.host.dispatcher.stopped
+    assert h.session.host.backend.page == 1
+
+
+def test_owner_button_reports_neutral_geometry_failure_without_relaxing_gate(setup):
+    h = setup
+    h.enable()
+    for _ in range(32):
+        h.step()
+    assert h.session.snapshot()["eligible_owner"] == "operator"
+    frame = h.frame()
+    data = frame.observations[0].model_dump()
+    for mcp in (5, 9, 13, 17):
+        y = data["landmarks_image"][mcp][1]
+        data["landmarks_image"][mcp + 1][1] = y - 0.05
+        data["landmarks_image"][mcp + 2][1] = y - 0.09
+    observation = type(frame.observations[0]).model_validate(data)
+    frame = type(frame)(frame.info, frame.status, (observation,))
+    result = h.session.process(frame)
+    assert result.notice.state == "predicted"
+    assert result.reason == "owner_requires_neutral_pose"
+    assert h.session.snapshot()["eligible_owner"] is None
+    assert not h.request()
+    assert h.session.controller.snapshot().owner_track_id is None
+    assert h.session.host.backend.page == 1
 
 
 def test_owner_epoch_cold_window_does_not_deadlock_or_bypass_release(setup):

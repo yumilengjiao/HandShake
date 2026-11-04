@@ -79,6 +79,29 @@ def rig(tmp_path):
     return Rig(calibration, sha)
 
 
+def test_geometry_caches_only_fixed_thresholds_and_preserves_neutral_rule(rig, monkeypatch):
+    from backend.interaction import geometry
+
+    original = geometry.load_config
+    calls = []
+    geometry._neutral_thresholds.cache_clear()
+
+    def counted():
+        calls.append(True)
+        return original()
+
+    monkeypatch.setattr(geometry, "load_config", counted)
+    try:
+        _, frame = rig.input()
+        for _ in range(20):
+            result = geometry.frame_geometry(frame, "operator")
+            assert result.neutral and result.quality_valid
+        assert len(calls) == 1
+        assert not geometry.frame_geometry(frame, "other").neutral
+    finally:
+        geometry._neutral_thresholds.cache_clear()
+
+
 def test_unique_hand_and_nog_never_grant_owner_automatically(rig):
     for _ in range(20):
         assert rig.step() is None

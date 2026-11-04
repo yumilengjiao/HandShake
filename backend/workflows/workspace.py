@@ -41,6 +41,7 @@ class DataSettings(SettingsModel):
 
 class TrainingSettings(SettingsModel):
     model: Literal["mlp", "tcn"] = "tcn"
+    model_variant: Literal["baseline", "motion", "dropout35", "motion_dropout35"] = "baseline"
     device: str = Field(default="auto", pattern=r"^(auto|cpu|cuda(:[0-9]+)?|mps)$")
     batch_size: int = Field(default=64, ge=1, le=1024)
     epochs: int = Field(default=80, ge=1)

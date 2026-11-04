@@ -21,7 +21,7 @@ DESCRIPTIONS = {
     "evaluate": "评估最近模型；默认只用 val，不接触最终 test 评估",
     "calibrate": "为最近模型生成验证集温度/拒识校准",
     "export": "导出最近模型的可信推理包",
-    "app": "启动原生只读预览（当前仅 Linux 桌面）",
+    "app": "启动统一原生应用，含实时手势翻页预览（仅 Linux，默认停止）",
     "check": "运行非训练回归；--training 显式包含训练测试",
 }
 
@@ -46,6 +46,7 @@ def parser():
             child.add_argument(
                 "--model", choices=["mlp", "tcn"], help="覆盖配置中的模型"
             )
+            child.add_argument("--model-variant", choices=["baseline", "motion", "dropout35", "motion_dropout35"], help="显式TCN实验变体；默认仍为原始baseline")
             child.add_argument("--device", help="auto / cpu / cuda / cuda:N / mps")
             child.add_argument("--epochs", type=positive)
             child.add_argument("--batch-size", type=positive)
@@ -149,9 +150,9 @@ def main(argv=None):
 
             return run_train(ws, args, execution_arguments, emit)
         if args.command in {"evaluate", "calibrate", "export", "check"} or (
-            args.command == "app" and (args.model or args.package)
+            args.command == "app" and (args.model or args.package or ws.latest.is_file())
         ):
-            if args.command != "check" and not (args.command == "app" and args.package):
+            if args.command != "check" and not (args.command == "app" and not args.model):
                 from backend.workflows.training import _bound_run
 
                 _bound_run(ws)

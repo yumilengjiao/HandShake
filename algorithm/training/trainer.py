@@ -13,7 +13,7 @@ import torch
 import yaml
 
 from algorithm.data.dataset import canonical_digest
-from algorithm.model_config import build_model, load_model_config
+from algorithm.model_config import build_model, model_architecture
 from algorithm.models.losses import masked_cross_entropy
 from algorithm.training.balancing import class_weights_from_counts
 from algorithm.training.config import TrainConfig
@@ -174,7 +174,9 @@ def train(
             training["y"][mask]
         )
     vocabulary = vocabulary_for(provenance["vocabulary_version"])
-    model = build_model(config.model_type, vocabulary=vocabulary).to(device)
+    model = build_model(
+        config.model_type, vocabulary=vocabulary, variant=config.model_variant
+    ).to(device)
     optimizer = torch.optim.AdamW(
         model.parameters(), lr=config.learning_rate, weight_decay=config.weight_decay
     )
@@ -220,11 +222,9 @@ def train(
         schema_sha256=feature_schema_hash(),
         classes_sha256=vocabulary.digest(),
         classes=vocabulary.to_dict(),
-        architecture=load_model_config(config.model_type).model_dump(mode="json")
-        | {
-            "vocabulary_version": vocabulary.vocabulary_version,
-            "num_classes": vocabulary.class_count,
-        },
+        architecture=model_architecture(
+            config.model_type, vocabulary=vocabulary, variant=config.model_variant
+        ),
         environment=dict(
             python=platform.python_version(),
             torch=str(torch.__version__),

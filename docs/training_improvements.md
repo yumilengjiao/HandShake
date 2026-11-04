@@ -1,5 +1,9 @@
 # 训练指标诊断与可选改进（2026-11-03）
 
+> 2026-11-04中午更新：上午因果运动候选的完整验证Accuracy/Macro-F1为79.38%/50.57%，当前按全标签F1保留；但单击退步且seed43复验仅完成18/20epoch，尚不能宣称稳健提分。实际结果与模型选择见[上午最终结果](training_morning_results.md)。下述夜间/实现阶段数字保留历史口径。
+
+> 最新补记（2026-11-04）：夜间已完成采样、学习率、权衰减、裁剪、batch与MLP对照，均未超过加权TCN的验证Accuracy 79.20% / Macro-F1 49.14%；继续保留参考模型。新增同分数/缓存绑定的历史长度诊断，见[夜间训练复盘](training_overnight_review.md)。[第二轮复盘](training_round2_review.md)中的下一轮命令是已执行的历史计划，不是尚待验证的新建议。下文原交付模型数据与实现阶段软件验证保留其历史口径，不把新旧缓存结果混作严格对照。
+
 ## 结论与证据
 
 当前交付TCN的验证Accuracy为78.85%，Macro-F1为46.52%。问题不是单纯“epoch太少”：类别不平衡、后期泛化停滞和动态类别混淆都有证据。以下原模型数据来自`artifacts/runs/20261102T174832Z-tcn-af17e513/`的训练清单和每轮验证混淆矩阵，不是新训练结果。
@@ -124,6 +128,6 @@ uv run train --sampling supervised_uniform --class-weighting sqrt_inverse --sche
 - 采样/加权损失/停滞衰减/短命令/紧凑缓存相关测试：**143通过**。其中包含MLP/TCN × 两种采样 × 两种损失/调度组合的跨进程精确续训，以及紧凑缓存续训/导出；数量与上一会话不是同一测试集合，不相加。
 - 广域非训练回归：**946通过、6未选中、13项既有诊断/样例警告**；用`HANDSHAKE_NO_TRAINING=1`禁止反向传播和优化器更新。
 - 真实train/val只读预检通过；独立进程确认没有导入torch或训练器、没有创建run/改变latest，旧checkpoint、epochs日志以及train/val缓存文件SHA256未变。
-- 本机torch为CPU构建；未认证CUDA/MPS训练性能。本次只有小型合成训练软件测试，**尚未运行真实数据重训，没有新的真实Macro-F1/Accuracy。**
+- 实现阶段本机torch为CPU构建，只有小型合成训练软件测试，当时尚未真实重训；未认证CUDA/MPS训练性能。随后完成的本机真实训练、同缓存对照和模型选择另记于[第二轮复盘](training_round2_review.md)，不改写历史预检回执。
 
 主要实现：`algorithm/training/balancing.py`、`algorithm/training/sampling.py`、`algorithm/models/losses.py`、`algorithm/training/trainer.py`；短命令及配置接入位于`backend/workflows/`。验证摘要见[training_revision_2026-11-03.json](verification/training_revision_2026-11-03.json)。

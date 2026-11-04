@@ -1,0 +1,736 @@
+{
+  "format_version": "handshake-defense-deck-v1",
+  "scope": "AI-focused defense, 13 main slides + 3 appendices",
+  "source_revision": "7adedb5eceed5161c1f7b74e9374b426e9e0427c",
+  "source_files_sha256": {
+    "artifacts/runs/20261102T174832Z-tcn-af17e513/epochs.jsonl": "2b51ba0adb061833fc75e178a2a2c1c1fe503d2b850f6d68db9f9a4993a07aed",
+    "artifacts/runs/20261102T174832Z-tcn-af17e513/run_manifest.json": "43205244a179a5701ce360ed0bf0b4c4f6d46ba7e07f495336ef1faddb2c9b36",
+    "docs/report/results.json": "192da4e1844774318608e51674aa0acb2c8c7390605b911814835f9af9527926"
+  },
+  "checks": {
+    "training_log_hashes": true,
+    "all_12_epochs_match": true,
+    "confusion_matrix_metrics_recomputed": true,
+    "pptx_reopened": true,
+    "speaker_notes_on_all_slides": true,
+    "shape_bounds": true
+  },
+  "slides": 16,
+  "main_speech_seconds": 480,
+  "parameter_counts": {
+    "tcn_15_classes": 56975,
+    "mlp_15_classes": 21391
+  },
+  "evidence_split": "val",
+  "final_test_read": false,
+  "new_neural_training": false,
+  "camera_opened": false,
+  "artwork": "Procedural hand/temporal/receptive-field illustrations are labeled schematics, not real samples.",
+  "source_results": {
+    "format_version": "course-report-evidence-v1",
+    "run": "20261102T174832Z-tcn-af17e513",
+    "split": "val",
+    "scope": "fixed source-capture-group holdout; not verified subject holdout or live control",
+    "synthetic": false,
+    "source": {
+      "cache_index_sha256": "d3e3ae80a9af191d9e365da68324e8c0b145a35f2b69f623a8588eb089f9fe85",
+      "config_sha256": "c402769a53a6b6b728c9de2f192622b14212db383b33dc22a4835abdd6db0d81",
+      "data_synthetic": false,
+      "dataset_sha256": "9c440be3d48529c2eee3d17242684ea5694a2c56a747f8baa05fcc09acb41e53",
+      "endpoint_sha256": "159872fc56ef3e5ee807066284ef5267a384267159bffddd45873a2198fa016f",
+      "model_sha256": "1c3e0253b5a6f543df3f7472a4a48ab9f6ebe35aa240807beb787cd76a84e2da",
+      "model_synthetic": false,
+      "scoring_policy": "all_cache_endpoints",
+      "split": "val",
+      "split_sha256": "20425aa8e2662f464ca5fc2b3df8b57a23c37033fc93b006b8ddf6f18dd462e4",
+      "stats_sha256": "6cd93cca7726adbd684bbbbee9795c64999a3a7eab2bccd899b2937b3ce38217",
+      "vocabulary_version": "ipn-hands-v1"
+    },
+    "hashes": {
+      "run_manifest": "43205244a179a5701ce360ed0bf0b4c4f6d46ba7e07f495336ef1faddb2c9b36",
+      "classification": "12732e887418b44c64a90280d3237553a1ffe0728e7d940b59acfc77be79048d",
+      "epochs": "2b51ba0adb061833fc75e178a2a2c1c1fe503d2b850f6d68db9f9a4993a07aed",
+      "score_manifest": "61cccac32e0b1049f39a9f748901d7ed7fe64662e105068cecd250c36cb23698"
+    },
+    "architecture": {
+      "format_version": "model-config-v1",
+      "status": "draft",
+      "feature_schema_version": "landmarks94-v1",
+      "vocabulary_version": "ipn-hands-v1",
+      "input_dim": 94,
+      "window_size": 32,
+      "dropout": 0.2,
+      "model_type": "tcn",
+      "channels": 64,
+      "kernel_size": 3,
+      "dilations": [
+        1,
+        2,
+        4,
+        8
+      ],
+      "num_classes": 15
+    },
+    "config": {
+      "format_version": "trainer-v1",
+      "model_type": "tcn",
+      "optimizer": "AdamW",
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "batch_size": 64,
+      "max_epochs": 80,
+      "patience": 10,
+      "min_delta": 0.0001,
+      "grad_clip_norm": 1.0,
+      "seed": 42,
+      "device": "auto",
+      "threads": 1,
+      "sampling": "uniform",
+      "scheduler": "constant",
+      "checkpoint_metric": "val_macro_f1",
+      "shuffle_labels_diagnostic": false
+    },
+    "environment": {
+      "python": "3.12.13",
+      "torch": "2.11.0+cu128",
+      "numpy": "1.26.4",
+      "system": "Windows",
+      "kernel": "11",
+      "machine": "AMD64",
+      "cpu_model": "AMD64 Family 26 Model 68 Stepping 0, AuthenticAMD",
+      "logical_cpus": 12,
+      "python_build": [
+        "main",
+        "May 10 2026 19:35:37"
+      ],
+      "threads": 1,
+      "device": "cuda:0",
+      "accelerator_name": "NVIDIA GeForce RTX 5060 Ti",
+      "cuda_runtime": "12.8"
+    },
+    "data": {
+      "train_index_sha256": "d3444ac6ab82ef400977a2a8a21127f32ad9c704e05c3e8a57f2157382a153c9",
+      "val_index_sha256": "d3e3ae80a9af191d9e365da68324e8c0b145a35f2b69f623a8588eb089f9fe85",
+      "format_version": "t11-cache-v3",
+      "dataset_sha256": "9c440be3d48529c2eee3d17242684ea5694a2c56a747f8baa05fcc09acb41e53",
+      "split_sha256": "20425aa8e2662f464ca5fc2b3df8b57a23c37033fc93b006b8ddf6f18dd462e4",
+      "stats_sha256": "6cd93cca7726adbd684bbbbee9795c64999a3a7eab2bccd899b2937b3ce38217",
+      "config_sha256": "c402769a53a6b6b728c9de2f192622b14212db383b33dc22a4835abdd6db0d81",
+      "synthetic": false,
+      "stride": 1,
+      "vocabulary_version": "ipn-hands-v1",
+      "classes_sha256": "b5f55c57930727716b9cacf516bf8aab6b935f6c65ced46db3ef592fe0dff466",
+      "grouping": {
+        "unit": "source_capture_group",
+        "subject_identity_verified": false,
+        "legacy_subject_id_field": "capture-group namespace, NOT verified person identifiers"
+      },
+      "train": {
+        "endpoints": 459704,
+        "supervised": 334604,
+        "class_counts": [
+          66650,
+          112317,
+          107997,
+          3145,
+          2993,
+          3286,
+          2507,
+          2956,
+          2856,
+          5449,
+          4921,
+          5306,
+          4549,
+          3876,
+          5796
+        ],
+        "coverage": {
+          "selected_endpoints": 465165,
+          "represented": 459704,
+          "ready": 224726,
+          "ready_coverage": 0.4831102941966829,
+          "unprocessed_frames": 0
+        },
+        "endpoint_sha256": "3ef6fe008fef9c8541417c8e5d2160b2d4611754baccdd1f767e4de78676c368"
+      },
+      "val": {
+        "endpoints": 131189,
+        "supervised": 99909,
+        "class_counts": [
+          24192,
+          31003,
+          30126,
+          939,
+          968,
+          958,
+          785,
+          798,
+          755,
+          1895,
+          1765,
+          1774,
+          1375,
+          1139,
+          1437
+        ],
+        "coverage": {
+          "selected_endpoints": 132119,
+          "represented": 131189,
+          "ready": 70069,
+          "ready_coverage": 0.530347641141698,
+          "unprocessed_frames": 0
+        },
+        "endpoint_sha256": "159872fc56ef3e5ee807066284ef5267a384267159bffddd45873a2198fa016f"
+      }
+    },
+    "metrics": {
+      "accuracy": 0.788537569187961,
+      "macro_f1": 0.46522292459115133,
+      "balanced_accuracy": 0.4555063959964309,
+      "weighted_f1": 0.781249949096739,
+      "labeled_endpoints": 99909,
+      "abstained_labeled": 0,
+      "classes": [
+        {
+          "token": "NOG",
+          "support": 24192,
+          "precision": 0.8186664336275452,
+          "recall": 0.7744708994708994,
+          "f1": 0.7959556480734101
+        },
+        {
+          "token": "P1F",
+          "support": 31003,
+          "precision": 0.8910770022846478,
+          "recall": 0.8932038834951457,
+          "f1": 0.892139175257732
+        },
+        {
+          "token": "P2F",
+          "support": 30126,
+          "precision": 0.8102783467887698,
+          "recall": 0.892850029874527,
+          "f1": 0.8495625532990114
+        },
+        {
+          "token": "C1F",
+          "support": 939,
+          "precision": 0.1752136752136752,
+          "recall": 0.043663471778487756,
+          "f1": 0.06990622335890878
+        },
+        {
+          "token": "C2F",
+          "support": 968,
+          "precision": 0.2323943661971831,
+          "recall": 0.03409090909090909,
+          "f1": 0.05945945945945946
+        },
+        {
+          "token": "TUP",
+          "support": 958,
+          "precision": 0.4233409610983982,
+          "recall": 0.3862212943632568,
+          "f1": 0.4039301310043668
+        },
+        {
+          "token": "TDN",
+          "support": 785,
+          "precision": 0.3315508021390374,
+          "recall": 0.47388535031847134,
+          "f1": 0.3901415836392239
+        },
+        {
+          "token": "TLT",
+          "support": 798,
+          "precision": 0.6372315035799523,
+          "recall": 0.33458646616541354,
+          "f1": 0.4387838948233361
+        },
+        {
+          "token": "TRT",
+          "support": 755,
+          "precision": 0.6104347826086957,
+          "recall": 0.4649006622516556,
+          "f1": 0.5278195488721805
+        },
+        {
+          "token": "OP2",
+          "support": 1895,
+          "precision": 0.35499398315282793,
+          "recall": 0.6226912928759895,
+          "f1": 0.4521939068787124
+        },
+        {
+          "token": "2C1",
+          "support": 1765,
+          "precision": 0.5146198830409356,
+          "recall": 0.3490084985835694,
+          "f1": 0.4159351789331533
+        },
+        {
+          "token": "2C2",
+          "support": 1774,
+          "precision": 0.4358974358974359,
+          "recall": 0.3258173618940248,
+          "f1": 0.3729032258064517
+        },
+        {
+          "token": "ZIN",
+          "support": 1375,
+          "precision": 0.40184883088635126,
+          "recall": 0.5374545454545454,
+          "f1": 0.4598630989421282
+        },
+        {
+          "token": "ZOT",
+          "support": 1139,
+          "precision": 0.6059113300492611,
+          "recall": 0.32396839332748023,
+          "f1": 0.4221967963386728
+        },
+        {
+          "token": "GRB",
+          "support": 1437,
+          "precision": 0.49586776859504134,
+          "recall": 0.3757828810020877,
+          "f1": 0.4275534441805226
+        }
+      ],
+      "confusion_matrix": [
+        [
+          18736,
+          825,
+          1419,
+          11,
+          13,
+          292,
+          160,
+          104,
+          167,
+          1371,
+          36,
+          60,
+          668,
+          83,
+          247,
+          0
+        ],
+        [
+          687,
+          27692,
+          1972,
+          88,
+          16,
+          4,
+          140,
+          4,
+          17,
+          30,
+          254,
+          18,
+          19,
+          11,
+          51,
+          0
+        ],
+        [
+          1209,
+          1177,
+          26898,
+          0,
+          32,
+          14,
+          312,
+          20,
+          8,
+          29,
+          2,
+          293,
+          44,
+          61,
+          27,
+          0
+        ],
+        [
+          61,
+          437,
+          68,
+          41,
+          5,
+          0,
+          0,
+          0,
+          0,
+          2,
+          286,
+          20,
+          18,
+          0,
+          1,
+          0
+        ],
+        [
+          46,
+          5,
+          515,
+          0,
+          33,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          343,
+          19,
+          5,
+          1,
+          0
+        ],
+        [
+          231,
+          25,
+          95,
+          3,
+          0,
+          370,
+          35,
+          0,
+          0,
+          107,
+          0,
+          0,
+          25,
+          0,
+          67,
+          0
+        ],
+        [
+          209,
+          25,
+          60,
+          3,
+          0,
+          19,
+          372,
+          1,
+          4,
+          47,
+          0,
+          0,
+          19,
+          0,
+          26,
+          0
+        ],
+        [
+          209,
+          23,
+          215,
+          0,
+          0,
+          13,
+          22,
+          267,
+          7,
+          14,
+          0,
+          0,
+          11,
+          0,
+          17,
+          0
+        ],
+        [
+          162,
+          14,
+          53,
+          0,
+          0,
+          82,
+          1,
+          15,
+          351,
+          60,
+          0,
+          0,
+          14,
+          0,
+          3,
+          0
+        ],
+        [
+          222,
+          48,
+          211,
+          0,
+          0,
+          49,
+          13,
+          2,
+          18,
+          1180,
+          2,
+          0,
+          60,
+          3,
+          87,
+          0
+        ],
+        [
+          160,
+          767,
+          116,
+          88,
+          3,
+          0,
+          2,
+          0,
+          0,
+          7,
+          616,
+          5,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          45,
+          15,
+          1071,
+          0,
+          31,
+          0,
+          5,
+          0,
+          0,
+          1,
+          0,
+          578,
+          11,
+          15,
+          2,
+          0
+        ],
+        [
+          349,
+          10,
+          207,
+          0,
+          5,
+          0,
+          0,
+          0,
+          0,
+          2,
+          1,
+          1,
+          739,
+          60,
+          1,
+          0
+        ],
+        [
+          263,
+          10,
+          272,
+          0,
+          4,
+          1,
+          0,
+          1,
+          0,
+          7,
+          0,
+          8,
+          185,
+          369,
+          19,
+          0
+        ],
+        [
+          297,
+          4,
+          24,
+          0,
+          0,
+          30,
+          59,
+          5,
+          3,
+          467,
+          0,
+          0,
+          6,
+          2,
+          540,
+          0
+        ]
+      ]
+    },
+    "curves": [
+      {
+        "epoch": 1,
+        "train_loss": 0.498095835357967,
+        "val_loss": 0.7319177807802728,
+        "val_macro_f1": 0.4168622455419842
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.36767795741742176,
+        "val_loss": 0.7384722982651305,
+        "val_macro_f1": 0.4652229245911513
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.3276237762491812,
+        "val_loss": 0.7304390341063147,
+        "val_macro_f1": 0.4574911887906473
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.3030923105836052,
+        "val_loss": 0.7627664547212166,
+        "val_macro_f1": 0.4585249757441607
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.2873601736922037,
+        "val_loss": 0.8197897698562714,
+        "val_macro_f1": 0.45833768415519105
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.2723927652363049,
+        "val_loss": 0.7955597096293806,
+        "val_macro_f1": 0.46526501242407736
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.2626784031593465,
+        "val_loss": 0.7821837216273831,
+        "val_macro_f1": 0.46478156203888626
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.25484616932780163,
+        "val_loss": 0.8643719341369374,
+        "val_macro_f1": 0.45681657091178135
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.24700029501068768,
+        "val_loss": 0.9076090993949376,
+        "val_macro_f1": 0.4464757536984402
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.24078748084800267,
+        "val_loss": 0.8830624208547845,
+        "val_macro_f1": 0.4573952729966465
+      },
+      {
+        "epoch": 11,
+        "train_loss": 0.23552502012812201,
+        "val_loss": 0.8694926120461387,
+        "val_macro_f1": 0.45359161846462676
+      },
+      {
+        "epoch": 12,
+        "train_loss": 0.22902303110370134,
+        "val_loss": 0.8512155600231461,
+        "val_macro_f1": 0.45589302922581393
+      }
+    ],
+    "best_epoch": 2,
+    "early_stopped": true,
+    "final_test_used": false,
+    "grouping": {
+      "unit": "source_capture_group",
+      "subject_identity_verified": false,
+      "legacy_subject_id_field": "capture-group namespace, NOT verified person identifiers"
+    },
+    "calibration": {
+      "accepted_count": 73076,
+      "accepted_errors": 7143,
+      "actions_enabled": false,
+      "fit_count": 99909,
+      "format_version": "validation-calibration-v1",
+      "labeled_count": 99909,
+      "max_risk": 0.1,
+      "method": "finite-grid-nll_then_max-coverage-empirical-risk-v1",
+      "min_accepted": 20,
+      "min_coverage": 0.5,
+      "nlls": [
+        1.1730183565939782,
+        0.8629767467542715,
+        0.7384722985533796,
+        0.6926798442113301,
+        0.68967376017901,
+        0.754169878171869,
+        0.9938664162438009,
+        1.241331951849256,
+        1.6101354322533148,
+        1.8426365846054082,
+        2.105156580297862,
+        2.2467642762631614
+      ],
+      "rejection_status": "selected",
+      "score_manifest_sha256": "61cccac32e0b1049f39a9f748901d7ed7fe64662e105068cecd250c36cb23698",
+      "source": {
+        "cache_index_sha256": "d3e3ae80a9af191d9e365da68324e8c0b145a35f2b69f623a8588eb089f9fe85",
+        "config_sha256": "c402769a53a6b6b728c9de2f192622b14212db383b33dc22a4835abdd6db0d81",
+        "data_synthetic": false,
+        "dataset_sha256": "9c440be3d48529c2eee3d17242684ea5694a2c56a747f8baa05fcc09acb41e53",
+        "endpoint_sha256": "159872fc56ef3e5ee807066284ef5267a384267159bffddd45873a2198fa016f",
+        "model_sha256": "1c3e0253b5a6f543df3f7472a4a48ab9f6ebe35aa240807beb787cd76a84e2da",
+        "model_synthetic": false,
+        "scoring_policy": "all_cache_endpoints",
+        "split": "val",
+        "split_sha256": "20425aa8e2662f464ca5fc2b3df8b57a23c37033fc93b006b8ddf6f18dd462e4",
+        "stats_sha256": "6cd93cca7726adbd684bbbbee9795c64999a3a7eab2bccd899b2937b3ce38217",
+        "vocabulary_version": "ipn-hands-v1"
+      },
+      "status": "draft",
+      "synthetic": false,
+      "temperature": 1.5,
+      "temperatures": [
+        0.5,
+        0.75,
+        1.0,
+        1.25,
+        1.5,
+        2.0,
+        3.0,
+        4.0,
+        6.0,
+        8.0,
+        12.0,
+        16.0
+      ],
+      "threshold": 0.6,
+      "thresholds": [
+        0.0,
+        0.5,
+        0.6,
+        0.7,
+        0.8,
+        0.9,
+        0.95,
+        0.99,
+        1.0
+      ]
+    },
+    "missing": [
+      "MLP comparison",
+      "frozen final-test evaluation",
+      "training wall-clock time",
+      "live gesture control accuracy/latency/false activations",
+      "member identities and verified contributions"
+    ]
+  },
+  "output_pptx_sha256": "215afdc1a21c69d6afc894a4032721d15c573eac830e315fea2afbc0e6863cd6"
+}

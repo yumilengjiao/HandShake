@@ -18,7 +18,7 @@ from pathlib import Path
 
 import numpy as np
 
-from algorithm.model_config import build_model, load_model_config
+from algorithm.model_config import MODEL_VARIANTS, build_model, model_architecture
 from shared.classes import vocabulary_for
 from shared.features import FeatureNormalizer
 from shared.features.schema import (
@@ -56,17 +56,22 @@ RUNTIME_FILES = (
 )
 
 
-def runtime_contract():
-    """Pin feature/model semantics as well as dimensions; paths never come from a bundle."""
+def runtime_contract(variant="baseline"):
+    """Pin semantics; baseline pins remain byte-for-byte compatible with old bundles."""
     from importlib.resources import files
 
+    if variant not in MODEL_VARIANTS:
+        raise ValueError("unsupported model variant")
+    modules = RUNTIME_FILES
+    if variant in {"motion", "motion_dropout35"}:
+        modules += ("algorithm.models.motion_tcn",)
     return {
         module: digest(
             files(module.rsplit(".", 1)[0])
             .joinpath(module.rsplit(".", 1)[1] + ".py")
             .read_bytes()
         )
-        for module in RUNTIME_FILES
+        for module in modules
     }
 
 
@@ -157,15 +162,12 @@ def _arrays_load(data, shapes):
     return result
 
 
-def architecture_for(kind, vocabulary):
-    return load_model_config(kind).model_dump(mode="json") | {
-        "vocabulary_version": vocabulary.vocabulary_version,
-        "num_classes": vocabulary.class_count,
-    }
+def architecture_for(kind, vocabulary, variant="baseline"):
+    return model_architecture(kind, vocabulary=vocabulary, variant=variant)
 
 
-def deployment_architecture(kind, vocabulary):
-    return architecture_for(kind, vocabulary) | {
+def deployment_architecture(kind, vocabulary, variant="baseline"):
+    return architecture_for(kind, vocabulary, variant) | {
         "heads": ["class"],
         "dtype": "float32",
         "device": "cpu",
@@ -207,8 +209,9 @@ def _check_training(manifest):
         raise ValueError("label-shuffling diagnostics cannot be deployed")
     vocabulary = vocabulary_for(identity["data"]["vocabulary_version"])
     kind = identity["config"]["model_type"]
+    variant = identity["config"].get("model_variant", "baseline")
     if kind not in {"mlp", "tcn"} or identity["architecture"] != architecture_for(
-        kind, vocabulary
+        kind, vocabulary, variant
     ):
         raise ValueError("unsupported training architecture")
     if (
@@ -272,10 +275,11 @@ def load_bundle(directory, *, expected_manifest_sha256: str) -> LoadedBundle:
         contents[name] = data
     training = strict_json(contents["training_manifest.json"])
     identity, vocabulary, kind = _check_training(training)
+    variant = identity["config"].get("model_variant", "baseline")
     if (
-        strict_json(contents["runtime_contract.json"]) != runtime_contract()
+        strict_json(contents["runtime_contract.json"]) != runtime_contract(variant)
         or strict_json(contents["architecture.json"])
-        != deployment_architecture(kind, vocabulary)
+        != deployment_architecture(kind, vocabulary, variant)
         or canonical_hash(strict_json(contents["classes.json"])) != vocabulary.digest()
         or strict_json(contents["feature_schema.json"]) != load_feature_schema()
         or strict_json(contents["calibration.json"]) != CALIBRATION
@@ -288,7 +292,7 @@ def load_bundle(directory, *, expected_manifest_sha256: str) -> LoadedBundle:
     # No torch import or model allocation until the entire package is verified.
     import torch
 
-    model = build_model(kind, vocabulary=vocabulary).cpu().eval()
+    model = build_model(kind, vocabulary=vocabulary, variant=variant).cpu().eval()
     state = _arrays_load(
         contents["weights.npz"],
         {name: tuple(t.shape) for name, t in model.state_dict().items()},
@@ -326,6 +330,7 @@ def export_bundle(run_directory, normalization, output, *, allow_synthetic=False
         )
     run = strict_json(read_bounded(root / "run_manifest.json", MAX_JSON))
     identity, vocabulary, kind = _check_training(run)
+    variant = identity["config"].get("model_variant", "baseline")
     from algorithm.training.trainer import implementation_hash
 
     if identity["code_sha256"] != implementation_hash():
@@ -350,7 +355,7 @@ def export_bundle(run_directory, normalization, output, *, allow_synthetic=False
         or checkpoint["val_macro_f1"] != run["best_val_macro_f1"]
     ):
         raise ValueError("best checkpoint/training manifest mismatch")
-    model = build_model(kind, vocabulary=vocabulary).cpu().eval()
+    model = build_model(kind, vocabulary=vocabulary, variant=variant).cpu().eval()
     if any(
         not isinstance(tensor, torch.Tensor)
         or tensor.dtype != torch.float32
@@ -378,8 +383,8 @@ def export_bundle(run_directory, normalization, output, *, allow_synthetic=False
         raise ValueError("export produced nonfinite golden logits")
     contents = {
         "weights.npz": _arrays_bytes(arrays),
-        "runtime_contract.json": json_bytes(runtime_contract()),
-        "architecture.json": json_bytes(deployment_architecture(kind, vocabulary)),
+        "runtime_contract.json": json_bytes(runtime_contract(variant)),
+        "architecture.json": json_bytes(deployment_architecture(kind, vocabulary, variant)),
         "classes.json": json_bytes(vocabulary.to_dict()),
         "feature_schema.json": json_bytes(load_feature_schema()),
         "normalization.json": json_bytes(stats_data),

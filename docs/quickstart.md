@@ -93,7 +93,7 @@ uv run calibrate
 
 默认val，自动关联模型与可信回执。校准不改变网络权重；约束不可满足时保存报告但返回失败。最终模型/参数冻结后才运行 `uv run evaluate --split test`。
 
-Linux上 `uv run app --model` 可只读加载最近模型及匹配校准；不自动开启相机或应用操作。给别人部署请发送完整模型包、export回执、校准文件及代码版本；不要只发 `weights.npz` 或整个`.venv`。
+Linux上 `uv run app` 会读取最新已有的完整模型/校准交接，默认进入同窗口的[实时手势翻页预览](native_gesture_preview.md)，不重新训练或导出；相机、启用和控制手选择仍需在界面明确操作。给别人部署请发送完整模型包、export回执、校准文件及代码版本；不要只发 `weights.npz` 或整个`.venv`。
 
 ## 错误与平台边界
 

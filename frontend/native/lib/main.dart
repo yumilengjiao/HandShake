@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'core/core_repository.dart';
+import 'gesture/gesture_repository.dart';
+import 'gesture/gesture_screen.dart';
+import 'gesture/gesture_view_model.dart';
 import 'presentation/presentation_repository.dart';
 import 'presentation/presentation_screen.dart';
 import 'presentation/presentation_view_model.dart';
@@ -21,7 +24,9 @@ class HandShakeApp extends StatefulWidget {
 class _HandShakeAppState extends State<HandShakeApp> {
   late final StageViewModel model;
   late final PresentationViewModel presenter;
-  bool presenting = false;
+  late final GestureViewModel gesture;
+  int selected = 0;
+  bool switching = false;
   late final AppLifecycleListener lifecycle;
 
   @override
@@ -49,33 +54,74 @@ class _HandShakeAppState extends State<HandShakeApp> {
         workingDirectory: Platform.environment['HANDSHAKE_ROOT'],
       ),
     );
+    final liveModel =
+        Platform.environment['HANDSHAKE_ALLOW_SYNTHETIC_MODEL'] != '1';
+    gesture = GestureViewModel(
+      () => ProcessGestureRepository(
+        python: Platform.environment['HANDSHAKE_PYTHON'] ?? 'python3',
+        workingDirectory: Platform.environment['HANDSHAKE_ROOT'],
+        camera:
+            int.tryParse(Platform.environment['HANDSHAKE_CAMERA'] ?? '0') ?? 0,
+        perceptionModel: Platform.environment['HANDSHAKE_PERCEPTION_MODEL'],
+        modelPackage: liveModel
+            ? Platform.environment['HANDSHAKE_MODEL_PACKAGE']
+            : null,
+        modelSha256: liveModel
+            ? Platform.environment['HANDSHAKE_MODEL_SHA256']
+            : null,
+        calibration: liveModel
+            ? Platform.environment['HANDSHAKE_CALIBRATION']
+            : null,
+        calibrationSha256: liveModel
+            ? Platform.environment['HANDSHAKE_CALIBRATION_SHA256']
+            : null,
+      ),
+    );
     lifecycle = AppLifecycleListener(
       onPause: _stopAll,
       onHide: _stopAll,
-      onInactive: () {
-        presenter.stop();
-        if (model.latest?.version == 5) model.stop();
+      onInactive: _stopAll,
+      onResume: () {
+        gesture.active = selected == 2;
       },
     );
-    // Connecting does not start even a synthetic preview; user intent is required.
+    // Connecting never opens a camera or enables control.
     model.connect();
+    if (liveModel &&
+        Platform.environment['HANDSHAKE_MODEL_PACKAGE'] != null &&
+        Platform.environment['HANDSHAKE_CALIBRATION'] != null &&
+        Platform.environment['HANDSHAKE_SHADOW_SESSION'] != '1') {
+      selected = 2;
+      gesture.activate();
+    }
   }
 
   void _stopAll() {
     model.stop();
     presenter.stop();
+    gesture.deactivate();
   }
 
-  void _select(bool presentation) {
-    if (presenting == presentation) return;
-    if (presentation) {
-      model.stop();
-      presenter.activate();
-    } else {
-      presenter.deactivate();
+  Future<void> _select(int page) async {
+    if (selected == page || switching) return;
+    setState(() => switching = true);
+    final released = selected == 0
+        ? await model.stopAndWait()
+        : selected == 2
+        ? await gesture.closeCameraAndWait()
+        : true;
+    if (!mounted) return;
+    if (!released) {
+      setState(() => switching = false);
+      return; // Keep the stop/error controls visible; never allocate a second camera.
     }
+    presenter.deactivate();
+    gesture.active = page == 2;
+    if (page == 1) presenter.activate();
+    if (page == 2) gesture.activate();
     setState(() {
-      presenting = presentation;
+      selected = page;
+      switching = false;
     });
   }
 
@@ -83,6 +129,7 @@ class _HandShakeAppState extends State<HandShakeApp> {
   void dispose() {
     lifecycle.dispose();
     presenter.dispose();
+    gesture.dispose();
     model.dispose();
     super.dispose();
   }
@@ -113,21 +160,28 @@ class _HandShakeAppState extends State<HandShakeApp> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () => _select(false),
+                    onPressed: switching ? null : () => _select(0),
                     child: const Text('观测'),
                   ),
                   TextButton(
                     key: const Key('open-presentation'),
-                    onPressed: () => _select(true),
-                    child: const Text('演示'),
+                    onPressed: switching ? null : () => _select(1),
+                    child: const Text('人工演示'),
+                  ),
+                  TextButton(
+                    key: const Key('open-gesture'),
+                    onPressed: switching ? null : () => _select(2),
+                    child: const Text('手势翻页'),
                   ),
                 ],
               ),
             ),
             Expanded(
-              child: presenting
-                  ? PresentationScreen(model: presenter)
-                  : StageScreen(model: model),
+              child: switch (selected) {
+                1 => PresentationScreen(model: presenter),
+                2 => GestureScreen(model: gesture),
+                _ => StageScreen(model: model),
+              },
             ),
           ],
         ),

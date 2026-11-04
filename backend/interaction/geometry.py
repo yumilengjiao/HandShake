@@ -2,6 +2,7 @@
 
 import math
 from dataclasses import dataclass
+from functools import lru_cache
 
 import numpy as np
 
@@ -20,6 +21,19 @@ class FrameGeometry:
     aspect_ratio: float
 
 
+@lru_cache(maxsize=1)
+def _neutral_thresholds():
+    # Package defaults are fixed for this process. Do not reread and validate
+    # seven YAML files on every geometry check (several checks per model frame).
+    # Cache scalars/tuples only, not the config's mutable nested lists.
+    protocol = load_config().gestures
+    return (
+        protocol.extended_pip_degrees_min,
+        protocol.folded_pip_degrees_max,
+        tuple(protocol.neutral_region_xy),
+    )
+
+
 def frame_geometry(frame, track_id):
     tracks = tuple(o.track_id for o in frame.observations)
     observation = next((o for o in frame.observations if o.track_id == track_id), None)
@@ -36,7 +50,7 @@ def frame_geometry(frame, track_id):
     )
     neutral, center, extended, folded = False, None, 0, 0
     if valid:
-        protocol = load_config().gestures
+        extended_min, folded_max, region = _neutral_thresholds()
         points = np.asarray(observation.landmarks_image, dtype=np.float64)
         center = tuple(float(v) for v in points[[0, 5, 9, 13, 17], :2].mean(0))
         corrected = points.copy()
@@ -53,12 +67,12 @@ def frame_geometry(frame, track_id):
                 )
             )
         extended = sum(
-            a is not None and a >= protocol.extended_pip_degrees_min for a in angles
+            a is not None and a >= extended_min for a in angles
         )
         folded = sum(
-            a is not None and a <= protocol.folded_pip_degrees_max for a in angles
+            a is not None and a <= folded_max for a in angles
         )
-        xmin, xmax, ymin, ymax = protocol.neutral_region_xy
+        xmin, xmax, ymin, ymax = region
         neutral = (
             1 <= extended <= 3
             and extended + folded == 4

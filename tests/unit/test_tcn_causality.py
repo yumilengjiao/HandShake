@@ -146,6 +146,21 @@ def test_tcn_rejects_invalid_configuration(kwargs):
         GestureTCN(**kwargs)
 
 
+def test_variant_cpu_gradients_are_finite_and_keep_the_same_receptive_field():
+    from algorithm.model_config import build_model
+
+    torch.manual_seed(101)
+    model = build_model("tcn", variant="motion")
+    x = torch.randn(2, 32, 94, requires_grad=True)
+    with torch.no_grad():
+        x[..., 73:94] = 1
+        model.motion_classifier.weight.normal_(std=0.1)
+    model(x).square().sum().backward()
+    assert torch.count_nonzero(x.grad[:, 0]) == 0
+    assert x.grad[:, 1].abs().sum() > 0
+    assert all(p.grad is not None and torch.isfinite(p.grad).all() for p in model.parameters())
+
+
 def test_configurable_tcn_width_dilations_and_window():
     model = GestureTCN(input_dim=12, channels=8, dilations=(1, 2), dropout=0, window_size=8)
     assert model.receptive_field == 7

@@ -1,0 +1,106 @@
+{
+  "renderer": "LibreOffice headless, actual PPTX → PDF",
+  "files_sha256": {
+    "HandShake_AI答辩.pptx": "215afdc1a21c69d6afc894a4032721d15c573eac830e315fea2afbc0e6863cd6",
+    "HandShake_AI答辩.pdf": "95c9274e48aa304b7554493150b2eaf3471031eda3130de243d3e769bba0bcea"
+  },
+  "pdf_pages": 16,
+  "slides": [
+    {
+      "slide": 1,
+      "text_length": 129,
+      "missing_text_paragraphs": [],
+      "out_of_page_spans": []
+    },
+    {
+      "slide": 2,
+      "text_length": 173,
+      "missing_text_paragraphs": [],
+      "out_of_page_spans": []
+    },
+    {
+      "slide": 3,
+      "text_length": 258,
+      "missing_text_paragraphs": [],
+      "out_of_page_spans": []
+    },
+    {
+      "slide": 4,
+      "text_length": 265,
+      "missing_text_paragraphs": [],
+      "out_of_page_spans": []
+    },
+    {
+      "slide": 5,
+      "text_length": 277,
+      "missing_text_paragraphs": [],
+      "out_of_page_spans": []
+    },
+    {
+      "slide": 6,
+      "text_length": 204,
+      "missing_text_paragraphs": [],
+      "out_of_page_spans": []
+    },
+    {
+      "slide": 7,
+      "text_length": 374,
+      "missing_text_paragraphs": [],
+      "out_of_page_spans": []
+    },
+    {
+      "slide": 8,
+      "text_length": 195,
+      "missing_text_paragraphs": [],
+      "out_of_page_spans": []
+    },
+    {
+      "slide": 9,
+      "text_length": 210,
+      "missing_text_paragraphs": [],
+      "out_of_page_spans": []
+    },
+    {
+      "slide": 10,
+      "text_length": 249,
+      "missing_text_paragraphs": [],
+      "out_of_page_spans": []
+    },
+    {
+      "slide": 11,
+      "text_length": 229,
+      "missing_text_paragraphs": [],
+      "out_of_page_spans": []
+    },
+    {
+      "slide": 12,
+      "text_length": 307,
+      "missing_text_paragraphs": [],
+      "out_of_page_spans": []
+    },
+    {
+      "slide": 13,
+      "text_length": 89,
+      "missing_text_paragraphs": [],
+      "out_of_page_spans": []
+    },
+    {
+      "slide": 14,
+      "text_length": 276,
+      "missing_text_paragraphs": [],
+      "out_of_page_spans": []
+    },
+    {
+      "slide": 15,
+      "text_length": 556,
+      "missing_text_paragraphs": [],
+      "out_of_page_spans": []
+    },
+    {
+      "slide": 16,
+      "text_length": 541,
+      "missing_text_paragraphs": [],
+      "out_of_page_spans": []
+    }
+  ]
+}
