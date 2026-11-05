@@ -201,6 +201,26 @@ def test_owner_button_reports_neutral_geometry_failure_without_relaxing_gate(set
     assert h.session.host.backend.page == 1
 
 
+@pytest.mark.parametrize("static_id", [1, 2])
+def test_model_bridge_outside_live_demo_still_requires_nog(setup, static_id):
+    import torch
+
+    h = setup
+    model = h.session.bundle.model
+    head = model.classifier if hasattr(model, "classifier") else model.network[-1]
+    with torch.no_grad():
+        head.bias.zero_()
+        head.bias[static_id] = 10
+    h.enable()
+    for _ in range(32):
+        result = h.step()
+    assert result.reason == "owner_requires_nog"
+    assert h.session.snapshot()["eligible_owner"] is None
+    assert not h.request()
+    assert h.session.controller.snapshot().owner_track_id is None
+    assert h.session.host.backend.page == 1
+
+
 def test_owner_epoch_cold_window_does_not_deadlock_or_bypass_release(setup):
     h = setup
     h.enable()

@@ -46,7 +46,9 @@ def main():
                     source,
                     output,
                     session=session,
-                    snapshot_interval_s=0.03,
+                    # UI telemetry is not the observation cadence. A 10Hz latest
+                    # preview avoids spending camera/model headroom on repaints.
+                    snapshot_interval_s=0.1,
                     decoder=lambda line: decode_command(line, NativeGestureCommand),
                     encoder=lambda value: (
                         json.dumps(

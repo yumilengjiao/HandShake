@@ -243,6 +243,30 @@ class _Camera extends StatelessWidget {
         '控制手：${value.flag('owner_bound') ? '已绑定' : '未选择'} · ${value.flag('warming') ? '预热中' : value.text('model_state')}',
       ),
       Text('翻页权限：${value.flag('actions_enabled') ? '可提交符合条件的手势' : '尚未就绪'}'),
+      if (value.diagnostics != null) ...[
+        Text(
+          '连续有效帧：${value.warmupValid} / 32 · 历史：${value.diagnostics!['window_length']} / 32',
+          key: const Key('gesture-warmup-progress'),
+        ),
+        Text(
+          '当前帧间隔：${value.sourceGapMs?.toStringAsFixed(1) ?? '—'} ms'
+          ' / 上限 ${(value.diagnostics!['max_gap_ms'] as num).toStringAsFixed(0)} ms'
+          ' · 完成时帧龄：${(value.diagnostics!['frame_age_ms'] as num).toStringAsFixed(1)} ms',
+          style: const TextStyle(fontSize: 12),
+        ),
+        if (value.diagnostics!.containsKey('capture_hz'))
+          Text(
+            '相机采集：${(value.diagnostics!['capture_hz'] as num?)?.toStringAsFixed(1) ?? '—'} FPS'
+            ' · 手部感知：${(value.diagnostics!['perception_ms'] as num?)?.toStringAsFixed(1) ?? '—'} ms'
+            ' · 模型/策略：${(value.diagnostics!['model_ms'] as num?)?.toStringAsFixed(1) ?? '—'} ms',
+            key: const Key('gesture-processing-timing'),
+            style: const TextStyle(fontSize: 12),
+          ),
+        Text(
+          '上次重置：${value.warmupResetText}（历史记录）',
+          style: const TextStyle(fontSize: 12),
+        ),
+      ],
       const SizedBox(height: 8),
       SelectableText(
         '判定原因：${value.text('policy_reason')}',
@@ -250,7 +274,7 @@ class _Camera extends StatelessWidget {
       ),
       const SizedBox(height: 12),
       const Text(
-        '选手时只留一只手，掌心放在画面中央：食指、中指伸直，无名指、小指弯曲，静止保持。完全张掌或握拳不符合当前中立条件。选手后继续静止预热，再做左右抛动；动作后回到中立。',
+        '选手时只留一只手，掌心放在画面中央：食指、中指伸直，无名指、小指弯曲，静止保持。完全张掌或握拳不符合当前中立条件。识别为 NOG（非手势）、P1F（单指）或 P2F（双指）且置信度足够时可选手，无需强等 NOG。选手后继续静止预热，再做左右抛动；动作后回到中立。',
       ),
     ],
   );

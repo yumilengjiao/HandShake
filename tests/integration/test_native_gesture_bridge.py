@@ -11,15 +11,16 @@ from backend.interaction.public_replay import ReplayClock
 from backend.native_gesture import NativeGestureSession
 from backend.perception.local_demo import DemoClassifier
 from backend.perception.preview import CameraFrame
-from tests.integration.test_local_gesture_demo import contract_inputs
+from tests.integration.test_local_gesture_demo import contract_inputs, set_fixture_neutral
 from tests.integration.test_model_session_bridge import Harness
 from tests.unit.test_native_gesture import ASSETS, Worker, command
 
 
 @pytest.mark.parametrize("kind", ["mlp", "tcn"])
 @pytest.mark.parametrize("with_capture_drops", [False, True])
+@pytest.mark.parametrize("neutral_id", [0, 1, 2])
 def test_native_commands_to_model_policy_and_visible_pages(
-    tmp_path, kind, with_capture_drops
+    tmp_path, kind, with_capture_drops, neutral_id,
 ):
     clock = ReplayClock()
     bridge = NativeGestureSession(
@@ -46,6 +47,7 @@ def test_native_commands_to_model_policy_and_visible_pages(
         clock=clock,
     )
     worker.adapter.session = session
+    set_fixture_neutral(session, neutral_id)
     h = Harness(session, clock)
 
     def paint():
@@ -79,6 +81,8 @@ def test_native_commands_to_model_policy_and_visible_pages(
             step()
         before = bridge.snapshot()
         assert before["eligible_owner"] and before["page"] == 1
+        assert before["top_class"] == args["bundle"].vocabulary.tokens[neutral_id]
+        assert not before["owner_bound"] and not before["actions_enabled"]
         bridge.accept(command(bridge, "choose_owner", before))
         step()
         assert bridge.snapshot()["owner_bound"]

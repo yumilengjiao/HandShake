@@ -23,6 +23,10 @@ def main(argv=None, *, project_root=None):
         help="run an already-built native executable without Flutter",
     )
     parser.add_argument(
+        "--debug", action="store_true",
+        help="developer-only Flutter debug/hot-reload; normal launches use release mode",
+    )
+    parser.add_argument(
         "--camera",
         type=int,
         default=0,
@@ -50,6 +54,8 @@ def main(argv=None, *, project_root=None):
     )
     parser.add_argument("--allow-synthetic-model", action="store_true")
     args = parser.parse_args(argv)
+    if args.debug and args.bundle:
+        parser.error("--debug requires a Flutter source launch, not --bundle")
     if args.shadow_session and not args.calibration:
         parser.error("shadow session requires model, perception and calibration assets")
     if args.allow_synthetic_model and not args.shadow_session:
@@ -82,7 +88,12 @@ def main(argv=None, *, project_root=None):
             parser.error(
                 "Flutter not found; pass --flutter /path/to/flutter/bin/flutter"
             )
-        command = [executable, "--no-version-check", "run", "-d", "linux"]
+        # This is the daily app entry, not a development session. Debug painting
+        # and VM-service overhead compete with the live 100ms observation budget.
+        command = [
+            executable, "--no-version-check", "run", "-d", "linux",
+            "--debug" if args.debug else "--release",
+        ]
     # Never inherit an old model/calibration selection from the launching shell.
     environment = {
         k: v

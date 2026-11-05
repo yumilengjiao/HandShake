@@ -300,10 +300,12 @@ class ModelPresentationSession:
 
                 probabilities = np.exp(lp)
                 winner = int(probabilities.argmax())
-                confident_nog = (
-                    winner == 0
-                    and int(np.count_nonzero(probabilities == probabilities[0])) == 1
-                    and probabilities[0]
+                token = self.bundle.vocabulary.tokens[winner]
+                neutral_tokens = self.host.engine.neutral_tokens
+                confident_neutral = (
+                    token in neutral_tokens
+                    and int(np.count_nonzero(probabilities == probabilities[winner])) == 1
+                    and probabilities[winner]
                     >= max(
                         self.host.engine.policy.class_on,
                         self.host.engine.calibration.threshold,
@@ -318,10 +320,16 @@ class ModelPresentationSession:
                     owner_reason = "owner_requires_valid_hand"
                 elif not geometry.neutral:
                     owner_reason = "owner_requires_neutral_pose"
-                elif winner != 0:
-                    owner_reason = "owner_requires_nog"
-                elif not confident_nog:
-                    owner_reason = "owner_requires_confident_nog"
+                elif token not in neutral_tokens:
+                    owner_reason = (
+                        "owner_requires_nog" if neutral_tokens == ("NOG",)
+                        else "owner_requires_static_neutral"
+                    )
+                elif not confident_neutral:
+                    owner_reason = (
+                        "owner_requires_confident_nog" if neutral_tokens == ("NOG",)
+                        else "owner_requires_confident_neutral"
+                    )
                 else:
                     self._eligible_track = prediction.track_id
                     owner_reason = "waiting_explicit_owner"

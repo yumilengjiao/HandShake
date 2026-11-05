@@ -170,7 +170,6 @@ class GestureViewModel extends ChangeNotifier {
       };
     }
     if (reason == 'enable_rejected') return '启用未成功：模型忙或画面已变化，请稍候再点击启用。';
-    if (reason == 'owner_rejected') return '选手未成功：只留一只自然静止的手，等待按钮重新可用。';
     if (!v.flag('enabled')) return '相机预览中 · 点击“启用手势”才开始识别控制';
     final policyReason = v.text('policy_reason');
     if (policyReason.startsWith('perception_not_processed:') ||
@@ -185,10 +184,12 @@ class GestureViewModel extends ChangeNotifier {
       };
     }
     if (v.flag('owner_pending')) return '已请求控制手，等待下一帧确认…';
-    if (v.flag('warming')) return '正在预热32帧窗口，请保持手部稳定';
+    if (v.flag('warming')) return _warmupStatus(v);
     if (!v.flag('owner_bound')) {
       return v.flag('eligible_owner')
-          ? '中立手已就绪 · 点击“选择控制手”或按 O'
+          ? (reason == 'owner_rejected'
+                ? '上次选手未成功 · 当前中立手已就绪，请再点击“选择控制手”或按 O'
+                : '中立手已就绪 · 点击“选择控制手”或按 O')
           : switch (v.text('policy_reason')) {
               'owner_requires_neutral_pose' =>
                 'O 未就绪：掌心居中，食指、中指伸直，其余两指弯曲；不要完全张掌或握拳。',
@@ -196,11 +197,16 @@ class GestureViewModel extends ChangeNotifier {
                 'O 未就绪：模型仍识别为 ${v.topClass ?? '动作'}，请保持中立手型静止，等待 NOG。',
               'owner_requires_confident_nog' =>
                 'O 未就绪：中立类别 NOG 置信度不足；保持手部清晰、光照充足。',
+              'owner_requires_static_neutral' =>
+                'O 未就绪：模型仍识别为 ${v.topClass ?? '动作'}；保持中立手型静止，等待 NOG / P1F / P2F。',
+              'owner_requires_confident_neutral' =>
+                'O 未就绪：中立类别 ${v.topClass ?? 'NOG / P1F / P2F'} 置信度不足；保持手部清晰、光照充足。',
+              'owner_request_rejected_or_expired' =>
+                '选手确认未通过或已过期；请保持一只中立手静止，等待按钮可用后再按 O。',
               'no_hand' => 'O 未就绪：未检测到手，请将一只手完整放入画面。',
               'multiple_hands' ||
               'owner_requires_unique_visible_hand' => 'O 未就绪：只留一只手，避免遮挡和交叉。',
-              'warming_up' ||
-              'history_uninitialized' => 'O 未就绪：正在积累32帧有效历史，请保持一只手稳定。',
+              'warming_up' || 'history_uninitialized' => _warmupStatus(v),
               'stale' ||
               'window_span_exceeded' => 'O 未就绪：识别帧过期或处理过慢，请检查相机帧率和系统负载。',
               'current_observation_invalid' ||
@@ -208,7 +214,23 @@ class GestureViewModel extends ChangeNotifier {
               _ => '请只留一只中立手静止，等待判定；当前原因：${v.text('policy_reason')}',
             };
     }
+    if (v.text('model_state') == 'WAIT_RELEASE') {
+      return '控制手已绑定 · 请在中央保持中立手型静止，等待释放期完成；当前还不能翻页。';
+    }
     return '控制手已绑定 · 右抛下一页，左抛上一页；动作后回到中立';
+  }
+
+  String _warmupStatus(GestureSnapshot value) {
+    if (value.warmupValid == null) return '正在积累32帧有效历史，请保持一只手稳定。';
+    final progress = '正在预热：连续有效 ${value.warmupValid}/32 帧';
+    if (value.samplingOverBudget) {
+      return '$progress；当前处理帧间隔超过上限'
+          '（${value.sourceGapMs!.toStringAsFixed(1)} / ${value.maxGapMs!.toStringAsFixed(0)} ms），请查看采集/感知耗时。';
+    }
+    if (value.sourceGapMs != null) {
+      return '$progress；当前帧间隔 ${value.sourceGapMs!.toStringAsFixed(1)} ms 正常。';
+    }
+    return '$progress；请继续保持一只手稳定。';
   }
 
   void _armDeadline(Duration duration) {

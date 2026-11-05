@@ -45,7 +45,7 @@ class SyntheticPublicPresentation:
         )
         self.controller.changes = deque(maxlen=128)
         # Validate policy/artifact before starting workers.
-        self.engine = PublicGestureEngine(
+        self.engine = self._make_engine(
             self.controller,
             calibration=calibration,
             calibration_sha256=calibration_sha256,
@@ -80,6 +80,9 @@ class SyntheticPublicPresentation:
                 target=self._watch, daemon=True, name="handshake-public-watchdog"
             )
             self._watchdog.start()
+
+    def _make_engine(self, controller, **kwargs):
+        return PublicGestureEngine(controller, **kwargs)
 
     def _deck(self):
         return demo_deck()

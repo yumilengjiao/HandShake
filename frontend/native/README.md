@@ -4,7 +4,7 @@ Linux原生预览，Flutter 3.47.9 / Dart 3.13.7。提供“观测”“人工�
 
 ## 启动
 
-推荐在仓库根目录使用 `uv run app`；统一配置见 `handshake.toml`，环境检查用 `uv run doctor`。需要相机依赖时先 `uv run setup --camera`。只有Linux原生宿主已提供，训练/数据命令不依赖Flutter。下文显式Python/脚本参数保留为高级兼容入口。
+推荐在仓库根目录使用 `uv run app`；统一配置见 `handshake.toml`，环境检查用 `uv run doctor`。正常启动默认使用Flutter release模式，减少调试服务和绘制开销；开发热重载用高级入口 `uv run python scripts/run_native.py --debug ...`。需要相机依赖时先 `uv run setup --camera`。只有Linux原生宿主已提供，训练/数据命令不依赖Flutter。下文显式Python/脚本参数保留为高级兼容入口。
 
 安装Flutter 3.47.9，以及Linux构建所需Clang/CMake/Ninja/pkg-config/GTK3开发库；将Flutter加入PATH。先按根目录说明准备Python `.venv`，然后在项目根目录运行：
 

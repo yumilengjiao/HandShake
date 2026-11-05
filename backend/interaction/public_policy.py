@@ -19,6 +19,10 @@ from shared.public_interaction import PublicActionEvent, PublicGesturePolicy
 
 
 class PublicGestureEngine:
+    # The historical shadow/replay policy accepts only NOG as neutral. A
+    # separately scoped local-demo subclass may declare static neutral tokens.
+    neutral_tokens = ("NOG",)
+
     def __init__(
         self,
         controller,
@@ -236,7 +240,7 @@ class PublicGestureEngine:
         geometry, token, confident = evidence
         if (
             track_id != prediction.track_id
-            or token != "NOG"
+            or token not in self.neutral_tokens
             or not confident
             or not geometry.neutral
         ):
@@ -276,7 +280,7 @@ class PublicGestureEngine:
             <= self.policy.stationary_speed
         )
         if self.state == "WAIT_RELEASE":
-            if token == "NOG" and g.neutral and stationary:
+            if token in self.neutral_tokens and g.neutral and stationary:
                 if self._neutral_since is None:
                     self._neutral_since = t
                 if (
@@ -290,7 +294,7 @@ class PublicGestureEngine:
             else:
                 self._neutral_since = None
             return self._record("waiting_geometric_neutral_and_cooldown", prediction)
-        if token == "NOG" and self.state == "ACTIVE":
+        if token in self.neutral_tokens and self.state == "ACTIVE":
             return self._record("active_no_command", prediction)
         if token not in {"TLT", "TRT"}:
             return self._wait_release("source_class_has_no_action", prediction)

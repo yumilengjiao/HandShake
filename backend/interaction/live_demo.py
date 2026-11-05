@@ -8,8 +8,11 @@ synthetic modes keep their original authorization rules.
 from hashlib import sha256
 import json
 
+from algorithm.bundle import digest, json_bytes
+
 from backend.interaction.model_host import ModelHost
 from backend.interaction.model_session import ModelPresentationSession
+from backend.interaction.public_policy import PublicGestureEngine
 from backend.interaction.public_presentation import SyntheticPublicPresentation
 from shared.presentation_protocol import Deck
 
@@ -56,10 +59,29 @@ def local_demo_deck():
     return deck, sha256(deck.model_dump_json().encode()).hexdigest()
 
 
+class _LocalDemoGestureEngine(PublicGestureEngine):
+    # Selecting a stationary pointing hand must not require the classifier to
+    # call that same pose NOG. These static classes still cannot create actions.
+    # All confidence, quality, freshness, geometry and release-hold checks stay.
+    neutral_tokens = ("NOG", "P1F", "P2F")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Bind the changed local-only semantics, not the old NOG-only policy SHA.
+        self.policy_sha256 = digest(json_bytes({
+            "policy": self.policy.model_dump(mode="json"),
+            "neutral_tokens": list(self.neutral_tokens),
+            "scope": "application-local-demo",
+        }))
+
+
 class _LiveDemoHost(ModelHost):
     def __init__(self, *, deck, **kwargs):
         self._local_deck = deck
         super().__init__(**kwargs)
+
+    def _make_engine(self, controller, **kwargs):
+        return _LocalDemoGestureEngine(controller, **kwargs)
 
     def _deck(self):
         return self._local_deck
@@ -142,5 +164,8 @@ class LocalDemoSession(ModelPresentationSession):
                 "live_available": True,
                 "external_control_available": False,
                 "experimental": True,
-                "actions_enabled": self.host._authorized(self.controller.snapshot()),
+                "actions_enabled": bool(
+                    self.host.engine.state in {"ACTIVE", "CANDIDATE"}
+                    and self.host._authorized(self.controller.snapshot())
+                ),
             }

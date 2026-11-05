@@ -150,6 +150,9 @@ class CameraPreviewWorker:
             cancelled=self.stop_requested.is_set,
         )
 
+    def _update_classifier(self, classifier, observation, *, capture_hz, perception_ms):
+        return classifier.update(observation)
+
     def _decorate_frame(self, packet):
         return packet
 
@@ -241,17 +244,27 @@ class CameraPreviewWorker:
                 ):
                     break
                 skipped, frame = capture.take(timeout=0.1)
-                if classifier is not None:
-                    for dropped in skipped:
-                        classifier.update(dropped)
                 if frame is None:
+                    if classifier is not None and skipped:
+                        classifier.update(skipped[-1])
                     if capture.done:
                         self.error = "camera_unavailable"
                         break
                     continue
+                # The retained frame advances source/health time past the whole
+                # earlier capture-drop ledger. Replaying old dropped records first
+                # can trigger the classifier's stale-input reset on every batch,
+                # even when this surviving frame is fresh. Gap, age and quality
+                # checks still apply to the actual processed observations.
+                perception_started = time.monotonic_ns()
                 observation = pipeline.process(frame) if pipeline is not None else None
+                perception_ms = (time.monotonic_ns() - perception_started) / 1e6
+                capture_hz = capture.stats.as_dict()["actual_capture_hz"]
                 notice = (
-                    classifier.update(observation) if classifier is not None else None
+                    self._update_classifier(
+                        classifier, observation,
+                        capture_hz=capture_hz, perception_ms=perception_ms,
+                    ) if classifier is not None else None
                 )
                 # Process evidence at capture cadence; cap only JPEG/UI output. A 10Hz
                 # sleep here would break the trained 100ms sampling-gap contract.
@@ -260,7 +273,7 @@ class CameraPreviewWorker:
                 packet = encode_frame(
                     frame,
                     observation,
-                    capture.stats.as_dict()["actual_capture_hz"],
+                    capture_hz,
                     classification=notice,
                 )
                 packet = self._decorate_frame(packet)

@@ -341,6 +341,7 @@ class NativeGestureSession:
                 ),
                 "model_state": demo["state"] if demo else "DISABLED",
                 "policy_reason": demo["bridge_reason"] if demo else "waiting_camera",
+                "diagnostics": demo.get("diagnostics") if active and demo else None,
                 "top_class": top_class,
                 "model_version": demo["model_version"] if demo else None,
                 "model_epoch": str(demo["epoch"]) if demo else None,

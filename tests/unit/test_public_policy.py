@@ -116,7 +116,7 @@ def test_unique_hand_and_nog_never_grant_owner_automatically(rig):
     assert rig.controller.snapshot().owner_track_id == "operator"
 
 
-@pytest.mark.parametrize("token", ["OP2", "GRB", "TLT", "TRT", "P1F"])
+@pytest.mark.parametrize("token", ["OP2", "GRB", "TLT", "TRT", "P1F", "P2F"])
 def test_non_neutral_source_class_cannot_arm_or_fake_wake_exit(rig, token):
     p, frame = rig.input(token)
     assert rig.engine.arm_owner("operator", p, frame, ready=True, now_ns=0) is None
@@ -180,6 +180,19 @@ def test_holding_and_return_motion_cannot_retrigger_after_cooldown(rig):
         assert rig.step("TLT", x) is None
     rig.release()
     assert len(rig.motion()) == 1
+
+
+@pytest.mark.parametrize("token", ["P1F", "P2F"])
+def test_public_policy_keeps_nog_only_release_and_original_digest(rig, token):
+    assert rig.engine.neutral_tokens == ("NOG",)
+    assert rig.engine.policy_sha256 == digest(
+        json_bytes(rig.engine.policy.model_dump(mode="json"))
+    )
+    rig.arm()
+    for _ in range(20):
+        assert rig.step(token) is None
+    assert rig.engine.state == "WAIT_RELEASE"
+    rig.release()
 
 
 def test_nog_without_stationary_geometric_neutral_does_not_release(rig):

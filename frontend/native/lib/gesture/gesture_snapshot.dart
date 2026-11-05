@@ -51,7 +51,7 @@ class GestureSnapshot {
       ...nullableTexts,
     };
     if (raw is! Map<String, dynamic> ||
-        raw.length != keys.length ||
+        raw.length != keys.length + (raw.containsKey('diagnostics') ? 1 : 0) ||
         !raw.keys.toSet().containsAll(keys) ||
         raw['protocol'] != 'native-gesture-v1' ||
         raw['version'] is! int ||
@@ -99,6 +99,58 @@ class GestureSnapshot {
         (raw['jpeg'] as String).length > 174764) {
       throw const FormatException('Invalid gesture page or image');
     }
+    final diagnostics = raw['diagnostics'];
+    if (diagnostics != null) {
+      const fields = {
+        'window_length',
+        'warmup_valid',
+        'source_gap_ms',
+        'frame_age_ms',
+        'max_gap_ms',
+        'reset_reason',
+      };
+      const timingFields = {'capture_hz', 'perception_ms', 'model_ms'};
+      if (diagnostics is! Map<String, dynamic> ||
+          diagnostics.length !=
+              fields.length +
+                  timingFields.where(diagnostics.containsKey).length ||
+          !diagnostics.keys.toSet().containsAll(fields)) {
+        throw const FormatException('Invalid warmup diagnostics');
+      }
+      for (final key in ['window_length', 'warmup_valid']) {
+        final value = diagnostics[key];
+        if (value is! int || value < 0 || value > 32) {
+          throw const FormatException('Invalid warmup count');
+        }
+      }
+      for (final key in ['source_gap_ms', 'frame_age_ms', 'max_gap_ms']) {
+        final value = diagnostics[key];
+        if (value == null && key == 'source_gap_ms') continue;
+        if (value is! num ||
+            !value.isFinite ||
+            value < 0 ||
+            value > 60000 ||
+            key == 'max_gap_ms' && value <= 0) {
+          throw const FormatException('Invalid warmup timing');
+        }
+      }
+      for (final key in timingFields) {
+        final value = diagnostics[key];
+        if (value == null) continue;
+        if (value is! num ||
+            !value.isFinite ||
+            value < 0 ||
+            value > (key == 'capture_hz' ? 1000 : 60000)) {
+          throw const FormatException('Invalid processing timing');
+        }
+      }
+      final reset = diagnostics['reset_reason'];
+      if (reset != null &&
+          (reset is! String || reset.isEmpty || reset.length > 128)) {
+        throw const FormatException('Invalid warmup reset reason');
+      }
+      raw['diagnostics'] = Map<String, dynamic>.unmodifiable(diagnostics);
+    }
     final jpeg = base64Decode(raw['jpeg'] as String);
     if (jpeg.length > 131072 ||
         (raw['camera_state'] != 'running' &&
@@ -135,4 +187,29 @@ class GestureSnapshot {
   int get pageCount => _data['page_count'] as int;
   String get cameraState => text('camera_state');
   String? get topClass => _data['top_class'] as String?;
+  Map<String, dynamic>? get diagnostics =>
+      _data['diagnostics'] as Map<String, dynamic>?;
+  int? get warmupValid => diagnostics?['warmup_valid'] as int?;
+  double? get sourceGapMs =>
+      (diagnostics?['source_gap_ms'] as num?)?.toDouble();
+  double? get maxGapMs => (diagnostics?['max_gap_ms'] as num?)?.toDouble();
+  bool get samplingOverBudget =>
+      sourceGapMs != null && maxGapMs != null && sourceGapMs! > maxGapMs!;
+  String get warmupResetText {
+    final reason = diagnostics?['reset_reason'] as String?;
+    if (reason?.startsWith('quality_invalid:') == true) {
+      return '手部质量不足（${reason!.substring(16)}）';
+    }
+    return switch (reason) {
+      null => '无',
+      'sampling_gap' => '处理帧间隔超过上限',
+      'stale' => '帧已过期',
+      'no_hand' => '未检测到手',
+      'multiple_hands' => '检测到多只手',
+      'source_changed' => '轨迹或控制代际变化',
+      'out_of_order' || 'future_input' => '源时间戳异常',
+      'perception_error' => '感知处理失败',
+      _ => reason,
+    };
+  }
 }
